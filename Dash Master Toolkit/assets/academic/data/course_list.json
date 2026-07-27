@@ -1,0 +1,359 @@
+{
+  "course_list": [
+    {
+      "courseName": "Design Accessibility",
+      "courseType": "Advanced",
+      "status": "In Progress",
+      "icon": "https://i.ibb.co/NB2hPJ7/design.png",
+      "duration": "5 hours",
+      "progress": 30.0,
+      "learnersCount": 2670,
+      "courseContents": [
+        {
+          "title": "Getting Started",
+          "lessons": ["Introductions"]
+        },
+        {
+          "title": "Before the workshop",
+          "lessons": [
+            "Design workshop basics",
+            "Essential tools in design workshops",
+            "Design workshop planning and agenda"
+          ]
+        },
+        {
+          "title": "During and after workshop",
+          "lessons": [
+            "Icebreakers & games for design workshops",
+            "Activities for brainstorming in design workshop",
+            "Design workshop deliverables",
+            "Design workshop presentations"
+          ]
+        },
+        {
+          "title": "Assessment",
+          "lessons": [
+            "Final Assessments"
+          ]
+        }
+      ],
+      "averageRating": 4.9,
+      "totalRatings": 5200,
+      "totalReviews": 4,
+      "ratingPercentages": [
+        0.7,
+        0.5,
+        0.35,
+        0.2,
+        0.1
+      ],
+      "reviewList": [
+        {
+          "userName": "Alesia K.",
+          "userImage": "https://i.ibb.co/DgCzDZgz/pf1.png",
+          "comment": "Eu leo ullamcorper cras velit accumsan. Facilisi dolor risus ac augue vitae nunc sapien. Lacus in consectetur eros amet posuere egestas. Ut tellus at venenatis mi. Morbi nibh nec nunc sem imperdiet. Risus in cursus quis nec auctor elementum ut lacus mi. Facilisis ut malesuada enim urna eu tristique commodo lacus. Amet.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Leslie Alexander.",
+          "userImage": "https://i.ibb.co/Zz381Yh3/pf2.png",
+          "comment": "Volutpat sagittis fringilla morbi dignissim at. Diam condimentum consectetur in lacus mattis ullamcorper. Blandit accumsan malesuada mi vel. Fermentum id suspendisse dignissim libero aliquam.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Jenny Wilson",
+          "userImage": "",
+          "comment": "Duis malesuada eu vel viverra. Et pellentesque ut risus vestibulum felis nisi. Magnis convallis mauris urna sit pretium. Elementum ullamcorper quam laoreet ultrices. Ullamcorper mattis quisque dapibus aliquam nisl elit. Turpis rhoncus in sodales rhoncus platea justo eu metus.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        }
+      ]
+    },
+    {
+      "courseName": "UX Research",
+      "courseType": "Intermediate",
+      "status": "In Progress",
+      "icon": "https://i.ibb.co/xnXR2Yc/research.png",
+      "duration": "6 hours",
+      "progress": 70.0,
+      "learnersCount": 2670,
+      "courseContents": [
+        {
+          "title": "Getting Started",
+          "lessons": ["Introductions"]
+        },
+        {
+          "title": "Before the workshop",
+          "lessons": [
+            "Design workshop basics",
+            "Essential tools in design workshops",
+            "Design workshop planning and agenda"
+          ]
+        },
+        {
+          "title": "During and after workshop",
+          "lessons": [
+            "Icebreakers & games for design workshops",
+            "Activities for brainstorming in design workshop",
+            "Design workshop deliverables",
+            "Design workshop presentations"
+          ]
+        },
+        {
+          "title": "Assessment",
+          "lessons": [
+            "Final Assessments"
+          ]
+        }
+      ],
+      "averageRating": 4.9,
+      "totalRatings": 5200,
+      "totalReviews": 4,
+      "ratingPercentages": [
+        0.7,
+        0.5,
+        0.35,
+        0.2,
+        0.1
+      ],
+      "reviewList": [
+        {
+          "userName": "Alesia K.",
+          "userImage": "https://i.ibb.co/DgCzDZgz/pf1.png",
+          "comment": "Eu leo ullamcorper cras velit accumsan. Facilisi dolor risus ac augue vitae nunc sapien. Lacus in consectetur eros amet posuere egestas. Ut tellus at venenatis mi. Morbi nibh nec nunc sem imperdiet. Risus in cursus quis nec auctor elementum ut lacus mi. Facilisis ut malesuada enim urna eu tristique commodo lacus. Amet.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Leslie Alexander.",
+          "userImage": "https://i.ibb.co/Zz381Yh3/pf2.png",
+          "comment": "Volutpat sagittis fringilla morbi dignissim at. Diam condimentum consectetur in lacus mattis ullamcorper. Blandit accumsan malesuada mi vel. Fermentum id suspendisse dignissim libero aliquam.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Jenny Wilson",
+          "userImage": "",
+          "comment": "Duis malesuada eu vel viverra. Et pellentesque ut risus vestibulum felis nisi. Magnis convallis mauris urna sit pretium. Elementum ullamcorper quam laoreet ultrices. Ullamcorper mattis quisque dapibus aliquam nisl elit. Turpis rhoncus in sodales rhoncus platea justo eu metus.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        }
+      ]
+    },
+    {
+      "courseName": "Design Terminology",
+      "courseType": "Beginner",
+      "status": "Completed",
+      "icon": "https://i.ibb.co/k2HyfYnv/grid.png",
+      "duration": "3 hours",
+      "progress": 100.0,
+      "learnersCount": 2670,
+      "courseContents": [
+        {
+          "title": "Getting Started",
+          "lessons": ["Introductions"]
+        },
+        {
+          "title": "Before the workshop",
+          "lessons": [
+            "Design workshop basics",
+            "Essential tools in design workshops",
+            "Design workshop planning and agenda"
+          ]
+        },
+        {
+          "title": "During and after workshop",
+          "lessons": [
+            "Icebreakers & games for design workshops",
+            "Activities for brainstorming in design workshop",
+            "Design workshop deliverables",
+            "Design workshop presentations"
+          ]
+        },
+        {
+          "title": "Assessment",
+          "lessons": [
+            "Final Assessments"
+          ]
+        }
+      ],
+      "averageRating": 4.9,
+      "totalRatings": 5200,
+      "totalReviews": 4,
+      "ratingPercentages": [
+        0.7,
+        0.5,
+        0.35,
+        0.2,
+        0.1
+      ],
+      "reviewList": [
+        {
+          "userName": "Alesia K.",
+          "userImage": "https://i.ibb.co/DgCzDZgz/pf1.png",
+          "comment": "Eu leo ullamcorper cras velit accumsan. Facilisi dolor risus ac augue vitae nunc sapien. Lacus in consectetur eros amet posuere egestas. Ut tellus at venenatis mi. Morbi nibh nec nunc sem imperdiet. Risus in cursus quis nec auctor elementum ut lacus mi. Facilisis ut malesuada enim urna eu tristique commodo lacus. Amet.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Leslie Alexander.",
+          "userImage": "https://i.ibb.co/Zz381Yh3/pf2.png",
+          "comment": "Volutpat sagittis fringilla morbi dignissim at. Diam condimentum consectetur in lacus mattis ullamcorper. Blandit accumsan malesuada mi vel. Fermentum id suspendisse dignissim libero aliquam.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Jenny Wilson",
+          "userImage": "",
+          "comment": "Duis malesuada eu vel viverra. Et pellentesque ut risus vestibulum felis nisi. Magnis convallis mauris urna sit pretium. Elementum ullamcorper quam laoreet ultrices. Ullamcorper mattis quisque dapibus aliquam nisl elit. Turpis rhoncus in sodales rhoncus platea justo eu metus.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        }
+      ]
+    },
+    {
+      "courseName": "Framer for Beginner",
+      "courseType": "Beginner",
+      "status": "Completed",
+      "icon": "https://i.ibb.co/1G4BjNj2/frame.png",
+      "duration": "7 hours",
+      "progress": 30.0,
+      "learnersCount": 2670,
+      "courseContents": [
+        {
+          "title": "Getting Started",
+          "lessons": ["Introductions"]
+        },
+        {
+          "title": "Before the workshop",
+          "lessons": [
+            "Design workshop basics",
+            "Essential tools in design workshops",
+            "Design workshop planning and agenda"
+          ]
+        },
+        {
+          "title": "During and after workshop",
+          "lessons": [
+            "Icebreakers & games for design workshops",
+            "Activities for brainstorming in design workshop",
+            "Design workshop deliverables",
+            "Design workshop presentations"
+          ]
+        },
+        {
+          "title": "Assessment",
+          "lessons": [
+            "Final Assessments"
+          ]
+        }
+      ],
+      "averageRating": 4.9,
+      "totalRatings": 5200,
+      "totalReviews": 4,
+      "ratingPercentages": [
+        0.7,
+        0.5,
+        0.35,
+        0.2,
+        0.1
+      ],
+      "reviewList": [
+        {
+          "userName": "Alesia K.",
+          "userImage": "https://i.ibb.co/DgCzDZgz/pf1.png",
+          "comment": "Eu leo ullamcorper cras velit accumsan. Facilisi dolor risus ac augue vitae nunc sapien. Lacus in consectetur eros amet posuere egestas. Ut tellus at venenatis mi. Morbi nibh nec nunc sem imperdiet. Risus in cursus quis nec auctor elementum ut lacus mi. Facilisis ut malesuada enim urna eu tristique commodo lacus. Amet.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Leslie Alexander.",
+          "userImage": "https://i.ibb.co/Zz381Yh3/pf2.png",
+          "comment": "Volutpat sagittis fringilla morbi dignissim at. Diam condimentum consectetur in lacus mattis ullamcorper. Blandit accumsan malesuada mi vel. Fermentum id suspendisse dignissim libero aliquam.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Jenny Wilson",
+          "userImage": "",
+          "comment": "Duis malesuada eu vel viverra. Et pellentesque ut risus vestibulum felis nisi. Magnis convallis mauris urna sit pretium. Elementum ullamcorper quam laoreet ultrices. Ullamcorper mattis quisque dapibus aliquam nisl elit. Turpis rhoncus in sodales rhoncus platea justo eu metus.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        }
+      ]
+    },
+    {
+      "courseName": "Figma for Beginner",
+      "courseType": "Beginner",
+      "status": "Completed",
+      "icon": "https://i.ibb.co/0VXjMvc6/figma.png",
+      "duration": "8 hours",
+      "progress": 30.0,
+      "learnersCount": 2670,
+      "courseContents": [
+        {
+          "title": "Getting Started",
+          "lessons": ["Introductions"]
+        },
+        {
+          "title": "Before the workshop",
+          "lessons": [
+            "Design workshop basics",
+            "Essential tools in design workshops",
+            "Design workshop planning and agenda"
+          ]
+        },
+        {
+          "title": "During and after workshop",
+          "lessons": [
+            "Icebreakers & games for design workshops",
+            "Activities for brainstorming in design workshop",
+            "Design workshop deliverables",
+            "Design workshop presentations"
+          ]
+        },
+        {
+          "title": "Assessment",
+          "lessons": [
+            "Final Assessments"
+          ]
+        }
+      ],
+      "averageRating": 4.9,
+      "totalRatings": 5200,
+      "totalReviews": 4,
+      "ratingPercentages": [
+        0.7,
+        0.5,
+        0.35,
+        0.2,
+        0.1
+      ],
+      "reviewList": [
+        {
+          "userName": "Alesia K.",
+          "userImage": "https://i.ibb.co/DgCzDZgz/pf1.png",
+          "comment": "Eu leo ullamcorper cras velit accumsan. Facilisi dolor risus ac augue vitae nunc sapien. Lacus in consectetur eros amet posuere egestas. Ut tellus at venenatis mi. Morbi nibh nec nunc sem imperdiet. Risus in cursus quis nec auctor elementum ut lacus mi. Facilisis ut malesuada enim urna eu tristique commodo lacus. Amet.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Leslie Alexander.",
+          "userImage": "https://i.ibb.co/Zz381Yh3/pf2.png",
+          "comment": "Volutpat sagittis fringilla morbi dignissim at. Diam condimentum consectetur in lacus mattis ullamcorper. Blandit accumsan malesuada mi vel. Fermentum id suspendisse dignissim libero aliquam.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        },
+        {
+          "userName": "Jenny Wilson",
+          "userImage": "",
+          "comment": "Duis malesuada eu vel viverra. Et pellentesque ut risus vestibulum felis nisi. Magnis convallis mauris urna sit pretium. Elementum ullamcorper quam laoreet ultrices. Ullamcorper mattis quisque dapibus aliquam nisl elit. Turpis rhoncus in sodales rhoncus platea justo eu metus.",
+          "timeAgo": "2d ago",
+          "rating": 4.9
+        }
+      ]
+    }
+  ]
+}

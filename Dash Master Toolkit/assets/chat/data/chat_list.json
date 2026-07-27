@@ -1,0 +1,147 @@
+{
+  "chat_list": [
+    {
+      "isVerified": true,
+      "image": "https://i.ibb.co/BrPBtpS/48px.png",
+      "user_name": "Alexander Arnold",
+      "message": "Hi there! I hope you're doing well. I have a new design project that I'd like to discuss with you. Are you available?",
+      "unread_msg_count": 2,
+      "date_time": "12.34 pm",
+      "message_list": [
+        {
+          "message": "Hi there! I hope you're doing well. I have a new design project that I'd like to discuss with you. Are you available?",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        },
+        {
+          "message": "Hi! I'm doing great, thank you. Of course, I'm available to discuss the project. I'd be happy to help. What's the project all about?",
+          "isSender": true,
+          "date_time": "12.34 pm"
+        },
+        {
+          "message": "Awesome! So, I'm working on launching a new e-commerce website for my boutique fashion brand. I need a fresh and modern design for the website's homepage and product pages. The goal is to create an engaging user experience that reflects our brand's style.",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        },
+        {
+          "message": "That sounds exciting! I'd love to help you with that. Could you provide me with more details about your brand's aesthetics, target audience, and any specific design elements you have in mind?",
+          "isSender": true,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "https://i.ibb.co/Fq6q4sj/48px-4.png",
+      "user_name": "Brian Cornor",
+      "message": "In terms of timeline, I aim to have the initial concepts ready within a week. After that, the timeline will depend on the revisions and adjustments needed. As for the budget, I'd like to know more about the complexity of the design and your expectations, so I can provide you with a fair estimate.\n",
+      "unread_msg_count": 1,
+      "date_time": "12.34 pm",
+      "message_list": [
+        {
+          "message": "In terms of timeline, I aim to have the initial concepts ready within a week. After that, the timeline will depend on the revisions and adjustments needed. As for the budget, I'd like to know more about the complexity of the design and your expectations, so I can provide you with a fair estimate.\n",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "https://i.ibb.co/dkPm54q/1.png",
+      "user_name": "Roberto Gunawan",
+      "message": "I'm glad to hear that. Your input and references will be extremely helpful in crafting the perfect logo for GreenHaven. I'll make sure to incorporate your preferences and keep you updated at every step. If you have any questions or thoughts along the way, please don't hesitate to reach out. I'm excited to start working on this project for you!",
+      "unread_msg_count": 0,
+      "date_time": "Yesterday",
+      "message_list": [
+        {
+          "message": "I'm glad to hear that. Your input and references will be extremely helpful in crafting the perfect logo for GreenHaven. I'll make sure to incorporate your preferences and keep you updated at every step. If you have any questions or thoughts along the way, please don't hesitate to reach out. I'm excited to start working on this project for you!",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "",
+      "user_name": "Onadio Patrick",
+      "message": "Fantastic! We're excited too. Let's create something amazing together. Looking forward to your first update. Thanks again!",
+      "unread_msg_count": 0,
+      "date_time": "Yesterday",
+      "message_list": [
+        {
+          "message": "Fantastic! We're excited too. Let's create something amazing together. Looking forward to your first update. Thanks again!",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "https://i.ibb.co/cTfVpXs/48px-2.png",
+      "user_name": "Lily Alexa",
+      "message": "Thank you for your enthusiasm! I'll put my best efforts into this project to ensure we create a logo that truly captures the essence of GreenHaven. I'll be in touch soon with the initial concepts. Have a great day!",
+      "unread_msg_count": 0,
+      "date_time": "Yesterday",
+      "message_list": [
+        {
+          "message": "Thank you for your enthusiasm! I'll put my best efforts into this project to ensure we create a logo that truly captures the essence of GreenHaven. I'll be in touch soon with the initial concepts. Have a great day!",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "https://i.ibb.co/z2yqRrZ/48px-3.png",
+      "user_name": "Windy Yunada",
+      "message": "That sounds like a solid plan. I appreciate your transparency. Our budget for this project is around $300. We're excited to see your creative ideas and work closely with you to develop a logo that truly represents our brand.",
+      "unread_msg_count": 0,
+      "date_time": "Yesterday",
+      "message_list": [
+        {
+          "message": "That sounds like a solid plan. I appreciate your transparency. Our budget for this project is around $300. We're excited to see your creative ideas and work closely with you to develop a logo that truly represents our brand.",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "",
+      "user_name": "James Carter",
+      "message": "That sounds like a solid plan. I appreciate your transparency. Our budget for this project is around $300. We're excited to see your creative ideas and work closely with you to develop a logo that truly represents our brand.",
+      "unread_msg_count": 0,
+      "date_time": "Yesterday",
+      "message_list": [
+        {
+          "message": "That sounds like a solid plan. I appreciate your transparency. Our budget for this project is around $300. We're excited to see your creative ideas and work closely with you to develop a logo that truly represents our brand.",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    },
+    {
+      "isVerified": false,
+      "image": "",
+      "user_name": "Jackson Harris",
+      "message": "That sounds like a solid plan. I appreciate your transparency. Our budget for this project is around $300. We're excited to see your creative ideas and work closely with you to develop a logo that truly represents our brand.",
+      "unread_msg_count": 0,
+      "date_time": "Yesterday",
+      "message_list": [
+        {
+          "message": "That sounds like a solid plan. I appreciate your transparency. Our budget for this project is around $300. We're excited to see your creative ideas and work closely with you to develop a logo that truly represents our brand.",
+          "isSender": false,
+          "date_time": "12.34 pm"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,37 @@
+{
+  "notification_list": [
+    {
+      "title": "Announcements",
+      "message": "Risus pretium massa mollis dui non blandit maecenas ullamcorper elit...",
+      "time_ago": "2h ago",
+      "icon": "https://i.ibb.co/R4QK8KKr/Icon-1.png",
+      "is_unread": true,
+      "category": "announcement"
+    },
+    {
+      "title": "Booking Confirmed!",
+      "message": "Risus pretium massa mollis dui non blandit maecenas ullamcorper elit...",
+      "time_ago": "2h ago",
+      "icon": "https://i.ibb.co/rKp042C4/Ellipse-8.png",
+      "is_unread": true,
+      "category": "booking"
+    },
+    {
+      "title": "Payment Successful!",
+      "message": "Risus pretium massa mollis dui non blandit maecenas ullamcorper elit...",
+      "time_ago": "2h ago",
+      "icon": "https://i.ibb.co/dw38Kx0p/Icon-2.png",
+      "is_unread": false,
+      "category": "payment"
+    },
+    {
+      "title": "Booking Confirmed!",
+      "message": "Risus pretium massa mollis dui non blandit maecenas ullamcorper elit...",
+      "time_ago": "2h ago",
+      "icon": "https://i.ibb.co/FLmVN4v7/Ellipse-8-1.png",
+      "is_unread": true,
+      "category": "booking"
+    }
+  ]
+
+}
