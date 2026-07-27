@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Theme Installation Steps</title>
+    <link href="files/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="files/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="files/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/x-icon" href="/files/images/favicon.png" sizes="16x16" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="files/fonts/font.css" type="text/css" media="all"> -->
+    <script>
+        document.createElement('section');
+        var duration = 500, easing = 'swing';
+    </script>
+    <script src="files/js/jquery.js" type="text/javascript"></script>
+    <script src="files/js/jquery.colorbox.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            jQuery(function () {
+                jQuery('.menu li.toclevel-1:nth-child(1) a').addClass('active');
+            });
+
+            jQuery(".uploadtheme").colorbox({ iframe: true, innerWidth: 640, innerHeight: 390 });
+
+            jQuery('a[href*=#]').bind('click', function (e) {
+                e.preventDefault(); // prevent hard jump, the default behavior
+
+                var target = jQuery(this).attr("href"); // Set the target as variable
+
+                // perform animated scrolling by getting top-position of target-element and set it as scroll target
+                jQuery('html, body').stop().animate({
+                    scrollTop: jQuery(target).offset().top
+                }, 1000, function () {
+                    location.hash = target; //attach the hash (#jumptarget) to the pageurl
+                });
+                return false;
+            });
+            jQuery(window).scroll(function () {
+                var scrollDistance = jQuery(window).scrollTop();
+                jQuery('section').each(function (i) {
+                    if (jQuery(this).position().top <= scrollDistance) {
+                        jQuery('.menu li.toclevel-1 a.active').removeClass('active');
+                        jQuery('.menu li.toclevel-1 a').eq(i).addClass('active');
+                    }
+                });
+            }).scroll();
+            $(document).scroll(function () {
+                if ($(this).scrollTop() > 300) {
+                    $('.left').css({ "position": "fixed", "top": "100px" });
+                }
+                else if ($(this).scrollTop() < 300) {
+                    $('.left').css({ "position": "absolute", "top": "auto" });
+                }
+            });
+        });
+    </script>
+    <div class="header-area">
+        <div class="div-container">
+            <div class="logo">
+                <img src="files/images/logo.png" alt="logo" />
+            </div>
+        </div>
+    </div>
+
+</head>
+
+
+
+<body>
+    <div class="div-container">
+        <br><br><br><br><br>
+        <h3 class="logo">&ldquo;DashMaster Toolkit&rdquo; Documentation by &ldquo;ImperiaThemes&rdquo; v1.0</h3>
+
+        <br>
+        <div class="borderTop">
+            <div class="span-6 colborder info prepend-1">
+                <p class="prepend-top">
+                    <strong>
+                        Created: 05-05-2025<br>
+                        By: ImperiaThemes<br>
+                        Email: <a href="mailto:support@imperiathemes.com">support@imperiathemes.com</a>
+                    </strong>
+                </p>
+            </div><!-- end div .span-6 -->
+            <br>
+            <div class="span-12 last">
+                <p class="prepend-top append-0">Thank you for purchasing my theme. If you have any questions that are
+                    beyond the scope of this help file, please feel free to email via my user page contact form <a
+                        href="http://themeforest.net/user/ImperiaThemes">here</a>. Thanks so much!</p>
+            </div>
+        </div>
+        <div class="content-area">
+            <div class="left">
+                <aside id="secondary" class="sidebar widget-area">
+                    <ul class="menu">
+                        <li class="toclevel-1"><a href="#androidstep1"> Introduction </a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep2"> Tools & Setup </a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep3"> Project Setup </a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep4"> How to Run </a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep5">Folder Structure</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep6">Dashboard</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep7">Calendar</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep8">chat</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep9">kanban</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep10">Users</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep11">Projects</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep12">Authentication</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep13">FAQs</a>
+                        </li>
+
+                        <li class="toclevel-1"><a href="#androidstep14">Privacy policy</a>
+                        </li>
+
+                        <li class="toclevel-1"><a href="#androidstep15">Terms & Condition</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep16">Tables</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep17">Forms</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep18">Chart</a>
+                        </li>
+                   
+                        <li class="toclevel-1"><a href="#androidstep19">Components</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep20">Language Customization</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep21">Customization </a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep22">Change Launcher Logo</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep23">Change Application id (Package Name)</a>
+                        </li>
+                        <li class="toclevel-1"><a href="#androidstep24">Google Map Integration</a>
+                        </li>
+                       
+                        <br>
+                    </ul>
+                </aside>
+            </div>
+
+            <div class="right">
+                <div class="primary">
+                    <h2 class="app-title" >DashMaster Toolkit</h2>
+
+                    <section id="androidstep1" class="androidstep">
+                        <h2 style="padding-top:40px;">Introduction</h2>
+
+
+                        <ul>
+                            <li><b><span>1. Light & Dark Theme Support:</span></b> Light and Dark theme support allows
+                                your app to offer
+                                different color schemes for users to choose from. Light themes are typically used in
+                                well-lit environments, while dark themes are preferred in low-light situations.
+                                Implementing this feature provides flexibility and user comfort.</li>
+                            </br>
+                            <li><b><span>2. Transition Animations:</span></b> Transition animations are a great way to
+                                create smooth and
+                                visually appealing user experiences when navigating between different screens or views
+                                in your app. Flutter provides various animation packages and tools to achieve this
+                                effect, including the built-in Hero widget and packages like animations.</li>
+                            </br>
+                            <li><b><span>3. State Management (GetX):</span></b> GetX is a state management package for
+                                Flutter that offers a
+                                simple and efficient way to manage application state. It also provides features for
+                                navigation, dependency injection, and more. Using GetX can help you maintain a clean and
+                                organized codebase, making it easier to manage the state and logic of your app.</li>
+                            </br>
+
+                        </ul>
+                    </section>
+
+
+                    <section id="androidstep2" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Tools & Setup</h2>
+                        <h3 style="padding-top:10px;">Pre requisite</h3>
+                        <ul>
+                            <li><b><span>1. Flutter & Dart SDK: </span></b> Please ensure that both the Flutter and Dart
+                                SDKs are installed on your system. Specifically, you've indicated the use of Flutter
+                                version 3.27.1. It's crucial to have compatible versions of both Flutter and Dart for
+                                optimal performance.</li></br>
+
+                            <li><b><span>2. IDE: </span></b> Consider utilizing one of the recommended integrated
+                                development environments (IDEs) for Flutter development, such as Android Studio
+                                (recommended), Visual Studio Code, or IntelliJ IDEA. Ensure to install the Flutter and
+                                Dart plugins tailored for your chosen IDE to streamline your development process. </li>
+                            </br>
+
+                        </ul>
+                    </section>
+                    <section id="androidstep3" class="androidstep">
+                        <h2 style="padding-top:40px;">Project Setup</h2>
+                        <ul>
+                            <li><b><span>1. Editing the Project: </span></b> To edit the project, it’s essential to have
+                                Flutter and Dart installed and configured successfully on your computer. </li></br>
+                            <li><b><span>2. Set Up Your Editor: </span></b> Install the Flutter and Dart plugins for
+                                your chosen IDE. These plugins provide tools and features to streamline Flutter
+                                development. </li></br>
+                            <li><b><span>3. Install Flutter: </span></b> : If you have the Android SDK already installed
+                                and configured, you only need to install Flutter. To do this: </li></br>
+
+                            <li> • Download the Flutter SDK from the official website.</li>
+                            <li> • Extract the downloaded SDK to a suitable location on your computer.</li></br>
+                            <li><b><span>4. Add Flutter to PATH: </span></b> To make Flutter accessible from the command
+                                line, add the path to the Flutter SDK to your system’s PATH variable. This allows you to
+                                run Flutter commands from any directory. </li></br>
+                            <li><b><span>5. Run flutter doctor: </span></b> After setting up the SDK and adding it to
+                                your PATH, run the flutter doctor command. This tool checks if everything is configured
+                                correctly and provides information on any missing dependencies or setup issues. </li>
+                            </br>
+
+                            <p>You’ve also mentioned that additional details and instructions for these steps can be
+                                found in the official Flutter installation guide: <a
+                                    href="https://flutter.dev/docs/get-started/install/" target="_blank">Flutter
+                                    Install</a>. This is a great resource for developers looking to set up their
+                                development environment for Flutter.</p>
+                            </br>
+                            <p>These instructions provide a clear path for setting up a Flutter development environment
+                                and starting to work on your project effectively.</p>
+
+                            <h3 style="padding-top:20px;"><b> Steps: </b></h3>
+
+                            <li>• Download the Flutter SDK for Windows from the official website.</li>
+                            <li>• Extract the downloaded archive to a suitable location.</li>
+                            <li>• Add the Flutter bin directory to your system’s PATH.</li>
+                        </ul>
+                        </br>
+
+                        <p>Run flutter doctor in the Command Prompt to check for any missing dependencies and follow the
+                            provided instructions to resolve them.</p></br>
+                        <p><b><span>IDE: </span></b> You can use Android Studio, Visual Studio Code, or IntelliJ IDEA on
+                            Windows. Make sure to install the Flutter and Dart plugins for your chosen IDE.</p></br>
+
+
+                    </section>
+                    <section id="androidstep4" class="androidstep">
+                        <h2 style="padding-top:40px;">How to Run</h2>
+                        <p>Running a Flutter application typically involves several straightforward steps. Below is a
+                            general guide on how to run a Flutter app on various platforms (iOS, Android, web, etc.)
+                            using the command line. Ensure that your Flutter project is already set up and that you have
+                            installed the necessary dependencies.</p>
+                        </br>
+                        <ul>
+                            <li><b>1. Navigate to Your Flutter Project Directory: </b> Open a terminal or command prompt
+                                and navigate to the directory where your Flutter project is located.</li></br>
+                            <li><b>2. Connect Your Device (Optional): </b> If you're running your app on a physical
+                                device, ensure it's connected to your computer via USB, and USB debugging is enabled.
+                            </li></br>
+                            <li><b>3. Check Devices: </b> Run the following command to verify the devices connected to
+                                your system:</li></br>
+
+                            <p>This command will display a list of connected devices, including emulators and physical
+                                devices.</p></br>
+
+                            <li><b>4. Select a Device: </b> Choose the device you want to run your app on from the list
+                                displayed by the flutter devices command.</li></br>
+                            <li><b>5. Run Your App: </b> </li></br>
+                            <li>• For Android: Run the following command to launch your app on an Android device or
+                                emulator:</li></br>
+
+                            <div class="title-box">flutter run</div>
+
+                            <li> • For iOS: Run the following command to launch your app on an iOS simulator:</li></br>
+
+                            <div class="title-box">flutter run</div>
+
+                            <p>Ensure you have Xcode installed on your macOS system for iOS development.</p></br>
+
+                            <li> • For Web: Run the following command to launch your app in a web browser:</li></br>
+
+                            <div class="title-box">Flutter run -d web</div>
+
+                            <p>Ensure you have configured your Flutter project for web development.</p></br>
+                            <li><b>For other platforms:</b> Depending on your project setup, you may have additional
+                                options for running your app on different platforms. Refer to the Flutter documentation
+                                for platform-specific instructions.</li></br>
+                            <li><b>6.View Your App </b>Once the build process is complete, your app will launch on the
+                                selected device or emulator. You can interact with your app as usual. </li></br>
+                            <li><b>7.Hot Reload: </b>During development, you can make changes to your code and use hot
+                                reload to quickly see the updates reflected in your running app. Simply save your
+                                changes, and Flutter will automatically reload your app with the new code. </li></br>
+
+
+
+                        </ul>
+                        <p>That's it! You've successfully run your Flutter app on your desired platform using the
+                            command line.</p></br>
+                        <p>Remember that the specific commands may vary depending on your platform and development
+                            environment. Be sure to have your development environment properly set up, including having
+                            the necessary SDKs, emulators, or simulators installed for the target platform you want to
+                            run your Flutter app on.</p>
+                        </br>
+                    </section>
+                    <section id="androidstep5" class="androidstep">
+                        <h2 style="padding-top:40px;">Folder Structure</h2>
+
+                        <a href="files/images/floder_structure.png">
+                            <img alt="" src="files/images/floder_structure.png" />
+                        </a>
+
+                        <ul>
+                            <li><b><span>1. DashMaster Toolkit</span></b></li></br>
+                            <li>• This seems to be the core application directory, which contains the main app code and
+                                assets.</li></br>
+                            <li>• The android and ios folders contain platform-specific code and configurations for
+                                Android and iOS.</li></br>
+                            <li>• The assets directory is where you store static assets like images, json files that
+                                your app uses.</li></br>
+                            <li>• The lib directory contains the main application code. The features subdirectory under
+                                lib likely contains code for various features or modules used in the app.</li></br>
+
+                            <li><b><span>2. main.dart: </span></b></li></br>
+                            <li>• This is the entry point of your Flutter application. It’s the starting point of your
+                                app’s execution.</li></br>
+
+
+                            <li><b><span>3. pubspec.yaml: </span></b></li></br>
+
+                            <li>• This is the entry point of your Flutter application. It’s the starting point of your
+                                app’s execution.</li></br>
+
+
+                        </ul><br/>
+        
+                    </section>
+                    
+                        <section id="androidstep6" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Dashboard</h2>
+
+                        <p>The project includes four unique dashboard screens, all organized under the /lib/dashboard directory.</p>
+                        
+                        <a href="files/images/dashboard_image.png"> <img alt="" src="files/images/dashboard_image.png" /></a><br/><br/>
+
+                        <a href="files/images/dashboard_2.png"> <img alt="" src="files/images/dashboard_2.png" /></a>
+
+                        <p>If you want to modify any of the dashboard screens, you can do so within this directory: /lib/dashboard. Each subdirectory corresponds to a specific dashboard screen title, making it simple to locate and update the relevant files.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+
+                    <section id="androidstep7" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Calendar</h2>
+
+                        <p>TThe Flutter project includes a dedicated calendar screen, which can be found in the /lib/application/calendar directory.</p>
+                        
+                        <a href="files/images/cal_1.png"> <img alt="" src="files/images/cal_1.png" /></a><br/><br/>
+
+                        <a href="files/images/cal_2.png"> <img alt="" src="files/images/cal_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the calendar, you can edit the calendar_view.dart file located at /lib/application/calendar/view/calendar_view_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+
+                    <section id="androidstep8" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Chat</h2>
+
+                        <p>The Flutter project includes a dedicated chat screen, which can be found in the /lib/application/chat directory.</p>
+                        
+                        <a href="files/images/chat_1.png"> <img alt="" src="files/images/chat_1.png" /></a><br/><br/>
+
+                        <a href="files/images/chat_2.png"> <img alt="" src="files/images/chat_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the chat, you can edit the chat_screen.dart file located at /lib/application/chat/view/chat_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+
+
+                    <section id="androidstep9" class="androidstep">
+
+                        <h2 style="padding-top:40px;">kanban</h2>
+
+                        <p>TThe Flutter project includes a dedicated chat screen, which can be found in the /lib/application/kanban directory.</p>
+                        
+                        <a href="files/images/kanban_1.png"> <img alt="" src="files/images/kanban_1.png" /></a><br/><br/>
+
+                        <a href="files/images/kanaban_2.png"> <img alt="" src="files/images/kanaban_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the kanban, you can edit the chat_screen.dart file located at /lib/application/kanban/view/kanban_view_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+                    
+
+                    <section id="androidstep10" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Users</h2>
+
+                        <p>TThe Flutter project includes a dedicated Users screen, which can be found in the /lib/application/users directory.</p>
+                        
+                        <a href="files/images/user_1.png"> <img alt="" src="files/images/user_1.png" /></a><br/><br/>
+
+                        <a href="files/images/users_2.png"> <img alt="" src="files/images/users_2.png" /></a>
+
+                        <p>To modify any of the component screens related to user management, you can do so within the appropriate directories under /lib/application/users. </p> <br/>
+                        <p>Each directory name corresponds to the title of a specific user-related screen, allowing for easy navigation and file identification: </p><br/>
+                        <ul>
+                           <li><b>User Grid Screen:</b> /lib/application/users/view/user_grid_screen.dart</li>  <br/>
+                            
+                           <li> <b>User List Screen:</b> /lib/application/users/view/user_list_screen.dart</li> 
+                           <li>  <br/>
+                            <b>User Profile Screen:</b> /lib/application/users/view/user_profile_screen.dart</li> 
+                        </ul>  <br/>
+                            <p></p> Each directory contains the relevant files for its respective screen, making it straightforward to edit or extend any part of the user interface.</p><br/>
+                        <br/><br/>
+
+                    </section>
+
+
+
+                    <section id="androidstep11" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Projects</h2>
+
+                        <p>The Flutter project includes a dedicated project screen, which can be found in the /lib/pages/projects directory.</p>
+                        
+                        <a href="files/images/project_1.png"> <img alt="" src="files/images/project_1.png" /></a><br/><br/>
+
+                        <a href="files/images/project_2.png"> <img alt="" src="files/images/project_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the project, you can edit the projects_screen.dart file located at /lib/pages/projects/view/projects_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+                    <section id="androidstep12" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Authentication</h2>
+
+                        <p>The Flutter project includes a dedicated authentication screen, which can be found in the /lib/pages/auth directory.</p>
+                        
+                        <a href="files/images/auth_1.png"> <img alt="" src="files/images/auth_1.png" /></a><br/>
+
+                        <a href="files/images/auth_2.png"> <img alt="" src="files/images/auth_2.png" /></a>
+
+                        <p>To modify any section of the Authentication screens, navigate to the following directory: /lib/pages/auth. </p><br/>
+                        <p>Each file within this folder corresponds to a specific authentication screen, making it easy to identify and edit the desired components:</p><br/>
+                            <ul>
+                               
+                            <li><b>Sign In Screen:</b> /lib/pages/auth/view/sign_in_screen.dart</li><br/>
+                            <a href="files/images/sign_up.png"> <img alt="" src="files/images/sign_in.png" /></a><br/>
+
+                            <li><b> Sign Up Screen:</b> /lib/pages/auth/view/sign_up_screen.dart</li><br/>
+                            <a href="files/images/sign_up.png"> <img alt="" src="files/images/sign_up.png" /></a><br/>
+
+                            <li><b> Forgot Password Screen:</b> /lib/pages/auth/view/forgot_password_screen.dart</li><br/>
+                            <a href="files/images/sign_up.png"> <img alt="" src="files/images/forgot_password.png" /></a><br/>
+                            
+                            <li><b> Reset Password Screen:</b> /lib/pages/auth/view/reset_password_screen.dart</li><br/>
+                            <a href="files/images/sign_up.png"> <img alt="" src="files/images/reset_password.png" /></a><br/>
+                           
+                        </ul>
+                            <p>This structure ensures quick access and maintainability when working with authentication-related views.
+                            
+                            </p>
+                        <br/><br/>
+
+                    </section>
+
+
+
+
+                    <section id="androidstep13" class="androidstep">
+
+                        <h2 style="padding-top:40px;">FAQs</h2>
+
+                        <p>The Flutter project includes a dedicated faq screen, which can be found in the /lib/pages/faq directory.</p>
+                        
+                        <a href="files/images/faq_1.png"> <img alt="" src="files/images/faq_1.png" /></a><br/><br/>
+
+                        <a href="files/images/faq_2.png"> <img alt="" src="files/images/faq_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the faq, you can edit the faq_screen.dart file located at /lib/pages/faq/view/faq_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+
+                    <section id="androidstep14" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Privacy Policy</h2>
+
+                        <p>The Flutter project includes a dedicated privacy policy screen, which can be found in the /lib/pages/privacy_term_condition directory.</p>
+                        
+                        <a href="files/images/privacy_1.png"> <img alt="" src="files/images/privacy_1.png" /></a><br/><br/>
+
+                        <a href="files/images/privacy_2.png"> <img alt="" src="files/images/privacy_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the privacy policy, you can edit the privacy_screen.dart file located at /lib/pages/privacy_term_condition/view/privacy_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+
+                    
+                    <section id="androidstep15" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Terms & Condition</h2>
+
+                        <p>The Flutter project includes a dedicated terms & condition screen, which can be found in the /lib/pages/privacy_term_condition directory.</p>
+                        
+                        <a href="files/images/terms_1.png"> <img alt="" src="files/images/terms_1.png" /></a><br/><br/>
+
+                        <a href="files/images/terms_2.png"> <img alt="" src="files/images/terms_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the terms & condition, you can edit the terms_condition_screen.dart file located at /lib/pages/privacy_term_condition/view/terms_condition_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+
+                    <section id="androidstep16" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Tables</h2>
+
+                        <p>The Flutter project includes a dedicated tables screen, which can be found in the /lib/tables directory.</p>
+                        
+                        <a href="files/images/table_1.png"> <img alt="" src="files/images/table_1.png" /></a><br/>
+
+                        <p>To modify any section of the tables screens, navigate to the following directory: /lib/tables. </p><br/>
+                        <p>Each file within this folder corresponds to a specific tables screen, making it easy to identify and edit the desired components:</p><br/>
+                            <ul>
+                               
+                            <li><b>Basic Table Screen:</b> /lib/tables/view/basic_table_screen.dart</li><br/>
+                            <a href="files/images/basic_table_2.png"> <img alt="" src="files/images/basic_table_2.png" /></a><br/>
+
+                            <li><b> Stripped Row Table Screen:</b> /lib/tables/view/stripped_row_table_screen.dart</li><br/>
+                            <a href="files/images/stripped_row_table_2.png"> <img alt="" src="files/images/stripped_row_table_2.png" /></a><br/>
+
+                            <li><b> Hover Table Screen:</b> /lib/tables/view/hover_table_screen.dart</li><br/>
+                            <a href="files/images/hover_table_2.png"> <img alt="" src="files/images/hover_table_2.png" /></a><br/>
+                            
+                            <li><b> Darg & Drop Table Screen:</b> /lib/tables/view/drag_and_drop_table_screen.dart</li><br/>
+                            <a href="files/images/drag_drop_table_2.png"> <img alt="" src="files/images/drag_drop_table_2.png" /></a><br/>
+                           
+                        </ul>
+                            <p>This structure ensures quick access and maintainability when working with tables-related views.
+                            
+                            </p>
+                        <br/><br/>
+
+                    </section>
+
+                
+                    <section id="androidstep17" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Forms</h2>
+
+                        <p>The Flutter project includes a dedicated forms screen, which can be found in the /lib/forms directory.</p>
+                        
+                        <a href="files/images/form_1.png"> <img alt="" src="files/images/form_1.png" /></a><br/>
+
+                        <p>To modify any section of the forms screens, navigate to the following directory: /lib/forms. </p><br/>
+                        <p>Each file within this folder corresponds to a specific forms screen, making it easy to identify and edit the desired components:</p><br/>
+                            <ul>
+                               
+                            <li><b>Basic Form Screen:</b> /lib/forms/view/basic_form_fields_screen.dart</li><br/>
+                            <a href="files/images/basic_form.png"> <img alt="" src="files/images/basic_form.png" /></a><br/>
+
+                            <li><b> Custom Form Table Screen:</b> /lib/forms/view/custom_form_screen.dart</li><br/>
+                            <a href="files/images/custom_form.png"> <img alt="" src="files/images/custom_form.png" /></a><br/>
+
+                            <li><b> Validation Form Screen:</b> /lib/forms/view/validation_form_screen.dart</li><br/>
+                            <a href="files/images/validation_form.png"> <img alt="" src="files/images/validation_form.png" /></a><br/>
+                            
+                          
+                           
+                        </ul>
+                            <p>This structure ensures quick access and maintainability when working with forms-related views.
+                            
+                            </p>
+                        <br/><br/>
+
+                    </section>
+
+                    <section id="androidstep18" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Charts</h2>
+
+                        <p>The Flutter project includes a dedicated chart screen, which can be found in the /lib/others/chart directory.</p>
+                        
+                        <a href="files/images/chart_1.png"> <img alt="" src="files/images/chart_1.png" /></a><br/><br/>
+
+                        <a href="files/images/chart_2.png"> <img alt="" src="files/images/chart_2.png" /></a>
+
+                        <p>To modify any of the widget screens related to the chart, you can edit the chart_screen.dart file located at /lib/others/chart/view/chart_screen.dart. Each file within this directory is named according to its corresponding widget screen, making it easy to identify and access the components you need to update.</p>
+                        <br/><br/>
+
+                    </section>
+
+                    <section id="androidstep19" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Components</h2>
+
+                        <p>The Flutter project includes a dedicated components screen, which can be found in the /lib/others/components directory.</p>
+                        
+                        <a href="files/images/component_1.png"> <img alt="" src="files/images/component_1.png" /></a><br/>
+
+                        <p>To modify any section of components forms screens, navigate to the following directory: /lib/forms. </p><br/>
+                        <p>Each file within this folder corresponds to a specific components screen, making it easy to identify and edit the desired components:</p><br/>
+                            <ul>
+                               
+                            <li><b>Buttons Screen:</b> /lib/others/components/view/buttons_screen.dart</li><br/>
+                            <a href="files/images/buttons.png"> <img alt="" src="files/images/buttons.png" /></a><br/>
+
+                            <li><b> Tabs Screen:</b> /lib/others/components/view/tabs_screen.dart</li><br/>
+                            <a href="files/images/tabs.png"> <img alt="" src="files/images/tabs.png" /></a><br/>
+
+                            <li><b> Dialogs Screen:</b> /lib/others/components/view/dialogs_screen.dart</li><br/>
+                            <a href="files/images/dialogs.png"> <img alt="" src="files/images/dialogs.png" /></a><br/>
+                            
+                            <li><b> Carousel Screen:</b> /lib/others/components/view/carousel_screen.dart</li><br/>
+                            <a href="files/images/carousel.png"> <img alt="" src="files/images/carousel.png" /></a><br/>
+                            
+                            <li><b> Avtar Screen:</b> /lib/others/components/view/avtar_screen.dart</li><br/>
+                            <a href="files/images/avtar.png"> <img alt="" src="files/images/avtar.png" /></a><br/>
+                            
+                            <li><b> Card Screen:</b> /lib/others/components/view/card_screen.dart</li><br/>
+                            <a href="files/images/card.png"> <img alt="" src="files/images/card.png" /></a><br/>
+                            
+                            <li><b> Rating Screen:</b> /lib/others/components/view/ratting_screen.dart</li><br/>
+                            <a href="files/images/rating.png"> <img alt="" src="files/images/rating.png" /></a><br/>
+                            
+                            <li><b> Toast Screen:</b> /lib/others/components/view/toast_screen.dart</li><br/>
+                            <a href="files/images/toast.png"> <img alt="" src="files/images/toast.png" /></a><br/>
+                            
+                        </ul>
+                            <p>This structure ensures quick access and maintainability when working with Components-related views.
+                            
+                            </p>
+                        <br/><br/>
+
+                    </section>
+
+                    <section id="androidstep20" class="androidstep">
+
+                        <h2 style="padding-top:40px;">Language Customization</h2>
+
+                        <p>The Flutter project includes a dedicated language screen, which can be found in the /assets/lang directory.</p>
+                        
+                        <a href="files/images/lang_1.png"> <img alt="" src="files/images/lang_1.png" /></a><br/>
+
+                        <p>To modify any String of the language screens, navigate to the following directory: /assets/lang. </p><br/>
+
+                        <p>Each file within this folder corresponds to a specific language screen, making it easy to add and edit the desired string:</p><br/>
+                            
+                        <a href="files/images/lang_2.png"> <img alt="" src="files/images/lang_2.png" /></a><br/>
+
+                            <p>To add new langauge ,edit the file to the following directory: /lib/providers/language_provider.dart file.</p>
+
+                            <a href="files/images/lang_3.png"> <img alt="" src="files/images/lang_3.png" /></a><br/>
+                        <br/><br/>
+
+                    </section>
+
+                    <section id="androidstep21" class="androidstep">
+                        <h2 style="padding-top:40px;">Customization</h2>
+                        <h3 style="padding-top:10px;"><b>Android</b></h3></br>
+                        <p>To change the application name in Android using Flutter, you need to modify the
+                            <b>android/app/src/main/AndroidManifest.xml</b> file in your Flutter project. Follow these
+                            steps:
+                        </p>
+                        </br>
+                        <ul>
+                            <li>1. Open your Flutter project in your preferred code editor</li></br>
+                            <li>2. Navigate to the <b>android/app/src/main</b> directory within your project.</li></br>
+                            <li>3. Locate the <b>AndroidManifest.xml</b> file.</li> </br>
+                            <li>4. open the <b>AndroidManifest.xml</b> file in your code editor.</li> </br>
+                            <li>5. Look for the <b>android:label </b> attribute in the <b>
+                                    <application>
+                                </b> tag. This attribute specifies the application name.</li> </br>
+                            <li>6. Change the value of the <b>android:label</b> attribute to the desired name. This is
+                                the name that will be displayed on the device's app launcher.</li> </br>
+
+                            <p>For example, if you want to change the application name to "My New App", modify the
+                                <b>android:label</b> attribute as follows:
+                            </p></br>
+
+                            <div class="title-box">
+                                <pre> <code> <</code><code>application </code><code> android:name="io.flutter.app.FlutterApplication"</code>
+                <code>android:label="My New App"</code>
+                <code>android:icon="@mipmap/ic_launcher"></code></pre>
+                            </div>
+                            </br>
+                            <li>7. Save the changes to the <b>AndroidManifest.xml</b> file.</li> </br>
+                            <li>8. Restart your Flutter app. If it's running, stop it and then run it again using
+                                <b>flutter run</b>
+                            </li> </br>
+
+                            <p>After following these steps, your Flutter app should now have the updated application
+                                name on Android devices.</p></br>
+                        </ul>
+
+
+                        <h3 style="padding-top:10px;"><b>Ios</b></h3></br>
+                        <p>To change the application name in iOS using Flutter, you need to modify the
+                            <b>Info.plist </b> file in your Flutter project. Follow these
+                            steps:
+                        </p>
+                        </br>
+
+                        <ul>
+                            <li>1. Open your Flutter project in your preferred code editor.</li></br>
+                            <li>2. Navigate to the <b>ios/Runner </b> directory within your project.</li></br>
+                            <li>3. Locate the <b>Info.plist </b> file.</li> </br>
+                            <li>4. open the <b>Info.plist </b> file in your code editor.</li> </br>
+                            <li>5. Look for the <b>
+                                    <key>CFBundleName</key>
+                                </b> attribute in the entry. This entry specifies the application name.</li> </br>
+
+                            <li>6. Change the value associated with <b>
+                                    <key>CFBundleName</key>
+                                </b>to the desired name.</li> </br>
+
+                            <p>For example, if you want to change the application name to "My New App", modify it as
+                                follows:
+                            </p></br>
+
+                            <div class="title-box">
+                                <pre> <code><</code><code>key>CFBundleName<</code><code>/key></code><br><code> <</code><code>string>My New App<</code><code>/string></code> </pre>
+
+                            </div>
+                            </br>
+                            <li>7. Save the changes to the <b>Info.plist</b> file.</li> </br>
+                            <li>8. Restart your Flutter app. If it's running, stop it and then run it again using
+                                <b>flutter run</b>
+                            </li> </br>
+
+                            <p>After following these steps, your Flutter app should now have the updated application
+                                name on Android devices.</p></br>
+                        </ul>
+                    </section>
+                    <section id="androidstep22" class="androidstep">
+                        <h2 style="padding-top:40px;">Change Launcher Logo</h2>
+
+                        <p>To change the application launcher logo (app icon) in a Flutter project, you need to update
+                            the app icons for both Android and iOS. Here’s how you can do it for each platform:</p>
+                        </br>
+                        <h3 style="padding-top:10px;"><b>Android</b></h3></br>
+
+                        <p>In Android, you need to replace the launcher icon in the res directory. Follow these steps:
+                        </p></br>
+                        <ul>
+                            <li>• Create a set of icons in different sizes for various screen densities (mdpi, hdpi,
+                                xhdpi, xxhdpi, xxxhdpi). You can use tools like Android Asset Studio <a
+                                    href="https://romannurik.github.io/AndroidAssetStudio/"
+                                    target="_blank">(https://romannurik.github.io/AndroidAssetStudio/)</a>
+                                to generate these icons.
+                            </li></br>
+                            <li>• Replace the existing icons in your Flutter project’s <code
+                                    class="android-color">android/app/src/main/res </code>directory with your newly
+                                created icons. Make sure to replace the icons in all the density-specific folders.</li>
+                            </br>
+                            <li>• After replacing the icons, rebuild your Flutter app using <code
+                                    class="android-color">flutter build</code> or <code
+                                    class="android-color">flutter run</code>. The new launcher icon should appear on the
+                                Android home screen.</li>
+
+                            </br>
+                        </ul>
+
+                        <a href="files/images/Screenshot_1.png">
+                            <img alt="" src="files/images/Screenshot_1.png" />
+                        </a>
+
+
+                        <h3 style="padding-top:10px;"><b>Ios</b></h3></br>
+                        <p>In iOS, you need to replace the app icon images in the <code
+                                class="android-color">Assets.xcassets</code> folder. Here’s how:</p></br>
+
+                        <ul>
+                            <li>• Create a set of app icon images in different sizes for various iOS devices. These
+                                icons should be in square dimensions (e.g., 60×60, 120×120, 180×180, etc.).</li></br>
+                            <li>• Open the Xcode project for your Flutter app, which is located in the <code
+                                    class="android-color">ios/Runner.xcodeproj</code> directory.</li></br>
+                            <li>• In Xcode, find the <code class="android-color">Runner</code> project in the left
+                                sidebar and expand it. You will see an asset catalog named <code
+                                    class="android-color">Assets.xcassets</code>.</li></br>
+                            <li>• Inside the Assets.xcassets, locate the “AppIcon” asset set. Delete the existing icons
+                                and add your new icons to their respective slots by dragging and dropping.</li></br>
+                            <li>• After updating the icons in Xcode, rebuild and run your Flutter app. The new app icon
+                                should appear on the iOS device’s home screen.</li></br>
+
+                        </ul>
+                        <p>Remember to follow the platform-specific guidelines for app icon sizes and naming
+                            conventions. Also, keep in mind that the app icon may have different sizes and shapes for
+                            different iOS devices and versions, so you should provide a complete set of icons to ensure
+                            your app looks good on all devices.</p></br>
+
+                        <a href="files/images/Screenshot_2.png">
+                            <img alt="" src="files/images/Screenshot_2.png" />
+                        </a>
+                    </section>
+
+                    <section id="androidstep23" class="androidstep">
+                        <h2 style="padding-top:40px;">Change Application id (Package Name)</h2>
+                        </br>
+                        <p>In Flutter, you can change the application ID (also known as the package name) for both
+                            Android and iOS platforms. The application ID uniquely identifies your app in the Google
+                            Play Store for Android and the App Store for iOS. Here’s how to change the application ID
+                            for both platforms:</p>
+
+                        </br>
+                        <h3 style="padding-top:10px;"><b>Android</b></h3></br>
+                        <p>To change the application ID for Android, you need to update the android/app/build.gradle
+                            file in your Flutter project:</p></br>
+                        <ul>
+                            <li>1. Open the android/app/build.gradle file.</li></br>
+                            <li>2. Locate the defaultConfig block and change the applicationId to your desired new
+                                package name. For example:</li></br>
+
+                            <pre><div class="title-box"><code>android {</code>
+            <code> defaultConfig {</code>
+                    <code> applicationId "com.example.newpackage"</code>
+                    <code> // ... </code>
+            <code> } </code>
+        <code> } </code>
+                            </div> </pre>
+                            <li>3. Save the changes.</li></br>
+                            <li>4. You may need to update the MainActivity and other references throughout your Android
+                                codebase with the new package name.</li></br>
+                            <li>5. Rebuild your Flutter app for Android by running flutter build or flutter run. The app
+                                will now use the new package name.</li></br>
+
+                        </ul>
+
+                        <h3 style="padding-top:10px;"><b>Ios</b></h3></br>
+                        <p>To change the application ID for Android, you need to update the android/app/build.gradle
+                            file in your Flutter project:</p></br>
+                        <ul>
+                            <li>1. Open your Flutter project’s <code class="android-color">/Runner.xcodeproj</code>
+                                using Xcode.</li></br>
+                            <li>2. In Xcode, select the “Runner” target.</li></br>
+                            <li>3. In the “General” tab, locate the “Bundle Identifier” field and change it to your
+                                desired new package name <code
+                                    class="android-color">(e.g., com.example.newpackage)</code>.</li></br>
+                            <li>4. Save the changes.</li></br>
+                            <li>5. You may also need to update any other references to the old bundle identifier in your
+                                iOS code.</li></br>
+                            <li>6. Rebuild your Flutter app for iOS by running <code
+                                    class="android-color">flutter build </code> or <code
+                                    class="android-color">flutter run</code>. The app will
+                                now use the new bundle identifier.</li></br>
+
+                        </ul>
+
+                        <p>Remember to keep your new package name or bundle identifier consistent across both platforms
+                            and update any external services or configurations that may depend on the application ID or
+                            bundle identifier. Also, make sure to follow any naming guidelines or requirements set by
+                            the respective app stores when publishing your app.</p></br></br>
+
+                    </section>
+
+
+                    <section id="androidstep24" class="androidstep">
+                        <h2 style="padding-top:40px;">Google Map Integration</h2>
+                        </br>
+                        <ol style="padding-left:20px;">
+                            <li>Get an API key at <a
+                                    href="https://cloud.google.com/maps-platform/">https://cloud.google.com/maps-platform/.</a>
+                            </li>
+                            <li>Enable Google Map SDK for each platform.</li>
+                            <li>Choose the project for which you want to enable Google Maps APIs.</li>
+                            <li>Select the navigation menu (☰) in the upper-left corner and then select "Google Maps"
+                                from the list of available services.</li>
+                            <li>Under the "Google Maps" menu, select "APIs."</li>
+                            <li>To enable Google Maps for Android, scroll down to the "Additional APIs" section and
+                                select "Maps SDK for Android." Then, click on the "ENABLE" button.</li>
+                            <li>To enable Google Maps for iOS, similarly, scroll down to the "Additional APIs" section
+                                and select "Maps SDK for iOS." Then, click on the "ENABLE" button.</li>
+                            <li>To enable Google Maps for Web, navigate to the "Maps JavaScript API" and click on the
+                                "ENABLE" button.</li>
+                            <li>Ensure that the APIs you enabled are listed under the "Enabled APIs" section.</li>
+
+                        </ol>
+                        </br>
+                        <p>For more details, see <a href="https://developers.google.com/maps/get-started">Getting
+                                started with Google Maps Platform.</a></p>
+
+                        <h3 style="padding-top:20px;">Android</h3>
+                        <ol style="padding-left:20px;">
+                            <li>Change your API key in the application manifest
+                                android/app/src/main/AndroidManifest.xml </li></br>
+                            <pre><div class="title-box"><code><span style="color: yellow;"> &lt;manifest ... </span> 
+ <span style="color: white;">   &lt;uses-permission android:name="android.permission.FOREGROUND_SERVICE" /&gt;
+    &lt;uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/&gt; </span> 
+
+    <span style="color: green;"> &lt;application ... </span>
+        <span style="color: white;"> &lt;meta-data android:name="com.google.android.geo.API_KEY" </span>
+            <span style="color: white;"> android:value=<span style="color: red;">"YOUR KEY HERE"</span>/&gt; </span>                   
+</code></div></pre>
+                        </ol>
+
+                        </br>
+
+                        <h3 style="padding-top:10px;">ios</h3>
+                        <ol style="padding-left:20px;">
+                            <li>Change your API key in the application delegate ios/Runner/AppDelegate.swift </li>
+                            </br>
+                            <pre><div class="title-box"><code>GMSServices.provideAPIKey(<span style="color: red;">"YOUR KEY HERE"</span>)</code></div></pre>
+
+                            <li>you have to add this permission in Info.plist </li>
+                            </br>
+                            <pre><div class="title-box"><code>&lt;key&gtNSLocationWhenInUseUsageDescription&lt;/key&gt
+&lt;string&gtWe need your location to show your current position on the map.&lt;/string&gt
+&lt;key&gtNSLocationAlwaysUsageDescription&lt;/key>
+&lt;string&gtWe need your location to provide continuous updates even in the background.&lt;/string&gt
+</code></div></pre>
+
+                        </ol>
+
+                        <h3 style="padding-top:10px;">Web</h3>
+                        <ol style="padding-left:20px;">
+                            <li>Open web/index.html </li>
+                            </br>
+                            <li>Add the following inside the &lt;head&gt; tag, replacing YOUR_API_KEY_HERE</li>
+                            </br>
+                            <pre><div class="title-box"><code>&lt;script 
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE"
+&lt;/script&gt; </code></div></pre>
+                                
+                        </ol>
+
+
+                        </br>
+                        <p>Example: <a href="https://pub.dev/packages/google_maps_flutter" target="_blank">Google Maps
+                                for Flutter</a></p>
+                        <p>Example: <a href="https://pub.dev/packages/location" target="_blank">location </a></p>
+                        </br>
+                    </section>
+
+
+
+                </div>
+            </div>
+</body>
+
+</html>
+
