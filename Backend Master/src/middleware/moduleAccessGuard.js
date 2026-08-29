@@ -15,6 +15,15 @@ const ALLOWED_PREFIXES_BY_ROLE = {
     "/users/me",
     "/uploads",
     "/me",
+    // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md, mission
+    // "CORRIGER LES 3 PROBLÈMES IDENTIFIÉS PAR L'AUDIT COPILOT" — ce rôle a
+    // un accès Copilot réel (industrial/maintenance/por_promesh/hr, voir
+    // capabilityMatrixService.js), mais cette liste n'avait jamais été mise
+    // à jour quand /ai-copilot a été monté dans app.js : ce rôle recevait un
+    // 403 sur CHAQUE message Copilot, avant même que l'IntentDetector ne
+    // s'exécute. Le RBAC réel (Tool/Agent) reste inchangé — seul l'accès
+    // HTTP à la route elle-même est ajouté ici, aucune autre permission.
+    "/ai-copilot",
   ],
 };
 
@@ -43,4 +52,12 @@ function moduleAccessGuard(req, res, next) {
   return next();
 }
 
-module.exports = { moduleAccessGuard };
+// AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md — exporté (en plus
+// de `moduleAccessGuard` lui-même) pour que RoleCapabilityAuditAgent
+// (src/ai/reasoning/capabilityMatrixService.js, injecté depuis
+// aiCopilotBridge.service.js — jamais require() directement sous src/ai/,
+// même discipline que createCopilotMeeting) puisse répondre à "quels
+// modules sont accessibles avec mon rôle ?" en LISANT cette même table,
+// jamais en la recopiant : une seule source de vérité pour cette
+// restriction, que ce soit le middleware HTTP ou le Copilot qui la consulte.
+module.exports = { moduleAccessGuard, ALLOWED_PREFIXES_BY_ROLE };

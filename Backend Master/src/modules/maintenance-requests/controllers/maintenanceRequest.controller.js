@@ -209,7 +209,7 @@ async function addComment(req, res) {
     if (!message || !String(message).trim()) {
       return res.status(400).json({ success: false, message: "message est requis" });
     }
-    const data = await svc.addComment(req.user.sub, req.params.id, String(message).trim());
+    const data = await svc.addComment(req.user.sub, req.user.role, req.params.id, String(message).trim(), req.user.email);
     res.status(201).json({ success: true, data });
   } catch (err) {
     handle(res, err);

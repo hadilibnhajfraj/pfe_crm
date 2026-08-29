@@ -9,6 +9,8 @@ const {
   sendRelanceEntrepriseEmail,
   sendRelanceBureauControleEmail,
 } = require("../utils/sendEmail");
+// ⚠️ TEMPORAIRE — voir src/diagnostics/crashDiagnostics.js (mission crash cron).
+const { setCronContext } = require("../diagnostics/crashDiagnostics");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -98,6 +100,7 @@ async function archiveProjects(projects) {
 async function checkProjects() {
   try {
     console.log("⏰ CRON START");
+    setCronContext("PROJECT CRON", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
 
     const projects = await Project.findAll({
       where: { isArchived: false },
@@ -179,6 +182,7 @@ async function checkProjects() {
     await archiveProjects(projects);
 
     console.log("✅ CRON END");
+    setCronContext("PROJECT CRON", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
   } catch (e) {
     console.error("❌ CRON ERROR:", e.message);
   }

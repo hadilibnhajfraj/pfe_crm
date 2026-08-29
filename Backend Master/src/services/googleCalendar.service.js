@@ -14,7 +14,12 @@
 // tokens, id d'événement créé) — c'est la seule source fiable pour
 // diagnostiquer un rendez-vous manquant côté Google (voir audit).
 
-const axios = require("axios");
+// Timeout explicite sur TOUS les appels de ce fichier (aucun n'en avait —
+// audit sécurité : une réponse lente/suspendue de l'API Google immobilisait
+// la requête entrante indéfiniment, DoS par épuisement de ressources).
+// `axios.create()` plutôt qu'un `timeout` par appel : un seul endroit à
+// tenir à jour, aucun risque d'oubli sur un futur appel ajouté ici.
+const axios = require("axios").create({ timeout: 15000 });
 const dayjs = require("dayjs");
 const GoogleCalendarAccount = require("../models/GoogleCalendarAccount");
 const tokenCrypto = require("../utils/tokenCrypto");

@@ -4,11 +4,30 @@ const stageRepo = require("../../pipeline/repositories/pipelineStage.repository"
 const actionTypeRepo = require("../../project-actions/repositories/projectActionType.repository");
 const actionRepo = require("../../project-actions/repositories/projectAction.repository");
 const { logActivity } = require("../../project-activities/services/projectActivity.service");
-const { toProjectCard } = require("../../kanban/services/kanban.service");
+const { toProjectCard, invalidateStageCache } = require("../../kanban/services/kanban.service");
 const User = require("../../../models/User");
 const projectActionCalendarSync = require("../../../services/projectActionCalendarSync.service");
 
 const SORTABLE = ["createdAt", "nomProjet", "montantMarche", "pourcentageReussite", "updatedAt"];
+
+// AI-Business-Copilot/15_AGENT_RUNTIME_AUDIT.md — `listProjects()` était
+// appelée avec un `query` de deux formes bien réelles selon l'appelant :
+// des query-params Express (`req.query`, TOUJOURS des chaînes — voir
+// project.controller.js/kanban.controller.js) OU l'input JSON déjà validé
+// par Joi du Tool MCP `list_projects` (voir
+// mcp/tools/projects/listProjectsTool.js), où `mine`/`isArchived` sont
+// déclarés `Joi.boolean()` et arrivent donc comme de VRAIS booléens
+// JavaScript. `=== "true"` seul ne reconnaissait QUE la première forme —
+// un appel MCP réel avec `{mine: true}` (exactement ce qu'un modèle de
+// langage produit pour un champ booléen JSON) était SILENCIEUSEMENT ignoré
+// (`mine` retombait à `false`), donc "Montre-moi mes projets"/toute
+// question scopée à l'utilisateur listait TOUS les projets visibles
+// (185/253 observés pendant ce diagnostic) au lieu des siens. Corrigé une
+// seule fois, ici, pour les DEUX formes — jamais dans le Tool ni dans les
+// contrôleurs, qui restent inchangés.
+function isTruthyFlag(value) {
+  return value === true || value === "true";
+}
 
 // ── List ──────────────────────────────────────────────────
 
@@ -19,7 +38,7 @@ async function listProjects(query, userId) {
   const sortBy = SORTABLE.includes(query.sortBy) ? query.sortBy : "createdAt";
   const sortDir = query.sortDir === "ASC" ? "ASC" : "DESC";
 
-  const mine = query.mine === "true" || query.myProjects === "true";
+  const mine = isTruthyFlag(query.mine) || isTruthyFlag(query.myProjects);
   // Accept both ?ownerId=... and ?userId=... from any client
   const ownerId = query.ownerId || query.userId || null;
 
@@ -31,11 +50,12 @@ async function listProjects(query, userId) {
     mine,
     userId,
     stageId: query.stageId || null,
+    statut: query.statut || null,
     projectModele: query.projectModele || null,
     productFamily: query.productFamily || null,
     diameterMm: query.diameterMm ? Number(query.diameterMm) : null,
     search: query.search || null,
-    isArchived: query.isArchived === "true",
+    isArchived: isTruthyFlag(query.isArchived),
     ownerId,
     dateFrom: query.dateFrom || null,
     dateTo: query.dateTo || null,
@@ -120,6 +140,13 @@ async function moveStage(projectId, newStageId, userId) {
     }
 
     await t.commit();
+
+    // La fiche kanban._stageCache (60s TTL) contenait le compte de projets
+    // par étape — ce chemin "move-stage complet" changeait aussi
+    // pipelineStageId sans jamais l'invalider, contrairement à
+    // moveStageFast() (audit performance : les compteurs pouvaient rester
+    // faux jusqu'à 60s après un changement d'étape via ce endpoint).
+    invalidateStageCache();
 
     // ── 4. Return fresh project card with all updated data ─
     const updated = await projectRepo.findById(projectId);

@@ -40,7 +40,7 @@ router.get("/", authRequired, async (req, res) => {
 // =========================
 // 🔥 SEND EMAIL + CREATE NOTIFICATION
 // =========================
-router.post("/send-email", async (req, res) => {
+router.post("/send-email", authRequired, async (req, res) => {
   try {
     const {
       toUserId,

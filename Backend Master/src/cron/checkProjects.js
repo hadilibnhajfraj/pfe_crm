@@ -4,6 +4,8 @@ const cron = require("node-cron");
 const { Op } = require("sequelize");
 const Project = require("../models/Project");
 const sendEmail = require("../utils/sendEmail");
+// ⚠️ TEMPORAIRE — voir src/diagnostics/crashDiagnostics.js (mission crash cron).
+const { setCronContext } = require("../diagnostics/crashDiagnostics");
 
 // ─── Auto-archive guard ───────────────────────────────────────────────────────
 // Mirrors the flag in projectCron.js — both must be enabled independently.
@@ -19,9 +21,11 @@ if (!AUTO_EMAIL_JOBS_ENABLED) {
 // Runs every hour: check for projects whose engineer deadline has passed.
 cron.schedule("0 * * * *", async () => {
   console.log("⏳ [checkProjects] Vérification des projets...");
+  setCronContext("CHECK PROJECTS", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
 
   if (!AUTO_ARCHIVE_ENABLED) {
     console.log("[checkProjects] AUTO_ARCHIVE_ENABLED=false — archiving skipped.");
+    setCronContext("CHECK PROJECTS", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
     return;
   }
 
@@ -62,5 +66,6 @@ cron.schedule("0 * * * *", async () => {
       console.error("[checkProjects] ERROR:", e.message, "project:", p?.id);
     }
   }
+  setCronContext("CHECK PROJECTS", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
 });
 }

@@ -36,7 +36,14 @@ const ProjectReminder = sequelize.define(
     }
   },
   {
-    tableName: "project_reminders"
+    tableName: "project_reminders",
+    indexes: [
+      // project.repository.js interroge "WHERE projectId = ... AND
+      // dateRelance >= NOW()" en sous-requête corrélée, une fois par ligne
+      // de projet affichée — voir la migration
+      // 20260731000200-add-performance-indexes-contacts-reminders.js.
+      { fields: ["projectId", "dateRelance"] },
+    ],
   }
 );
 

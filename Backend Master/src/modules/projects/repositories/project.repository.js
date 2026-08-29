@@ -125,6 +125,7 @@ const LIST_ATTRIBUTES = [
   "latitude",
   "longitude",
   "dateDemarrage",
+  "dateLimiteIngenieur",
   "lastRelanceAt",
   "nextRelanceDate",
   "user_nom",
@@ -159,6 +160,15 @@ function buildBaseWhere(filters) {
   }
 
   if (filters.stageId) where.pipelineStageId = filters.stageId;
+  // Mission "CORRIGER LE FILTRAGE DES PROJETS PAR STATUT" — `statut`
+  // (colonne STRING réelle, voir Project.js, celle qu'utilise
+  // dashboard.service.js pour le graphique "Breakdown by Status") n'avait
+  // JAMAIS eu de branche de filtre ici — la seule notion de "statut" que ce
+  // builder connaissait était `stageId` (pipelineStageId, un concept
+  // différent, quasi inutilisé dans les données réelles). Résultat : aucune
+  // valeur de `filters.statut`, quel que soit son origine (Tool MCP ou route
+  // REST), n'avait jamais eu le moindre effet sur la requête.
+  if (filters.statut) where.statut = filters.statut;
   if (filters.projectModele) where.projectModele = filters.projectModele;
   if (filters.productFamily) where.productFamily = filters.productFamily;
   if (filters.diameterMm) where.diameterMm = filters.diameterMm;

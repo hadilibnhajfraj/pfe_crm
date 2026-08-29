@@ -2,6 +2,7 @@ const { sequelize } = require("../../../db");
 const repo = require("../repositories/pipelineStage.repository");
 const actionTypeRepo = require("../../project-actions/repositories/projectActionType.repository");
 const Project = require("../../../models/Project");
+const { invalidateStageCache } = require("../../kanban/services/kanban.service");
 
 async function getAllStages() {
   return repo.findAll();
@@ -49,6 +50,7 @@ async function createStage(data, userId) {
     }
 
     await t.commit();
+    invalidateStageCache();
     return repo.findById(stage.id);
   } catch (err) {
     await t.rollback();
@@ -72,6 +74,7 @@ async function updateStage(id, data, userId) {
 
     const updated = await repo.update(id, data, t);
     await t.commit();
+    invalidateStageCache();
     return updated;
   } catch (err) {
     await t.rollback();
@@ -96,6 +99,7 @@ async function deleteStage(id) {
     // paranoid: true → sets deletedAt, does NOT hard-delete
     await repo.destroy(id, t);
     await t.commit();
+    invalidateStageCache();
     return { deleted: true };
   } catch (err) {
     await t.rollback();
@@ -110,6 +114,7 @@ async function reorderStages(stages) {
       stages.map(({ id, position }) => repo.update(id, { position: Number(position) }, t))
     );
     await t.commit();
+    invalidateStageCache();
     return repo.findAll();
   } catch (err) {
     await t.rollback();

@@ -7,6 +7,8 @@
 
 const cron = require("node-cron");
 const { renewExpiringChannels } = require("../services/googleCalendarWatch.service");
+// ⚠️ TEMPORAIRE — voir src/diagnostics/crashDiagnostics.js (mission crash cron).
+const { setCronContext } = require("../diagnostics/crashDiagnostics");
 
 console.log("🔥 GOOGLE CALENDAR CHANNEL RENEWAL CRON LOADED");
 
@@ -16,9 +18,12 @@ if (AUTO_EMAIL_JOBS_ENABLED) {
   // Une fois par jour à 3h du matin (heure Tunis) — largement avant le seuil
   // de renouvellement de 48h utilisé par renewExpiringChannels().
   cron.schedule("0 3 * * *", () => {
-    renewExpiringChannels().catch((err) =>
-      console.error("❌ [googleCalendarChannelRenewal] cron error:", err.message)
-    );
+    setCronContext("GOOGLE CALENDAR CHANNEL RENEWAL", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
+    renewExpiringChannels()
+      .then(() => setCronContext("GOOGLE CALENDAR CHANNEL RENEWAL", "end")) // ⚠️ TEMPORAIRE — diagnostic crash
+      .catch((err) =>
+        console.error("❌ [googleCalendarChannelRenewal] cron error:", err.message)
+      );
   }, { timezone: "Africa/Tunis" });
 } else {
   console.log("[googleCalendarChannelRenewal.job] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.");

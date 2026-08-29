@@ -1,12 +1,30 @@
 const express = require("express");
 const multer = require("multer");
+const rateLimit = require("express-rate-limit");
 const fs = require("fs");
 const XLSX = require("xlsx");
 const Client = require("../models/client.model");
 const { authRequired } = require("../middleware/auth.middleware");
+const { requireRole } = require("../middleware/requireRole");
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
+// 20MB : ces imports Excel/CSV peuvent contenir plusieurs milliers de
+// lignes clients — pas de limite ici auparavant (DoS disque/CPU via upload
+// illimité, voir audit sécurité).
+const upload = multer({ dest: "uploads/", limits: { fileSize: 20 * 1024 * 1024 } });
 const { sequelize } = require("../db");
+
+// Ces deux imports déclenchent un parsing XLSX coûteux (CPU) sur un fichier
+// pouvant atteindre 20MB — même garde-fou que les autres opérations
+// sensibles du CRM (routes/auth.routes.js) : `skip` en environnement de
+// test pour ne pas casser les suites qui enchaînent plusieurs imports.
+const isTestEnv = () => process.env.NODE_ENV === "test";
+const importLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: isTestEnv,
+});
 function cleanValue(value) {
   if (value === undefined || value === null) return null;
 
@@ -73,7 +91,7 @@ function normalize(str) {
     .replace(/\s+/g, " ")
     .trim();
 }
-router.post("/import-csv", upload.single("file"), async (req, res) => {
+router.post("/import-csv", authRequired, requireRole("admin", "superadmin", "superadmin2"), importLimiter, upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "Aucun fichier envoyé." });
@@ -181,7 +199,7 @@ router.get("/all", authRequired, async (req, res) => {
     });
   }
 });
-router.post("/import-factures", upload.single("file"), async (req, res) => {
+router.post("/import-factures", authRequired, requireRole("admin", "superadmin", "superadmin2"), importLimiter, upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "Aucun fichier envoyé." });

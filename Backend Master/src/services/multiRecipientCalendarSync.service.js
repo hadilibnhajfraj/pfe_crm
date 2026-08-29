@@ -251,4 +251,10 @@ module.exports = {
   deleteEventForRecipients,
   sendEmailToRecipients,
   FIXED_RECIPIENT_EMAIL,
+  // AI-Business-Copilot/29_MEETING_AGENT_CRM_CALENDAR_LINK.md — exporté pour
+  // réutilisation par meetingCopilotSync.service.js (liaison CRM <-> Google
+  // pour une réunion créée depuis le Copilot conversationnel) : même helper
+  // générique déjà utilisé ici pour ProjectAction/CommercialContactRelance,
+  // jamais une seconde implémentation d'upsert.
+  upsertSync,
 };

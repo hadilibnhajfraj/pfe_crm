@@ -1,9 +1,15 @@
+// NOTE (audit sécurité) : ce fichier n'est actuellement require() nulle part
+// (dead code — ni app.js ni aucun autre module ne le monte). Il référençait
+// en plus un middleware inexistant (../middleware/auth, sans .middleware —
+// aurait crashé au démarrage si jamais mounté). Corrigé ici en attendant une
+// décision (le supprimer, ou le monter réellement) pour qu'il ne devienne
+// pas, une fois réactivé sans revue, une route non authentifiée.
 const router = require("express").Router();
 const { ProjectComment } = require("../models");
 const { notifyProjectComment } = require("../services/notification.service");
-const { requireAuth } = require("../middleware/auth"); // ton middleware JWT
+const { authRequired } = require("../middleware/auth.middleware");
 
-router.post("/:projectId/comments", requireAuth, async (req, res) => {
+router.post("/:projectId/comments", authRequired, async (req, res) => {
   try {
     const { projectId } = req.params;
     const { body, parentId = null } = req.body;
@@ -14,7 +20,7 @@ router.post("/:projectId/comments", requireAuth, async (req, res) => {
 
     const comment = await ProjectComment.create({
       projectId,
-      authorId: req.user.id, // depuis JWT
+      authorId: req.user.sub, // depuis JWT
       parentId,
       body: body.trim(),
     });
@@ -23,7 +29,7 @@ router.post("/:projectId/comments", requireAuth, async (req, res) => {
     await notifyProjectComment({
       projectId,
       commentId: comment.id,
-      authorId: req.user.id,
+      authorId: req.user.sub,
       body: comment.body,
     });
 

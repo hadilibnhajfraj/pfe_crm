@@ -1,7 +1,26 @@
 require("dotenv").config();
+
+// ⚠️ TEMPORAIRE — Mission "CAPTURER L'EXCEPTION EXACTE DU CRASH NODE.JS" :
+// installé le plus tôt possible (avant tout autre require) pour capturer
+// même une exception survenant pendant le chargement d'un module suivant.
+// Voir src/diagnostics/crashDiagnostics.js — capture uniquement, ne change
+// aucun comportement métier, à retirer une fois la cause réelle identifiée.
+require("./diagnostics/crashDiagnostics").install();
+
+// [AI-COPILOT] boot-time diagnostic — reads/logs the AI config EAGERLY,
+// right after dotenv, so `pm2 logs` shows enabled=true/false immediately at
+// startup rather than only after the first Copilot request (the rest of the
+// AI kernel — McpServer/RAG pipeline/per-user orchestrators — stays lazily
+// built on first use, see aiCopilotBridge.service.js; this call is pure
+// config parsing + one log line, no I/O, safe to run unconditionally even
+// when AI_COPILOT_ENABLED is unset). Never logs the LLM API key — see
+// ai.config.js/secretRedaction.js.
+require("./ai/config").loadAiConfig();
+
 const http = require("http");
 const express = require("express");
 const helmet = require("helmet");
+const compression = require("compression");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { sequelize } = require("./db");
@@ -37,6 +56,13 @@ require("./cron/followup.job");
 // Renouvellement des canaux push Google Calendar (sync entrante, Phase B) —
 // même garde-fou AUTO_EMAIL_JOBS_ENABLED.
 require("./cron/googleCalendarChannelRenewal.job");
+// Proactive AI — surveille projets/ventes/activités/échéances/interventions/
+// KPI sans qu'une question soit posée, envoie une alerte réelle (e-mail +
+// notification + push temps réel) quand un risque est détecté — voir
+// src/ai/proactive/PROACTIVE_AI.md. Garde-fou DÉDIÉ (pas AUTO_EMAIL_JOBS_ENABLED,
+// une capacité IA nouvelle mérite son propre interrupteur) : désactivé par
+// défaut, AI_PROACTIVE_MONITORING_ENABLED=true dans .env pour l'activer.
+require("./cron/proactiveAiMonitor.job");
 
 // ── CRM Pipeline Modules ──────────────────────────────────
 const pipelineStageRoutes = require("./modules/pipeline/routes/pipelineStage.routes");
@@ -54,6 +80,8 @@ const industrialRecordRoutes = require("./modules/industrial-records/routes/indu
 const hrRequestRoutes = require("./modules/hr-requests/routes/hrRequest.routes");
 const recuperableRoutes = require("./modules/recuperables/routes/recuperable.routes");
 const adminDashboardRoutes = require("./modules/admin-dashboard/routes/adminDashboard.routes");
+const aiDashboardRoutes = require("./modules/ai-dashboard/routes/aiDashboard.routes");
+const aiCopilotRoutes = require("./modules/ai-copilot/routes/aiCopilot.routes");
 
 const app = express();
 
@@ -70,6 +98,12 @@ const app = express();
 // app.set("trust proxy", 1); // décommenter si (et seulement si) un proxy de confiance est bien en amont
 
 app.use(helmet());
+// Audit performance : aucune compression des réponses JSON auparavant —
+// les listes non paginées (contacts commerciaux, projets, exports) et les
+// réponses du module IA transitent en clair. gzip/brotli automatique
+// au-dessus du seuil par défaut (1 Ko) ; coût CPU négligeable comparé au
+// gain de bande passante/latence, surtout sur mobile (client Flutter).
+app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
@@ -107,6 +141,8 @@ app.use("/industrial-records", industrialRecordRoutes);
 app.use("/hr-requests", hrRequestRoutes);
 app.use("/recuperables", recuperableRoutes);
 app.use("/admin-dashboard", adminDashboardRoutes);
+app.use("/ai-dashboard", aiDashboardRoutes);
+app.use("/ai-copilot", aiCopilotRoutes);
 
 // ── Existing routes (unchanged) ──────────────────────────
 app.use("/projects", projectRoutes);
@@ -186,6 +222,12 @@ async function start() {
     const port = Number(process.env.PORT || 4000);
     const httpServer = http.createServer(app);
     socket.init(httpServer);
+    // Copilot real-time layer (typing indicator + streaming reveal) — an
+    // ADDITIONAL "connection" listener, deliberately attached here rather
+    // than inside socket.js itself (see aiCopilotSocket.js's own comment on
+    // why: keeps socket.js free of the heavy MCP/RAG/orchestrator import
+    // chain for its own lightweight call sites).
+    require("./modules/ai-copilot/socket/aiCopilotSocket").attach(socket.getIo());
     httpServer.listen(port, () => {
       console.log(`✅ API running on http://localhost:${port}`);
       // DIAGNOSTIC TEMPORAIRE (audit MFA "wrong_code") — permet de repérer

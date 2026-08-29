@@ -409,8 +409,16 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "Invalid email" });
     }
 
-    if (!isStrongPassword(password)) {
-      return res.status(400).json({ message: "Weak password (min 8 chars)" });
+    // Nouveau compte : aucun mot de passe existant à préserver, donc pas de
+    // raison de rester sur la règle faible (longueur seule) réservée à
+    // signin/isStrongPassword (voir son commentaire — nécessaire là-bas pour
+    // ne jamais bloquer un utilisateur existant). Même règle que le reset
+    // (audit sécurité : le signup acceptait "aaaaaaaa").
+    if (!isStrongPasswordForReset(password)) {
+      return res.status(400).json({
+        message:
+          "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
+      });
     }
 
     const cleanEmail = String(email).toLowerCase().trim();

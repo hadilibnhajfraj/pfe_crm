@@ -217,7 +217,17 @@ async function getUserKPIs(userId) {
   console.log("USER_ID", userId);
 
   // ── 0. DB health check — runs first, shows isArchived breakdown ───────────
-  const [[hc]] = await sequelize.query(
+  // `sequelize.query(sql, { type: "SELECT" })` resolves DIRECTLY to `rows`
+  // (one array level) — never `[rows, metadata]`. A single extra level of
+  // destructuring (`[[hc]]`) only happens to work when the call sits inside
+  // `Promise.all([...])`, where the OUTER array comes from `Promise.all`
+  // itself and the INNER one from `rows` (see the Promise.all block just
+  // below, correct as written). Here, standalone, `[[hc]]` tried to
+  // destructure `rows[0]` (a plain row OBJECT, e.g. `{total: 5, ...}`) as
+  // an array — `TypeError: object is not iterable` for ANY "user"-role
+  // account (role="admin" never reaches this function, see getKPIByRole)
+  // — see AI-Business-Copilot/09_INCIDENT_KPI_AGENT.md.
+  const [hc] = await sequelize.query(
     `SELECT
        COUNT(*)::int                                        AS total,
        COUNT(*) FILTER (WHERE "isArchived" = false)::int   AS active,

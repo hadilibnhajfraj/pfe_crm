@@ -4,6 +4,8 @@ const Project = require("../models/Project");
 const ProjectAction = require("../models/ProjectAction");
 const User = require("../models/User");
 const projectActionService = require("../modules/project-actions/services/projectAction.service");
+// ⚠️ TEMPORAIRE — voir src/diagnostics/crashDiagnostics.js (mission crash cron).
+const { setCronContext } = require("../diagnostics/crashDiagnostics");
 
 console.log("🚀 CRM Scheduler started");
 
@@ -17,6 +19,7 @@ if (!AUTO_EMAIL_JOBS_ENABLED) {
 cron.schedule("* * * * *", async () => {
 
   console.log("⏱ Checking projects for relance...");
+  setCronContext("SCHEDULER RELANCE", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
 
   try {
 
@@ -91,6 +94,8 @@ cron.schedule("* * * * *", async () => {
       }
 
     }
+
+    setCronContext("SCHEDULER RELANCE", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
 
   } catch (err) {
 

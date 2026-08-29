@@ -521,9 +521,13 @@ async function getTechnicians() {
   return users.map((u) => ({ id: u.id, email: u.email, name: resolveFullName(u), role: u.role }));
 }
 
-async function addComment(senderId, requestId, messageText) {
+async function addComment(senderId, senderRole, requestId, messageText, senderEmail) {
   const request = await MaintenanceRequest.findByPk(requestId);
   if (!request) throw { status: 404, message: "Demande introuvable" };
+  // Manquait ici (présent sur getById/getComments/getHistory) — sans ce
+  // contrôle, n'importe quel utilisateur authentifié pouvait commenter une
+  // demande de maintenance à laquelle il n'a aucun lien (audit sécurité).
+  if (!_canAccess(request, senderId, senderRole, senderEmail)) throw { status: 403, message: "Accès refusé" };
 
   const sender = await User.findByPk(senderId, {
     attributes: ["id", "email"],

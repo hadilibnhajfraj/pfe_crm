@@ -90,6 +90,11 @@ const Notification = sequelize.define(
       { fields: ["maintenanceRequestId"] },
       { fields: ["hrRequestId"] },
       { fields: ["actionId"] },
+      // GET /notifications (liste paginée, triée par date) et la
+      // déduplication de cron/followup.job.js — voir la migration
+      // 20260731000100-add-notifications-perf-indexes.js.
+      { fields: ["userId", "createdAt"] },
+      { fields: ["type", "createdAt"] },
     ],
   }
 );

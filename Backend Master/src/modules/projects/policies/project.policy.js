@@ -30,4 +30,28 @@ function requireOwnerOrAdmin(req, res, next) {
     .catch(() => res.status(500).json({ message: "Policy check failed" }));
 }
 
-module.exports = { canEdit, requireOwnerOrAdmin };
+/**
+ * Same policy as requireOwnerOrAdmin, but reads the project id from
+ * `req.params.projectId` instead of `req.params.id` — for routers nested
+ * under `/projects/:projectId/...` (e.g. project-actions), where the
+ * parent's param keeps its own name via `mergeParams: true` rather than
+ * being remapped to `id`.
+ */
+function requireProjectOwnerOrAdmin(req, res, next) {
+  const userId = req.user?.sub;
+  const role = req.user?.role;
+
+  if (ADMIN_ROLES.includes(role)) return next();
+
+  const projectId = req.params.projectId;
+  if (!projectId) return res.status(400).json({ message: "Missing project id" });
+
+  canEdit(userId, role, projectId)
+    .then((allowed) => {
+      if (!allowed) return res.status(403).json({ message: "Forbidden: not project owner" });
+      next();
+    })
+    .catch(() => res.status(500).json({ message: "Policy check failed" }));
+}
+
+module.exports = { canEdit, requireOwnerOrAdmin, requireProjectOwnerOrAdmin };

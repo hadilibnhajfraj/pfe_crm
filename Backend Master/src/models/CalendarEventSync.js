@@ -10,8 +10,18 @@ const CalendarEventSync = sequelize.define(
   {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
 
+    // "copilot_meeting" ajouté par la migration
+    // 20260815120000-add-copilot-meeting-to-calendar-event-syncs-enum.js
+    // (déjà présente dans src/migrations/, pas encore exécutée au moment de
+    // ce constat — voir meetingCopilotSync.service.js::ENTITY_TYPE). Gardée
+    // ici explicitement synchronisée avec l'ENUM Postgres réel : même si
+    // Sequelize n'impose pas de son propre chef une validation stricte
+    // contre cette liste avant l'écriture (vérifié empiriquement), la
+    // déclarer avec exactitude évite toute divergence future entre le
+    // modèle et le schéma réel (voir le drift déjà constaté ailleurs entre
+    // User.js et l'ENUM role réel de la base).
     entityType: {
-      type: DataTypes.ENUM("project_action", "commercial_contact_relance"),
+      type: DataTypes.ENUM("project_action", "commercial_contact_relance", "copilot_meeting"),
       allowNull: false,
     },
     entityId: { type: DataTypes.UUID, allowNull: false },

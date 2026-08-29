@@ -1,7 +1,22 @@
 const express = require("express");
 const axios = require("axios");
+const rateLimit = require("express-rate-limit");
+const { authRequired } = require("../middleware/auth.middleware");
 
 const router = express.Router();
+
+const isTestEnv = () => process.env.NODE_ENV === "test";
+// Ce endpoint proxie vers Nominatim (OpenStreetMap), un service tiers dont
+// la politique d'usage impose ~1 req/s — sans limite propre ici, un
+// appelant pouvait le faire tourner sans borne (risque de bannissement de
+// l'IP du serveur, DoS sur ce service pour tous les vrais utilisateurs).
+const geocodeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: isTestEnv,
+});
 
 // 🔥 Désactiver cache HTTP (IMPORTANT)
 router.use((req, res, next) => {
@@ -12,6 +27,10 @@ router.use((req, res, next) => {
 // 🔥 cache mémoire
 const cache = new Map();
 const TTL_MS = 60 * 1000;
+// Une clé expirée n'est purgée qu'à son prochain accès (jamais si elle
+// n'est jamais redemandée) — plafond dur pour empêcher une croissance non
+// bornée si beaucoup de requêtes uniques arrivent (voir audit sécurité).
+const MAX_CACHE_ENTRIES = 500;
 
 function getCache(key) {
   const v = cache.get(key);
@@ -24,6 +43,10 @@ function getCache(key) {
 }
 
 function setCache(key, data) {
+  if (cache.size >= MAX_CACHE_ENTRIES) {
+    const oldestKey = cache.keys().next().value; // Map préserve l'ordre d'insertion
+    cache.delete(oldestKey);
+  }
   cache.set(key, { t: Date.now(), data });
 }
 
@@ -78,7 +101,7 @@ async function geocode(q) {
 // ==========================
 // 🔥 ROUTE PRINCIPALE
 // ==========================
-router.get("/geocode", async (req, res) => {
+router.get("/geocode", authRequired, geocodeLimiter, async (req, res) => {
   try {
     const q = (req.query.q || "").toString().trim();
 

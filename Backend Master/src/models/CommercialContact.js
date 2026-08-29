@@ -128,6 +128,12 @@ matriculeFiscale: {
   {
     tableName: "commercial_contacts",
     timestamps: true,
+    indexes: [
+      // Filtre principal de GET /commercial-contacts ("mes contacts") et de
+      // commercialContactKpi.service.js — une FK ne crée pas d'index en
+      // PostgreSQL (voir la migration 20260731000200-...).
+      { fields: ["createdBy"] },
+    ],
   }
 );
 module.exports = CommercialContact;

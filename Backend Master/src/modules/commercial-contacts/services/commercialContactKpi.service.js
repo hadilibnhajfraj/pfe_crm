@@ -514,10 +514,67 @@ async function getPersonalKPISummary(userId, commercialName = null) {
   };
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// Liste individuelle (mission "EXPOSER LA LISTE DES CONTACTS À RELANCER AU
+// COPILOT") — même scope EXACT que getMyKPI/getPersonalKPISummary ci-dessus
+// (`_where`/`_andUser` : "createdBy" = :userId, userId=null pour admin-tier
+// = aucun filtre, transverse) — jamais une deuxième définition du périmètre
+// commercial. Retourne les VRAIS enregistrements (nom/entreprise/téléphone/
+// statut/dernier appel), jamais un agrégat : c'est la limite exacte que
+// getMyKPI/getPersonalKPISummary n'ont jamais comblée (ils ne renvoient que
+// des comptes par statut, jamais les contacts eux-mêmes).
+// `search` (mission "CORRIGER LES ACTIONS COMMERCIALES DEPUIS LA LISTE DES
+// CONTACTS") — résolution déterministe d'un NOM DE CONTACT vers son id
+// réel (jamais un id inventé par le LLM, voir commercialAgent.js). Même
+// périmètre de colonnes que la recherche `q` de la route legacy `GET /`
+// (nom/prenom/nomSociete), volontairement réduit (pas telephone/localisation/
+// sujetDiscussion/matriculeFiscale) : ce paramètre sert à retrouver UN
+// contact par son nom, pas une recherche libre multi-champs.
+async function listCommercialContacts(userId, { status, search, limit = 20, offset = 0 } = {}) {
+  const whereParts = [];
+  if (userId) whereParts.push(`"createdBy" = :userId`);
+  if (status) whereParts.push(`statut = :status`);
+  // Le nom capturé par commercialActionSlotExtractor.js est souvent le nom
+  // d'affichage COMPLET ("Pépinière awled el HAJ" = prenom+nom concaténés,
+  // voir buildRelanceAnswer) — jamais présent en entier dans UNE SEULE
+  // colonne (nom="awled el HAJ", prenom="Pépinière" séparément). Les 2
+  // concaténations (prenom+nom et nom+prenom) couvrent les deux ordres
+  // d'affichage possibles, en plus de la recherche mono-colonne existante.
+  if (search) {
+    whereParts.push(
+      `(nom ILIKE :search OR prenom ILIKE :search OR "nomSociete" ILIKE :search ` +
+        `OR (COALESCE(prenom, '') || ' ' || COALESCE(nom, '')) ILIKE :search ` +
+        `OR (COALESCE(nom, '') || ' ' || COALESCE(prenom, '')) ILIKE :search)`
+    );
+  }
+  const whereClause = whereParts.length ? `WHERE ${whereParts.join(" AND ")}` : "";
+  const replacements = { ..._rep(userId), status, limit, offset, search: search ? `%${search}%` : undefined };
+
+  const [rows, [countRow]] = await Promise.all([
+    sequelize.query(
+      `SELECT
+         id, nom, prenom, "nomSociete", telephone, email, statut,
+         "dateAppel", "nbAppels", "sujetDiscussion", "createdAt", "updatedAt"
+       FROM commercial_contacts
+       ${whereClause}
+       ORDER BY "createdAt" DESC
+       LIMIT :limit OFFSET :offset`,
+      { replacements, type: "SELECT" }
+    ),
+    sequelize.query(
+      `SELECT COUNT(*)::int AS total FROM commercial_contacts ${whereClause}`,
+      { replacements, type: "SELECT" }
+    ),
+  ]);
+
+  return { contacts: rows, total: countRow?.total ?? 0 };
+}
+
 module.exports = {
   ADMIN_ROLES,
   getCommercialContactKPI,
   getCommercialContactAnalytics,
   getMyKPI,
   getPersonalKPISummary,
+  listCommercialContacts,
 };

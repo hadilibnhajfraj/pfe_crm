@@ -205,6 +205,18 @@ function toProjectCard(project) {
     adresse: p.adresse || null,
     dateDemarrage: p.dateDemarrage ?? null,
     startDate:     p.dateDemarrage ?? null,
+    dateLimiteIngenieur: p.dateLimiteIngenieur ?? null,
+
+    // Déjà chargés par LIST_ATTRIBUTES pour computeCompletion() (ci-dessous)
+    // mais jamais individuellement exposés jusqu'ici — sans eux, aucun
+    // consommateur (Flutter ou IA) ne peut savoir SI un email/téléphone
+    // renseigné est valide, seulement s'il est absent (voir missingFields).
+    // Champ additif, même précédent que dateLimiteIngenieur ci-dessus.
+    emailIngenieur: p.emailIngenieur || null,
+    emailArchitecte: p.emailArchitecte || null,
+    telephoneIngenieur: p.telephoneIngenieur || null,
+    telephoneArchitecte: p.telephoneArchitecte || null,
+
     lastRelanceAt: p.lastRelanceAt,
     nextRelanceDate: p.nextRelanceDate ?? null,
     relanceStatus: (() => {
@@ -265,4 +277,4 @@ async function moveStageFast(projectId, newStageId) {
   return { id: projectId, pipelineStageId: newStageId };
 }
 
-module.exports = { getKanbanBoard, getStagesWithCount, moveStageFast, toProjectCard };
+module.exports = { getKanbanBoard, getStagesWithCount, moveStageFast, toProjectCard, invalidateStageCache: _invalidateStageCache };

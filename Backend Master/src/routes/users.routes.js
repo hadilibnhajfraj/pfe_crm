@@ -78,7 +78,7 @@ router.get("/me/profile", authRequired, async (req, res) => {
 // upload.single("avatar") : accepte aussi bien un body JSON classique (pas de
 // fichier envoyé, req.file est alors undefined et ne change rien) qu'un
 // multipart/form-data avec un fichier "avatar" — voir _pickAvatar côté Flutter.
-router.put("/me/profile", authRequired, upload.single("avatar"), async (req, res) => {
+router.put("/me/profile", authRequired, upload.single("avatar"), upload.handleUploadError, async (req, res) => {
   try {
     const userId = req.user.sub;
 

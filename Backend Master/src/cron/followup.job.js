@@ -17,6 +17,8 @@ const ProjectAction = require("../models/ProjectAction");
 const Project = require("../models/Project");
 const { actionLabel } = require("../services/projectActionCalendar.service");
 const { resolveOwnerInfo } = require("../services/projectActionCalendarSync.service");
+// ⚠️ TEMPORAIRE — voir src/diagnostics/crashDiagnostics.js (mission crash cron).
+const { setCronContext } = require("../diagnostics/crashDiagnostics");
 
 console.log("🔥 FOLLOWUP CRON LOADED");
 
@@ -30,6 +32,7 @@ const checkFollowup = async () => {
   const today = now.format("YYYY-MM-DD");
 
   console.log("🚀 CRON START (FOLLOW-UP)");
+  setCronContext("FOLLOW-UP", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
   console.log("📅 TODAY:", today);
 
   try {
@@ -54,12 +57,36 @@ const checkFollowup = async () => {
       relanceMap.set(r.commercialContactId, r);
     });
 
+    // ── Déduplication FOLLOWUP_MISSING (correctif perf/coût) ────────────
+    // Ce cron tourne CHAQUE MINUTE (voir le scheduler plus bas). Sans ce
+    // garde-fou, un contact sans email ou sans relance planifiée déclenchait
+    // une nouvelle Notification (ET un nouvel email réel si
+    // AUTO_EMAIL_JOBS_ENABLED=true) à CHAQUE tick, indéfiniment, tant que la
+    // situation n'était pas corrigée manuellement — confirmé en base réelle :
+    // une seule condition non résolue a produit plus de 12 millions de
+    // notifications FOLLOWUP_MISSING sur ~80 jours (table de 3 Go, requêtes
+    // de liste de notifications passant de <10ms à >1,3s en scan séquentiel
+    // faute d'index adapté — voir Performance_Report.md). Un seul rappel par
+    // contact et par jour suffit ; se recalcule chaque jour via `today`.
+    const alreadyNotifiedToday = new Set(
+      (
+        await Notification.findAll({
+          where: { type: "FOLLOWUP_MISSING", createdAt: { [Op.gte]: `${today} 00:00:00` } },
+          attributes: ["commercialContactId"],
+          raw: true,
+        })
+      ).map((n) => n.commercialContactId)
+    );
+
     // =========================
     // 🔁 LOOP CONTACTS
     // =========================
     for (let contact of contacts) {
       try {
         if (!contact.email) {
+          if (alreadyNotifiedToday.has(contact.id)) {
+            continue;
+          }
           console.log(`⚠️ No email: ${contact.nom}`);
 
           await Notification.create({
@@ -67,8 +94,10 @@ const checkFollowup = async () => {
             type: "FOLLOWUP_MISSING",
             title: "Email manquant",
             message: `Le contact ${contact.nom} n'a pas d'email`,
+            commercialContactId: contact.id,
             isRead: false,
           });
+          alreadyNotifiedToday.add(contact.id);
 
           continue;
         }
@@ -86,61 +115,48 @@ const checkFollowup = async () => {
 
           console.log(`📅 Relance TODAY: ${contact.nom}`);
 
-          const result = await sendEmail(
-            contact.email,
-            "🔔 Rappel Follow-up",
-            `Relance prévue aujourd’hui pour ${contact.nom} ${contact.prenom}.`
-          );
+          // ⛔ Envoi d'email CLIENT désactivé (demande explicite : plus
+          // aucun email de follow-up ne doit atteindre un client — voir
+          // sendEmail(contact.email, ...) ci-dessus, supprimé). contact.email
+          // est l'adresse du CLIENT lui-même — à ne jamais confondre avec les
+          // emails ADMIN/internes (info@probardistribution.com, commercial,
+          // responsable projet) envoyés par checkReminders()/
+          // checkActionReminders() plus bas, INCHANGÉS. Le Follow-up reste
+          // détecté et enregistré (relance.emailSent + Notification) — seule
+          // la tentative SMTP disparaît, plus aucun appel sendEmail().
+          console.log(`⏭️ Follow-up email skipped for client: ${contact.nom}`);
 
-          if (result.success) {
-            console.log(`✅ EMAIL SENT: ${contact.nom}`);
+          relance.emailSent = true;
+          await relance.save();
 
-            // 🔥 UPDATE RELANCE
-            relance.emailSent = true;
-            await relance.save();
-
-            // 🔥 NOTIFICATION
-            await Notification.create({
-              userId: relance.createdBy,
-              type: "FOLLOWUP",
-              title: "Relance envoyée",
-              message: `Email envoyé à ${contact.nom} ${contact.prenom}`,
-              isRead: false,
-            });
-          } else {
-            console.log(`❌ EMAIL FAILED: ${contact.nom}`);
-
-            await Notification.create({
-              userId: relance.createdBy,
-              type: "FOLLOWUP_ERROR",
-              title: "Erreur envoi",
-              message: `Échec d'envoi pour ${contact.nom}`,
-              isRead: false,
-            });
-          }
+          await Notification.create({
+            userId: relance.createdBy,
+            type: "FOLLOWUP",
+            title: "Relance détectée",
+            message: `Follow-up du jour détecté pour ${contact.nom} ${contact.prenom} — email client non envoyé (désactivé)`,
+            isRead: false,
+          });
         }
 
         // =========================
         // ❌ PAS DE RELANCE
         // =========================
         else {
-          console.log(`⚠️ No follow-up: ${contact.nom}`);
-
-          const result = await sendEmail(
-            contact.email,
-            "⚠️ Follow-up manquant",
-            `Aucun follow-up défini pour ${contact.nom}. Merci de planifier une relance.`
-          );
-
-          if (result.success) {
-            await Notification.create({
-              userId: contact.createdBy,
-              type: "FOLLOWUP_MISSING",
-              title: "Relance manquante",
-              message: `Aucune relance définie pour ${contact.nom}`,
-              isRead: false,
-            });
+          if (alreadyNotifiedToday.has(contact.id)) {
+            continue;
           }
+          console.log(`⚠️ No follow-up: ${contact.nom}`);
+          console.log(`⏭️ Follow-up email skipped for client: ${contact.nom}`);
+
+          await Notification.create({
+            userId: contact.createdBy,
+            type: "FOLLOWUP_MISSING",
+            title: "Relance manquante",
+            message: `Aucune relance définie pour ${contact.nom}`,
+            commercialContactId: contact.id,
+            isRead: false,
+          });
+          alreadyNotifiedToday.add(contact.id);
         }
       } catch (err) {
         console.error("❌ LOOP ERROR:", err.message);
@@ -148,6 +164,7 @@ const checkFollowup = async () => {
     }
 
     console.log("✅ CRON END");
+    setCronContext("FOLLOW-UP", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
   } catch (err) {
     console.error("❌ CRON ERROR:", err);
   }
@@ -183,6 +200,7 @@ function buildReminderMessage({ name, relance, projectName, label }) {
 
 const checkReminders = async () => {
   console.log("⏰ CRON START (FOLLOWUP REMINDERS)");
+  setCronContext("FOLLOWUP REMINDERS", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
 
   try {
     const infoUser = await User.findOne({ where: { email: FOLLOWUP_AUTOMATION_EMAIL } });
@@ -267,6 +285,7 @@ const checkReminders = async () => {
     }
 
     console.log("✅ CRON END (REMINDERS)");
+    setCronContext("FOLLOWUP REMINDERS", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
   } catch (err) {
     console.error("❌ REMINDER CRON ERROR:", err);
   }
@@ -296,6 +315,7 @@ function buildActionReminderMessage({ action, project, label }) {
 
 const checkActionReminders = async () => {
   console.log("⏰ CRON START (ACTION REMINDERS)");
+  setCronContext("ACTION REMINDERS", "start"); // ⚠️ TEMPORAIRE — diagnostic crash
 
   try {
     // ── Visibilité (point 2) : follow-up dus aujourd'hui ou en retard,
@@ -379,6 +399,7 @@ const checkActionReminders = async () => {
     }
 
     console.log("✅ CRON END (ACTION REMINDERS)");
+    setCronContext("ACTION REMINDERS", "end"); // ⚠️ TEMPORAIRE — diagnostic crash
   } catch (err) {
     console.error("❌ ACTION REMINDER CRON ERROR:", err);
   }
