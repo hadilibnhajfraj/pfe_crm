@@ -44,6 +44,19 @@ dependencies:
   google_fonts: ^8.1.0
   table_calendar: ^3.1.0
   flutter_html: ^3.0.0-beta.2
+  # Nouvelles dépendances pour le Copilot IA (lib/ai/) — le projet n'avait
+  # encore aucun rendu markdown (seulement flutter_html, qui attend du HTML) ;
+  # les réponses du Copilot sont du texte/markdown (gras, listes, tableaux,
+  # blocs de code), voir lib/ai/widgets/copilot_message_bubble.dart.
+  flutter_markdown: ^0.7.4+3
+  # Déclaré explicitement bien que déjà tiré transitivement par
+  # flutter_markdown — utilisé directement pour activer l'extension GFM
+  # (tableaux) via md.ExtensionSet.gitHubWeb.
+  markdown: ^7.2.2
+  # Coloration syntaxique des blocs de code dans les réponses du Copilot
+  # (voir lib/ai/widgets/copilot_code_block.dart).
+  flutter_highlight: ^0.7.0
+  highlight: ^0.7.0
   intl: 0.20.2
   flag: ^7.0.0
   country_flags: ^3.2.0
@@ -100,6 +113,10 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
+  # dev uniquement — pour mocker Dio dans les tests du Copilot IA (voir
+  # test/ai/services/copilot_api_service_test.dart) ; aucune dépendance de
+  # mock n'existait avant dans ce projet.
+  mocktail: ^1.0.4
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

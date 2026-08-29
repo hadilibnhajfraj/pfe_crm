@@ -27,6 +27,10 @@ import '../../controller/probar_controller.dart';
 import '../../model/industrial_record_model.dart';
 import '../../service/industrial_record_service.dart';
 
+// Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
+import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart';
+
 import 'widgets/probar_detail_data.dart';
 import 'widgets/general_info_card.dart';
 import 'widgets/rendement_card.dart';
@@ -59,6 +63,13 @@ class _ProbarDetailScreenState extends State<ProbarDetailScreen> {
     _load();
   }
 
+  @override
+  void dispose() {
+    // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+    CopilotContextController.to.clearContext();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     setState(() {
       _loading = true;
@@ -67,16 +78,40 @@ class _ProbarDetailScreenState extends State<ProbarDetailScreen> {
     try {
       final r = await IndustrialRecordService.instance.fetchById(widget.id);
       if (!mounted) return;
+      final data = ProbarDetailData.fromModel(r);
       setState(() {
         _record = r;
-        _data = ProbarDetailData.fromModel(r);
+        _data = data;
       });
+      _updateCopilotContext(r, data);
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md. Le
+  // diamètre est encodé dans qualiteMesures (clés l1d/l2d/l3d/l4d, "d" pour
+  // diamètre) plutôt qu'un champ dédié — vérifié contre le vrai code
+  // (probar_detail_data.dart) avant d'écrire cette extraction. Aucun champ
+  // "commande" dans IndustrialRecordModel — jamais inventé ici.
+  void _updateCopilotContext(IndustrialRecordModel record, ProbarDetailData data) {
+    final diameters = ['l1d', 'l2d', 'l3d', 'l4d']
+        .map((key) => data.qualiteMesures[key])
+        .where((d) => d != null && d.isNotEmpty)
+        .map((d) => d!)
+        .toList();
+
+    CopilotContextController.to.setContext(CopilotPageContext.industrial(
+      family: 'PROBAR',
+      machine: record.machine,
+      poste: record.poste,
+      diameters: diameters,
+      conformite: record.statutQualite,
+      nonConformiteDescription: data.descriptionNonConformite,
+    ));
   }
 
   String get _backRoute =>

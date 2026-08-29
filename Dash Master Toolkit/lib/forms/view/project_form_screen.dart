@@ -39,6 +39,10 @@ import '../providers/pipeline_provider.dart';
 import '../../providers/api_client.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
 
+// Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
+import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart';
+
 import 'sections/general_section.dart';
 import 'sections/details_section.dart';
 import 'sections/contacts_section.dart';
@@ -104,6 +108,8 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
     if (Get.isRegistered<ProjectFormController>()) {
       Get.delete<ProjectFormController>();
     }
+    // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+    CopilotContextController.to.clearContext();
     super.dispose();
   }
 
@@ -131,6 +137,7 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
       if (c.validationStatut.text.trim().isEmpty) {
         c.validationStatut.text = 'Non validé';
       }
+      _updateCopilotContext();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -138,6 +145,23 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  // ── Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+  // Un instantané pris à la fin du chargement, jamais recalculé en direct à
+  // chaque frappe — mêmes limites que les 3 autres écrans intégrés
+  // (dashboard/client/industriel).
+  void _updateCopilotContext() {
+    CopilotContextController.to.setContext(CopilotPageContext.project(
+      name: c.nomProjet.text.trim().isEmpty ? 'Projet sans nom' : c.nomProjet.text.trim(),
+      client: c.entreprise.text.trim(),
+      productFamily: c.productFamily.value,
+      diameterMm: c.diameterMm.value,
+      budget: c.montantMarche.text.trim(),
+      status: c.statut.text.trim().isEmpty ? c.validationStatut.text.trim() : c.statut.text.trim(),
+      successRate: c.pourcentageReussite.text.trim(),
+      surface: c.surfaceProspectee.text.trim(),
+    ));
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────

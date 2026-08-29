@@ -18,6 +18,10 @@ import 'package:dash_master_toolkit/dashboard/academic/widgets/relances_followup
 import 'package:dash_master_toolkit/dashboard/academic/widgets/crm_dashboard_widgets.dart';
 import 'package:dash_master_toolkit/dashboard/academic/widgets/crm_performance_widgets.dart';
 
+// Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
+import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -128,6 +132,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _isAdmin       = role == 'admin' || role == 'superadmin' || role == 'superadmin2';
     _currentUserId = auth.userId ?? '';
     _loadAll();
+  }
+
+  @override
+  void dispose() {
+    // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+    CopilotContextController.to.clearContext();
+    super.dispose();
   }
 
   // ── Load — branché par rôle ───────────────────────────────────────────────
@@ -316,7 +327,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       debugPrint('[Dashboard] $e');
     } finally {
       setState(() => _loading = false);
+      _updateCopilotContext();
     }
+  }
+
+  // ── Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+  // Dans le `finally` ci-dessus : toujours appelé après un chargement,
+  // succès OU échec (avec les données déjà disponibles dans ce dernier cas)
+  // — jamais un contexte à moitié construit qui bloquerait le reste de
+  // l'écran.
+  void _updateCopilotContext() {
+    CopilotContextController.to.setContext(CopilotPageContext.dashboard(
+      totalProjects: _total,
+      validated: _validated,
+      nonValidated: _nonValidated,
+      validRate: '${_validRate.toStringAsFixed(1)}%',
+      overdueFollowups: _followupsOverdue.length,
+      todayFollowups: _followupsToday.length,
+      upcomingFollowups: _followupsUpcoming.length,
+    ));
   }
 
   // ── Computed getters ──────────────────────────────────────────────────────

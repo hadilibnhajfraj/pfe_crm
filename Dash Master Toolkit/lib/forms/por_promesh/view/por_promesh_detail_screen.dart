@@ -28,6 +28,11 @@ import '../service/por_promesh_service.dart';
 import '../service/por_promesh_pdf_service.dart';
 import '../service/por_promesh_excel_service.dart';
 import '../utils/por_promesh_safe_value.dart';
+
+// Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
+import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart';
+
 import 'modules/controle_qualite/cq_theme.dart';
 import 'detail/detail_info_card.dart';
 import 'detail/detail_kpi_card.dart';
@@ -61,6 +66,13 @@ class _PorPromeshDetailScreenState extends State<PorPromeshDetailScreen> {
     _load();
   }
 
+  @override
+  void dispose() {
+    // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+    CopilotContextController.to.clearContext();
+    super.dispose();
+  }
+
   // Un seul appel réseau pour toute la page — toutes les sections lisent
   // ensuite `_item` (même instance mémoire, jamais re-fetché par section).
   Future<void> _load() async {
@@ -72,12 +84,30 @@ class _PorPromeshDetailScreenState extends State<PorPromeshDetailScreen> {
       final item = await PorPromeshService.instance.fetchById(widget.id);
       if (!mounted) return;
       setState(() => _item = item);
+      _updateCopilotContext(item);
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md. Aucun
+  // champ "commande" dans PorPromeshModel (vérifié contre le vrai code) —
+  // jamais inventé ici.
+  void _updateCopilotContext(PorPromeshModel item) {
+    CopilotContextController.to.setContext(CopilotPageContext.industrial(
+      family: 'PROMESH',
+      machine: item.machine,
+      poste: item.poste,
+      diameters: [item.diametreMaille1, item.diametreMaille2, item.diametreMaille3]
+          .where((d) => d != null && d.isNotEmpty)
+          .map((d) => d!)
+          .toList(),
+      conformite: item.conformite,
+      nonConformiteDescription: item.descriptionNonConformite,
+    ));
   }
 
   Future<void> _delete() async {

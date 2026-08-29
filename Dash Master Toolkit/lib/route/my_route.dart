@@ -249,6 +249,12 @@ static const clientsProfileScreen = '/users/client';
     redirect: (context, state) {
       final loggedIn = AuthService().isLoggedIn;
       final loc = state.matchedLocation;
+      // DIAGNOSTIC TEMPORAIRE (mission "CONFIRMER LA CAUSE DE LA DISPARITION
+      // DU COPILOT") — à retirer après le diagnostic, aucun changement de
+      // comportement : uniquement des print(), jamais une valeur de retour
+      // modifiée.
+      // ignore: avoid_print
+      print('[COPILOT-ROUTER] location=$loc isLoggedIn=$loggedIn role=${AuthService().userRole} token=${AuthService().accessToken != null}');
 
       final isAuthRoute = loc == signInScreen ||
           loc == signUpScreen ||
@@ -256,7 +262,11 @@ static const clientsProfileScreen = '/users/client';
           loc == resetPasswordScreen;
 
       // ── Non connecté sur route protégée → login ─────────────────────────
-      if (!loggedIn && !isAuthRoute) return signInScreen;
+      if (!loggedIn && !isAuthRoute) {
+        // ignore: avoid_print
+        print('[COPILOT-ROUTER] redirect=$signInScreen (non connecté)');
+        return signInScreen;
+      }
 
       if (loggedIn) {
         final role = (AuthService().userRole ?? '').toLowerCase().trim();
@@ -270,6 +280,8 @@ static const clientsProfileScreen = '/users/client';
         if (role == 'responsable_logistique_achat' &&
             !isAuthRoute &&
             !isOnIndustrialRoute) {
+          // ignore: avoid_print
+          print('[COPILOT-ROUTER] redirect=$porPromeshDashboardScreen (responsable_logistique_achat hors module industriel)');
           return porPromeshDashboardScreen;
         }
 
@@ -280,10 +292,14 @@ static const clientsProfileScreen = '/users/client';
         if (loc == initialPath || isAuthRoute) {
           print('ROLE = $role');
           if (role == 'responsable_logistique_achat') {
+            // ignore: avoid_print
+            print('[COPILOT-ROUTER] redirect=$porPromeshDashboardScreen (auth route + responsable_logistique_achat)');
             return porPromeshDashboardScreen;
           }
           if (role == 'commercial') {
             debugPrint('REDIRECTION → $commercialContactsKpiUsers');
+            // ignore: avoid_print
+            print('[COPILOT-ROUTER] redirect=$commercialContactsKpiUsers (auth route + commercial)');
             return commercialContactsKpiUsers;
           }
           // ── Dashboard Business Intelligence ─────────────────────────
@@ -303,13 +319,21 @@ static const clientsProfileScreen = '/users/client';
           // Tous les autres rôles (user, accueil, ...) atterrissent aussi
           // ici : DashboardScreen bascule en interne sur la vue "Dashboard
           // Utilisateur" quand isAdmin est faux (dashboard_screen.dart).
+          // ignore: avoid_print
+          print('[COPILOT-ROUTER] redirect=$dashboardSalesAdmin (auth route + autre rôle)');
           return dashboardSalesAdmin;
         }
       }
 
       // ── Route racine → login ─────────────────────────────────────────────
-      if (loc == initialPath) return signInScreen;
+      if (loc == initialPath) {
+        // ignore: avoid_print
+        print('[COPILOT-ROUTER] redirect=$signInScreen (route racine)');
+        return signInScreen;
+      }
 
+      // ignore: avoid_print
+      print('[COPILOT-ROUTER] redirect=null (aucune redirection — reste sur $loc)');
       return null;
     },
 

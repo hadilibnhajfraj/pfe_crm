@@ -7,6 +7,10 @@ import 'package:dash_master_toolkit/providers/auth_service.dart';
 import 'package:excel/excel.dart' as excel;
 import 'dart:html' as html;
 
+// Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
+import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart';
+
 // Compte pour lequel le Follow-up déclenche l'automatisation complète
 // (calendrier / notifications / email / WhatsApp) côté backend — le champ
 // "Commercial" n'est affiché/obligatoire que pour ce compte, inchangé pour
@@ -2275,6 +2279,19 @@ if (saved == true) {
       IconButton(
         tooltip: 'Timeline',
         onPressed: () {
+          // Context Awareness (Copilot IA) — additif, voir lib/ai/README.md.
+          // Défini ici (pas dans CommercialTimelineScreen, qui ne reçoit que
+          // contactId/token, jamais l'objet CommercialContact complet — voir
+          // l'audit dans lib/ai/README.md) à partir de l'objet déjà chargé
+          // dans cette liste ; effacé quand l'utilisateur revient (le
+          // Future de Navigator.push se résout à la fermeture de l'écran).
+          CopilotContextController.to.setContext(CopilotPageContext.client(
+            name: '${contact.nom} ${contact.prenom}'.trim(),
+            pipelineStage: contact.pipelineStage,
+            projectNames: contact.projects.map((p) => p.nomProjet ?? '').where((n) => n.isNotEmpty).toList(),
+            relanceCount: contact.relances.length,
+            lastRelanceDate: contact.relances.isNotEmpty ? contact.relances.last.dateRelance : null,
+          ));
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -2283,7 +2300,7 @@ if (saved == true) {
                 token: widget.token,
               ),
             ),
-          );
+          ).then((_) => CopilotContextController.to.clearContext());
         },
         icon: const Icon(Icons.timeline, color: Colors.purple),
       ),

@@ -2,6 +2,14 @@
 import 'package:responsive_framework/responsive_framework.dart' as rf;
 import 'components/common_imports.dart';
 
+// AI Business Copilot — présent sur toute page authentifiée (voir
+// lib/ai/README.md). Additif uniquement : un floatingActionButton et un
+// endDrawer, tous deux absents du Scaffold jusqu'ici — aucun comportement
+// existant de AppShell n'est modifié.
+import 'package:dash_master_toolkit/ai/providers/copilot_ui_controller.dart';
+import 'package:dash_master_toolkit/ai/screens/copilot_chat_drawer.dart';
+import 'package:dash_master_toolkit/ai/widgets/copilot_fab.dart';
+
 class AppShell extends StatefulWidget {
   const AppShell({super.key, required this.child});
 
@@ -17,6 +25,10 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // DIAGNOSTIC TEMPORAIRE (mission "CONFIRMER LA CAUSE DE LA DISPARITION
+    // DU COPILOT") — à retirer après le diagnostic.
+    // ignore: avoid_print
+    print('[COPILOT-SHELL] AppShell build');
     final screenSize = MediaQuery.sizeOf(context);
     final isDesktop = rf.ResponsiveBreakpoints.of(context).largerThan(
       BreakpointName.MD.name,
@@ -27,6 +39,14 @@ class _AppShellState extends State<AppShell> {
       key: scaffoldKey,
       backgroundColor: themeController.isDarkMode ? colorGrey900 : colorWhite,
       drawer: screenSize.width > 1240 ? null : _buildSidebar(isDesktop && isSidebarExpanded),
+      // AI Business Copilot — voir le commentaire d'import en tête de
+      // fichier. `onEndDrawerChanged` est la source de vérité de
+      // CopilotUiController.isOpen pour la présentation desktop (voir
+      // CopilotFab._open) : reste correct même si l'utilisateur ferme le
+      // drawer d'un swipe ou d'un tap en dehors, pas seulement via un bouton.
+      endDrawer: const CopilotChatDrawer(),
+      onEndDrawerChanged: (isOpen) => CopilotUiController.to.setOpen(isOpen),
+      floatingActionButton: const CopilotFab(),
       body: rf.ResponsiveRowColumn(
         layout: rf.ResponsiveRowColumnType.ROW,
         rowCrossAxisAlignment: CrossAxisAlignment.start,
