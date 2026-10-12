@@ -43,11 +43,15 @@ const STRONG_PASSWORD = "NewPass456!";
 const NEUTRAL_MESSAGE_RE = /Si un compte est associé/;
 
 async function createTestUser(email) {
+  // Enregistré pour le nettoyage afterAll même si le scénario n'appelle pas
+  // forgotPassword() — sans cela, chaque exécution laissait un compte
+  // reset-test-…@example.com dans la base.
+  createdEmails.push(email);
   return User.create({
     email,
     passwordHash: await bcrypt.hash(OLD_PASSWORD, 12),
     isActive: true,
-    role: "user",
+    role: "commercial", // vocabulaire des rôles v2 ("user" n'existe plus dans l'ENUM)
   });
 }
 

@@ -43,6 +43,21 @@ async function createOrOpenDraft(req, res) {
   }
 }
 
+// Fiches déjà présentes pour la même machine, la même date et le même poste
+// — lecture seule, appelée par l'application AVANT de créer une fiche.
+async function findExistingFiches(req, res) {
+  try {
+    const { machine, poste, date } = req.query;
+    if (!machine || !["matin", "nuit"].includes(poste) || (date && !/^\d{4}-\d{2}-\d{2}$/.test(date))) {
+      return res.status(400).json({ success: false, message: "Paramètres attendus : machine, poste (matin | nuit), date facultative (AAAA-MM-JJ)." });
+    }
+    const data = await svc.findExistingFiches(actorFrom(req), { machine, poste, date });
+    res.json({ success: true, data });
+  } catch (err) {
+    handle(res, err);
+  }
+}
+
 async function listOperators(req, res) {
   try {
     const data = await svc.listOperators();
@@ -153,6 +168,7 @@ async function getPorPromeshPdf(req, res) {
 module.exports = {
   createPorPromesh,
   createOrOpenDraft,
+  findExistingFiches,
   listOperators,
   listPorPromesh,
   getDashboard,

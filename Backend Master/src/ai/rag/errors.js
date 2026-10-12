@@ -28,10 +28,21 @@ class EmptyQueryError extends RagError {
   }
 }
 
+// Phase 2 — documents téléversés dans le Copilot. `code` est stable et
+// traduit en statut HTTP par le contrôleur (jamais le message interne).
+class DocumentError extends RagError {
+  constructor(code, message, status = 400) {
+    super(message);
+    this.code = code;
+    this.status = status;
+  }
+}
+
 module.exports = {
   RagError,
   SourceNotAllowedError,
   UnsupportedSourceTypeError,
   EmptyQueryError,
+  DocumentError,
   ConfigurationError,
 };

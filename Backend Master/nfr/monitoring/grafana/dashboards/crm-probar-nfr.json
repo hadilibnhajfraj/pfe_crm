@@ -1,0 +1,447 @@
+{
+  "uid": "crm-probar-nfr",
+  "title": "CRM PROBAR — Non-Functional Monitoring",
+  "tags": [
+    "crm-probar",
+    "nfr"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "1. API Requests (req/s)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_requests_total{job=\"crm-probar-backend\"}[1m]))",
+          "legendFormat": "total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "2. API Response Time — moyenne",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_request_duration_seconds_sum{job=\"crm-probar-backend\"}[1m])) / sum(rate(http_request_duration_seconds_count{job=\"crm-probar-backend\"}[1m]))",
+          "legendFormat": "moyenne",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "3. P95",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"crm-probar-backend\"}[1m])))",
+          "legendFormat": "p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "4. P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"crm-probar-backend\"}[1m])))",
+          "legendFormat": "p99",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "5. HTTP Errors (req/s)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_requests_total{job=\"crm-probar-backend\",status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5xx",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(http_requests_total{job=\"crm-probar-backend\",status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4xx",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "6. CPU du processus Node (% d'un cœur)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * rate(process_cpu_seconds_total{job=\"crm-probar-backend\"}[1m])",
+          "legendFormat": "CPU",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "7. RAM du processus Node",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_resident_memory_bytes{job=\"crm-probar-backend\"}",
+          "legendFormat": "RSS",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "nodejs_heap_size_used_bytes{job=\"crm-probar-backend\"}",
+          "legendFormat": "heap utilisé",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "8. Availability (cible joignable par Prometheus)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"crm-probar-backend\"}",
+          "legendFormat": "up",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "avg_over_time(up{job=\"crm-probar-backend\"}[$__range]) * 100",
+          "legendFormat": "disponibilité % sur la période",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "9. PostgreSQL — connexions et transactions",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(pg_stat_database_numbackends{datname=~\".*_test\"})",
+          "legendFormat": "connexions",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(pg_stat_database_xact_commit{datname=~\".*_test\"}[1m]))",
+          "legendFormat": "transactions/s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "crm_database_up{job=\"crm-probar-backend\"}",
+          "legendFormat": "base joignable (/health)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "10. Requêtes par route (req/s)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, sum by (route) (rate(http_requests_total{job=\"crm-probar-backend\"}[1m])))",
+          "legendFormat": "{{route}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Latence de la boucle d'événements (p99)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nodejs_eventloop_lag_p99_seconds{job=\"crm-probar-backend\"}",
+          "legendFormat": "event loop p99",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "P95 par route",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(http_request_duration_seconds_bucket{job=\"crm-probar-backend\"}[1m])))",
+          "legendFormat": "{{route}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    }
+  ]
+}

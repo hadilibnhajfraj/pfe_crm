@@ -22,6 +22,9 @@ router.get("/", requireRole(...READ_WRITE_ROLES), ctrl.listPorPromesh);
 
 // Bouton "Nouvelle fiche" — rouvre le brouillon en cours ou en crée un.
 router.post("/new", requireRole(...READ_WRITE_ROLES), validateCreateOrOpenDraft, ctrl.createOrOpenDraft);
+// Avertissement avant création : fiches existantes pour la même machine, la
+// même date et le même poste. Lecture seule ; déclarée avant "/:id".
+router.get("/existing", requireRole(...READ_WRITE_ROLES), ctrl.findExistingFiches);
 
 // Liste déroulante "Opérateur" — ouvert aux mêmes rôles que la création/
 // modification de fiches (pas réservé admin/superadmin comme GET /users).

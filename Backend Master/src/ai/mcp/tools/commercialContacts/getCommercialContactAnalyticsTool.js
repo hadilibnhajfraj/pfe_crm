@@ -14,7 +14,7 @@ function createGetCommercialContactAnalyticsTool() {
     name: "get_commercial_contact_analytics",
     description: "Analytics enrichies des contacts commerciaux (badges, taux de validation, distributions en %).",
     inputSchema: Joi.object({}),
-    requiredRoles: ["commercial", ...ADMIN_TIER_ROLES],
+    requiredRoles: ["commercial_sedentaire", ...ADMIN_TIER_ROLES],
     run: async (_input, { actingUser }) =>
       ADMIN_TIER_ROLES.includes(actingUser.role)
         ? kpiService.getCommercialContactAnalytics(null)

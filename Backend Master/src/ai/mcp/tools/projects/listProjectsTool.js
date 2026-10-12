@@ -75,6 +75,11 @@ function createListProjectsTool() {
       projectModele: Joi.string().valid("project", "revendeur", "applicateur").optional(),
       sortBy: Joi.string().valid("createdAt", "nomProjet", "montantMarche", "pourcentageReussite", "updatedAt").optional(),
       page: Joi.number().integer().min(1).optional(),
+      // Taille de page réellement lue par listProjects() (défaut 20, plafond
+      // 100). `pageSize` était déclaré mais jamais lu : conservé pour ne
+      // rien casser, sans effet.
+      limit: Joi.number().integer().min(1).max(100).optional(),
+      isArchived: Joi.boolean().optional(),
       pageSize: Joi.number().integer().min(1).max(500).optional(),
     }).unknown(true),
     requiredRoles: [],

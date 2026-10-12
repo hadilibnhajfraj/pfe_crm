@@ -5,6 +5,7 @@ const { createGetCommercialContactAnalyticsTool } = require("./getCommercialCont
 const { createGetPersonalKpiSummaryTool } = require("./getPersonalKpiSummaryTool");
 const { createGetMyCommercialContactsTool } = require("./getMyCommercialContactsTool");
 const { createScheduleCommercialContactRelanceTool } = require("./scheduleCommercialContactRelanceTool");
+const { createGetCommercialContactStatisticsTool } = require("./getCommercialContactStatisticsTool");
 
 // Périmètre limité au service KPI (modules/commercial-contacts/services/) —
 // le CRUD des contacts/relances/actions vit dans la couche legacy
@@ -25,6 +26,7 @@ const toolFactories = [
   createGetPersonalKpiSummaryTool,
   createGetMyCommercialContactsTool,
   createScheduleCommercialContactRelanceTool,
+  createGetCommercialContactStatisticsTool,
 ];
 
 module.exports = {
@@ -34,4 +36,5 @@ module.exports = {
   createGetPersonalKpiSummaryTool,
   createGetMyCommercialContactsTool,
   createScheduleCommercialContactRelanceTool,
+  createGetCommercialContactStatisticsTool,
 };

@@ -1,0 +1,10 @@
+=== Palier 10 VUs — 2026-10-03T22:20:01+01:00 ===
+[dotenv@17.2.3] injecting env (37) from .env -- tip: ⚙️  override existing env vars with { override: true }
+=== Palier 25 VUs — 2026-10-03T22:21:39+01:00 ===
+[dotenv@17.2.3] injecting env (37) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+=== Palier 50 VUs — 2026-10-03T22:23:23+01:00 ===
+[dotenv@17.2.3] injecting env (37) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+=== Palier 100 VUs — 2026-10-03T22:25:07+01:00 ===
+[dotenv@17.2.3] injecting env (37) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+=== Terminé — 2026-10-03T22:26:53+01:00 ===
+login exit=99

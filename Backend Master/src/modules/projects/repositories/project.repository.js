@@ -131,6 +131,7 @@ const LIST_ATTRIBUTES = [
   "user_nom",
   "user_nom_custom",
   // completion check fields
+  "ingenieurResponsable",
   "telephoneIngenieur",
   "emailIngenieur",
   "architecte",
@@ -215,7 +216,9 @@ function findPaginated(filters, { limit, offset, sortBy = "createdAt", sortDir =
     where: buildWhere(filters),
     attributes: LIST_ATTRIBUTES,
     include: [OWNER_INCLUDE, STAGE_INCLUDE],
-    order: [[sortBy, sortDir]],
+    // `id` départage les égalités : sans lui, deux projets de même date
+    // peuvent changer de page entre deux lectures (doublon ou oubli).
+    order: [[sortBy, sortDir], ["id", "ASC"]],
     limit,
     offset,
     distinct: true,

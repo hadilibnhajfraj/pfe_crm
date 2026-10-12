@@ -66,7 +66,7 @@ function classifyAiCopilotError(err) {
   if (isTimeoutError(err)) {
     return { code: AI_COPILOT_ERROR.TIMEOUT, status: 503, message: "Le service met trop de temps à répondre. Réessayez dans quelques instants." };
   }
-  if (err instanceof OrchestratorPermissionError || err instanceof PermissionDeniedError) {
+  if (err instanceof OrchestratorPermissionError || err instanceof PermissionDeniedError || (err && err.constructor && err.constructor.name === "AgentPermissionError")) {
     return { code: AI_COPILOT_ERROR.PERMISSION_DENIED, status: 403, message: "Vous n'avez pas la permission d'effectuer cette action." };
   }
   if (err instanceof ToolExecutionError || err instanceof ToolNotFoundError || err instanceof ToolValidationError) {

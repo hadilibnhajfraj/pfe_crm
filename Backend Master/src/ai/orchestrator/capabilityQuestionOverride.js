@@ -1,6 +1,7 @@
 "use strict";
 
 const { tokenize } = require("../utils/tokenize");
+const { extractEntities } = require("./entityExtractor");
 
 /**
  * # capabilityQuestionOverride — "qu'est-ce que je peux faire ?" > general_chat
@@ -74,6 +75,10 @@ function matchesGroup(terms, group) {
 }
 
 function isCapabilityQuestion(message) {
+  // Une question qui nomme une entité du CRM (« donne-moi les ingénieurs
+  // disponibles », « quels projets sont disponibles pour moi ») porte sur des
+  // DONNÉES, jamais sur les capacités du Copilot.
+  if (extractEntities(message).entityType) return false;
   const terms = new Set(tokenize(message));
   return GROUPS.some((group) => matchesGroup(terms, group));
 }

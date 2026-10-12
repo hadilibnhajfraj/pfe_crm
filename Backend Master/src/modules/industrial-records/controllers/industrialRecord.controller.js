@@ -26,6 +26,21 @@ async function createRecord(req, res) {
   }
 }
 
+// Fiches PROBAR déjà présentes pour la même machine, la même date et le même
+// poste — lecture seule, appelée par l'application AVANT de créer une fiche.
+async function findExistingFiches(req, res) {
+  try {
+    const { module, machine, poste, date } = req.query;
+    if ((module && module !== "probar") || !machine || !["matin", "nuit"].includes(poste) || (date && !/^\d{4}-\d{2}-\d{2}$/.test(date))) {
+      return res.status(400).json({ success: false, message: "Paramètres attendus : module probar, machine, poste (matin | nuit), date facultative (AAAA-MM-JJ)." });
+    }
+    const data = await svc.findExistingFiches(actorFrom(req), { machine, poste, date });
+    res.json({ success: true, data });
+  } catch (err) {
+    handle(res, err);
+  }
+}
+
 async function listRecords(req, res) {
   try {
     const { module, machine, poste, page, pageSize } = req.query;
@@ -63,4 +78,4 @@ async function deleteRecord(req, res) {
   }
 }
 
-module.exports = { createRecord, listRecords, getRecord, updateRecord, deleteRecord };
+module.exports = { createRecord, listRecords, findExistingFiches, getRecord, updateRecord, deleteRecord };

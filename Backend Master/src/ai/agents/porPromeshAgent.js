@@ -1,6 +1,16 @@
 "use strict";
 
 const { BaseAgent } = require("./baseAgent");
+const {
+  detectIndustrialRequest,
+  isFicheCreationFollowUp,
+  buildAmbiguousAnswer,
+  buildCountAnswer,
+  buildAnalysisAnswer,
+  runGuidedCreation,
+  INDUSTRIAL_CREATION_TYPE,
+  PROMESH_CREATION_TYPE,
+} = require("../reasoning/industrialRequest");
 const { AgentError } = require("./errors");
 const { tokenize } = require("../utils/tokenize");
 
@@ -268,7 +278,28 @@ const SEQUENCE_NUMBER_RE = /\bfiche\S*\s+(?:promesh\s+)?(?:n[o°]?\s*|num[eé]ro
  * générique passée par le LLM.
  */
 class PorPromeshAgent extends BaseAgent {
+  constructor({ pendingActionStore = null, ...rest }) {
+    super(rest);
+    this.pendingActionStore = pendingActionStore;
+  }
+
   async _run({ message, user, conversationId }) {
+    const pending = this.pendingActionStore ? this.pendingActionStore.peek(conversationId) : null;
+    const creating = Boolean(pending && pending.type === PROMESH_CREATION_TYPE && pending.actingUserId === user.id);
+    const request = detectIndustrialRequest(message);
+
+    if (creating && isFicheCreationFollowUp(message)) {
+      return this._runCreation(message, user, conversationId);
+    }
+    if (request && (request.module === "promesh" || !request.module)) {
+      if (request.operation === "ambiguous") return { answer: buildAmbiguousAnswer(["promesh"]), citations: [], toolSteps: [] };
+      // « Je veux saisir une fiche PROMESH » : guidée, jamais une liste, jamais un appel incomplet.
+      if (request.operation === "create") return this._runCreation(message, user, conversationId);
+      if (request.operation === "count") return this._runCount();
+      if (request.operation === "analysis") return this._runAnalysis();
+      // « Affiche l'historique PROMESH » (sans le mot « fiche ») : la liste.
+      if (request.operation === "list") return this._runAllFichesQuery();
+    }
     if (!this._looksLikeFilteredQuery(message)) {
       const sequenceNumber = this._extractSequenceNumber(message);
       if (sequenceNumber !== null) {
@@ -319,6 +350,52 @@ class PorPromeshAgent extends BaseAgent {
     const { data, total } = JSON.parse(rawOutput);
     const list = Array.isArray(data) ? data : [];
     return { list, total: typeof total === "number" ? total : list.length };
+  }
+
+  async _runCount() {
+    const { list, total } = await this._fetchAllFiches();
+    const byStatus = new Map();
+    for (const f of list) byStatus.set(f.status || "sans statut", (byStatus.get(f.status || "sans statut") || 0) + 1);
+    const breakdown = list.length === total && total ? ["Par statut :", ...[...byStatus.entries()].map(([k, n]) => `• ${k} : ${n}`)] : null;
+    return { answer: buildCountAnswer("promesh", total, breakdown), citations: [], toolSteps: [{ tool: "list_por_promesh", input: {}, output: { total, read: list.length } }] };
+  }
+
+  async _runAnalysis() {
+    const { list, total } = await this._fetchAllFiches();
+    return {
+      answer: buildAnalysisAnswer({ module: "promesh", list, total, keys: { date: "dateProduction", quantity: "productionM2", quantityUnit: "m²", quality: "conformite", status: "status" } }),
+      citations: [],
+      toolSteps: [{ tool: "list_por_promesh", input: {}, output: { total, read: list.length } }],
+    };
+  }
+
+  // Création guidée : machine et poste sont les deux champs exigés par
+  // create_or_open_por_promesh_draft ; l'opérateur est le compte connecté, la
+  // date et l'heure sont posées par le service, le numéro de séquence par la base.
+  async _runCreation(message, user, conversationId) {
+    const tool = this._findRealTool("create_or_open_por_promesh_draft");
+    if (!tool) {
+      throw new AgentError(`Agent "${this.name}" has no "create_or_open_por_promesh_draft" Tool available.`);
+    }
+    return runGuidedCreation({
+      agent: this,
+      store: this.pendingActionStore,
+      type: PROMESH_CREATION_TYPE,
+      module: "promesh",
+      required: ["machine", "poste"],
+      optionalNote: "La fiche sera ouverte en brouillon, à votre nom, à la date et à l'heure du moment ; le numéro de séquence est attribué automatiquement. Si un brouillon existe déjà pour cette machine et ce poste, il est rouvert.",
+      tool,
+      toolName: "create_or_open_por_promesh_draft",
+      toToolInput: (fields) => ({ machine: fields.machine, poste: fields.poste }),
+      describeResult: (output) => {
+        const fiche = (output && (output.fiche || output.data || output)) || {};
+        const parts = [fiche.sequenceNumber != null ? `Séquence ${fiche.sequenceNumber}` : null, fiche.status ? `statut ${fiche.status}` : null].filter(Boolean);
+        return parts.length ? `${parts.join(" — ")}. Vous pouvez la compléter depuis l'écran PROMESH.` : "Vous pouvez la compléter depuis l'écran PROMESH.";
+      },
+      message,
+      user,
+      conversationId,
+    });
   }
 
   async _runAllFichesQuery() {
@@ -377,8 +454,9 @@ class PorPromeshAgent extends BaseAgent {
   }
 }
 
-function createPorPromeshAgent({ chatModel, tools = [], workflowEngine, qaChain = null, memory = null, maxToolCalls, maxHistoryMessages, promptInjectionGuard = null }) {
+function createPorPromeshAgent({ chatModel, tools = [], workflowEngine, qaChain = null, memory = null, maxToolCalls, maxHistoryMessages, promptInjectionGuard = null, pendingActionStore = null }) {
   return new PorPromeshAgent({
+    pendingActionStore,
     name: "por_promesh_agent",
     systemPrompt: SYSTEM_PROMPT,
     intentNames: ["por_promesh"],

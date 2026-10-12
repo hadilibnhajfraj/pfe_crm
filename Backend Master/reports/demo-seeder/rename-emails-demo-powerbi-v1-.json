@@ -1,0 +1,298 @@
+{
+  "batchId": "DEMO-demo-powerbi-v1-s20261010",
+  "mode": "apply",
+  "accounts": [
+    {
+      "id": "ee815d2c-3a83-57fa-9570-76693b29bf69",
+      "role": "commercial",
+      "oldEmail": "demo.commercial01@demo.invalid",
+      "newEmail": "demo.commercial01@cbi_tunisia.com",
+      "currentEmail": "demo.commercial01@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "68d9ded1-f1e5-566e-8a8e-e9e202e0066e",
+      "role": "commercial",
+      "oldEmail": "demo.commercial02@demo.invalid",
+      "newEmail": "demo.commercial02@cbi_tunisia.com",
+      "currentEmail": "demo.commercial02@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "05d9e538-3e85-5b7a-bf87-30a2f1152f6d",
+      "role": "commercial",
+      "oldEmail": "demo.commercial03@demo.invalid",
+      "newEmail": "demo.commercial03@cbi_tunisia.com",
+      "currentEmail": "demo.commercial03@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "13eb6768-99b3-5b1f-bf6c-3b2edbca479e",
+      "role": "commercial",
+      "oldEmail": "demo.commercial04@demo.invalid",
+      "newEmail": "demo.commercial04@cbi_tunisia.com",
+      "currentEmail": "demo.commercial04@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "a57195ed-52ef-524e-958b-0dc6f332c98e",
+      "role": "commercial",
+      "oldEmail": "demo.commercial05@demo.invalid",
+      "newEmail": "demo.commercial05@cbi_tunisia.com",
+      "currentEmail": "demo.commercial05@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "67ff888d-356e-5966-bb00-7961a2bbac20",
+      "role": "commercial",
+      "oldEmail": "demo.commercial06@demo.invalid",
+      "newEmail": "demo.commercial06@cbi_tunisia.com",
+      "currentEmail": "demo.commercial06@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "bc586dfe-59cc-5f01-9ddd-a8019e3bfa82",
+      "role": "commercial_sedentaire",
+      "oldEmail": "demo.commercial-sedentaire01@demo.invalid",
+      "newEmail": "demo.commercial_sedentaire01@cbi_tunisia.com",
+      "currentEmail": "demo.commercial-sedentaire01@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "a0efa99e-c98c-5ed5-bff5-e86b54ce51da",
+      "role": "commercial_sedentaire",
+      "oldEmail": "demo.commercial-sedentaire02@demo.invalid",
+      "newEmail": "demo.commercial_sedentaire02@cbi_tunisia.com",
+      "currentEmail": "demo.commercial-sedentaire02@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "e5d8c1d8-aa32-50f6-a85b-d1750ce8ca24",
+      "role": "responsable_logistique_achat",
+      "oldEmail": "demo.responsable-logistique-achat01@demo.invalid",
+      "newEmail": "demo.responsable_logistique_achat01@cbi_tunisia.com",
+      "currentEmail": "demo.responsable-logistique-achat01@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    },
+    {
+      "id": "0c5d1905-ab93-5cdf-ad1b-117f2c57851e",
+      "role": "admin",
+      "oldEmail": "demo.admin01@demo.invalid",
+      "newEmail": "demo.admin01@cbi_tunisia.com",
+      "currentEmail": "demo.admin01@demo.invalid",
+      "active": true,
+      "state": "à modifier"
+    }
+  ],
+  "updated": 10,
+  "alreadyDone": 0,
+  "controls": [
+    {
+      "label": "comptes au registre du lot",
+      "ok": true,
+      "detail": "10 au registre, 10 attendus"
+    },
+    {
+      "label": "comptes présents",
+      "ok": true,
+      "detail": "10 sur 10"
+    },
+    {
+      "label": "rôle du compte demo.commercial01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial en base, commercial attendu"
+    },
+    {
+      "label": "adresse actuelle du compte ee815d2c-3a83-57fa-9570-76693b29bf69",
+      "ok": true,
+      "detail": "demo.commercial01@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial02@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial en base, commercial attendu"
+    },
+    {
+      "label": "adresse actuelle du compte 68d9ded1-f1e5-566e-8a8e-e9e202e0066e",
+      "ok": true,
+      "detail": "demo.commercial02@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial02@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial03@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial en base, commercial attendu"
+    },
+    {
+      "label": "adresse actuelle du compte 05d9e538-3e85-5b7a-bf87-30a2f1152f6d",
+      "ok": true,
+      "detail": "demo.commercial03@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial03@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial04@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial en base, commercial attendu"
+    },
+    {
+      "label": "adresse actuelle du compte 13eb6768-99b3-5b1f-bf6c-3b2edbca479e",
+      "ok": true,
+      "detail": "demo.commercial04@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial04@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial05@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial en base, commercial attendu"
+    },
+    {
+      "label": "adresse actuelle du compte a57195ed-52ef-524e-958b-0dc6f332c98e",
+      "ok": true,
+      "detail": "demo.commercial05@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial05@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial06@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial en base, commercial attendu"
+    },
+    {
+      "label": "adresse actuelle du compte 67ff888d-356e-5966-bb00-7961a2bbac20",
+      "ok": true,
+      "detail": "demo.commercial06@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial06@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial_sedentaire01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial_sedentaire en base, commercial_sedentaire attendu"
+    },
+    {
+      "label": "adresse actuelle du compte bc586dfe-59cc-5f01-9ddd-a8019e3bfa82",
+      "ok": true,
+      "detail": "demo.commercial-sedentaire01@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial_sedentaire01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.commercial_sedentaire02@cbi_tunisia.com",
+      "ok": true,
+      "detail": "commercial_sedentaire en base, commercial_sedentaire attendu"
+    },
+    {
+      "label": "adresse actuelle du compte a0efa99e-c98c-5ed5-bff5-e86b54ce51da",
+      "ok": true,
+      "detail": "demo.commercial-sedentaire02@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.commercial_sedentaire02@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.responsable_logistique_achat01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "responsable_logistique_achat en base, responsable_logistique_achat attendu"
+    },
+    {
+      "label": "adresse actuelle du compte e5d8c1d8-aa32-50f6-a85b-d1750ce8ca24",
+      "ok": true,
+      "detail": "demo.responsable-logistique-achat01@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.responsable_logistique_achat01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "rôle du compte demo.admin01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "admin en base, admin attendu"
+    },
+    {
+      "label": "adresse actuelle du compte 0c5d1905-ab93-5cdf-ad1b-117f2c57851e",
+      "ok": true,
+      "detail": "demo.admin01@demo.invalid"
+    },
+    {
+      "label": "compte actif demo.admin01@cbi_tunisia.com",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "label": "nouvelles adresses libres",
+      "ok": true,
+      "detail": "0 déjà utilisée(s) par un autre compte"
+    },
+    {
+      "label": "aucune autre donnée modifiée (comptes hors adresse, données commerciales et industrielles, référentiels)",
+      "ok": true,
+      "detail": "25 tables identiques"
+    },
+    {
+      "label": "plus aucune adresse @demo.invalid parmi les comptes",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "comptes sur le nouveau domaine",
+      "ok": true,
+      "detail": "10 sur 10"
+    },
+    {
+      "label": "adresses uniques",
+      "ok": true,
+      "detail": "10"
+    },
+    {
+      "label": "comptes toujours actifs",
+      "ok": true,
+      "detail": "10 sur 10"
+    },
+    {
+      "label": "journal",
+      "ok": true,
+      "detail": "10 entrée(s) pour 10 compte(s) modifié(s)"
+    }
+  ],
+  "error": null,
+  "database": "cbigestionnairepfe_demo",
+  "committed": true
+}

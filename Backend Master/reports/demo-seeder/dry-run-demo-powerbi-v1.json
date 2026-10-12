@@ -1,0 +1,229 @@
+{
+  "mode": "dry-run",
+  "generatedAt": "2026-10-10T22:48:05.857Z",
+  "database": "cbigestionnairepfe_demo",
+  "batchId": "DEMO-demo-powerbi-v1-s20261010",
+  "seed": 20261010,
+  "planFingerprint": "264b08099dfe4776",
+  "deterministic": true,
+  "injectionAllowed": true,
+  "totalRows": 2182,
+  "byTable": {
+    "users": {
+      "planned": 10,
+      "toCreate": 0,
+      "alreadyPresent": 10,
+      "via": "modèle Sequelize",
+      "preexisting": 11
+    },
+    "user_profiles": {
+      "planned": 10,
+      "toCreate": 0,
+      "alreadyPresent": 10,
+      "via": "modèle Sequelize",
+      "preexisting": 11
+    },
+    "companies": {
+      "planned": 40,
+      "toCreate": 0,
+      "alreadyPresent": 40,
+      "via": "modèle Sequelize",
+      "preexisting": 40
+    },
+    "engineers": {
+      "planned": 25,
+      "toCreate": 0,
+      "alreadyPresent": 25,
+      "via": "modèle Sequelize",
+      "preexisting": 25
+    },
+    "architects": {
+      "planned": 10,
+      "toCreate": 0,
+      "alreadyPresent": 10,
+      "via": "modèle Sequelize",
+      "preexisting": 10
+    },
+    "clients": {
+      "planned": 60,
+      "toCreate": 0,
+      "alreadyPresent": 60,
+      "via": "modèle Sequelize",
+      "preexisting": 60
+    },
+    "projects": {
+      "planned": 80,
+      "toCreate": 0,
+      "alreadyPresent": 80,
+      "via": "modèle Sequelize",
+      "preexisting": 80
+    },
+    "user_projects": {
+      "planned": 80,
+      "toCreate": 0,
+      "alreadyPresent": 80,
+      "via": "modèle Sequelize",
+      "preexisting": 80
+    },
+    "project_actions": {
+      "planned": 300,
+      "toCreate": 0,
+      "alreadyPresent": 300,
+      "via": "modèle Sequelize",
+      "preexisting": 300
+    },
+    "commercial_contacts": {
+      "planned": 150,
+      "toCreate": 0,
+      "alreadyPresent": 150,
+      "via": "modèle Sequelize",
+      "preexisting": 150
+    },
+    "commercial_contact_status_histories": {
+      "planned": 150,
+      "toCreate": 0,
+      "alreadyPresent": 150,
+      "via": "modèle Sequelize",
+      "preexisting": 150
+    },
+    "commercial_contact_products": {
+      "planned": 150,
+      "toCreate": 0,
+      "alreadyPresent": 150,
+      "via": "modèle Sequelize",
+      "preexisting": 150
+    },
+    "commercial_contact_actions": {
+      "planned": 150,
+      "toCreate": 0,
+      "alreadyPresent": 150,
+      "via": "modèle Sequelize",
+      "preexisting": 150
+    },
+    "commercial_projects": {
+      "planned": 93,
+      "toCreate": 0,
+      "alreadyPresent": 93,
+      "via": "modèle Sequelize",
+      "preexisting": 93
+    },
+    "commercial_contact_relances": {
+      "planned": 100,
+      "toCreate": 0,
+      "alreadyPresent": 100,
+      "via": "modèle Sequelize",
+      "preexisting": 100
+    },
+    "por_promesh": {
+      "planned": 90,
+      "toCreate": 0,
+      "alreadyPresent": 90,
+      "via": "porPromesh.createPorPromesh",
+      "preexisting": 90
+    },
+    "por_promesh_controles_qualite": {
+      "planned": 180,
+      "toCreate": 0,
+      "alreadyPresent": 180,
+      "via": "créée par le service de la fiche",
+      "preexisting": null
+    },
+    "por_promesh_process_control": {
+      "planned": 360,
+      "toCreate": 0,
+      "alreadyPresent": 360,
+      "via": "créée par le service de la fiche",
+      "preexisting": null
+    },
+    "industrial_records": {
+      "planned": 70,
+      "toCreate": 0,
+      "alreadyPresent": 70,
+      "via": "industrialRecord.createRecord",
+      "preexisting": 70
+    },
+    "recuperable_fiches": {
+      "planned": 20,
+      "toCreate": 0,
+      "alreadyPresent": 20,
+      "via": "recuperable.saveFiche",
+      "preexisting": 20
+    },
+    "recuperable_lignes": {
+      "planned": 54,
+      "toCreate": 0,
+      "alreadyPresent": 54,
+      "via": "créée par le service de la fiche",
+      "preexisting": null
+    }
+  },
+  "relations": {
+    "user_profiles.userId → users": 10,
+    "projects.ownerId → users": 80,
+    "projects.pipelineStageId → pipeline_stages": 80,
+    "user_projects.projectId → projects": 80,
+    "user_projects.userId → users": 80,
+    "project_actions.actionTypeId → project_action_types": 300,
+    "project_actions.projectId → projects": 300,
+    "commercial_contacts.assignedBy → users": 128,
+    "commercial_contacts.commercialId → users": 128,
+    "commercial_contacts.createdBy → users": 150,
+    "commercial_contact_status_histories.changedBy → users": 150,
+    "commercial_contact_status_histories.commercialContactId → commercial_contacts": 150,
+    "commercial_contact_products.commercialContactId → commercial_contacts": 150,
+    "commercial_contact_actions.commercialContactId → commercial_contacts": 150,
+    "commercial_projects.commercialContactId → commercial_contacts": 93,
+    "commercial_contact_relances.commercialContactId → commercial_contacts": 100,
+    "commercial_contact_relances.createdBy → users": 100,
+    "projects.companyId → companies (sans clé étrangère en base, vérifiée par le plan)": 65,
+    "projects.engineerId → engineers (sans clé étrangère en base, vérifiée par le plan)": 61,
+    "projects.architectId → architects (sans clé étrangère en base, vérifiée par le plan)": 22,
+    "por_promesh.machineId → machines": 90,
+    "industrial_records.machineId → machines": 70,
+    "recuperable_fiches.machineId → machines": 20
+  },
+  "missingReferences": [],
+  "missingFields": [],
+  "uniqueConflicts": [],
+  "violations": [],
+  "warnings": [
+    "8 couple(s) machine / date / poste portent plusieurs fiches : fonctionnement métier valide, aucune règle d'unicité appliquée.",
+    "2182 ligne(s) du plan existent déjà dans la base : elles seront ignorées (rejeu sans doublon)."
+  ],
+  "simulation": {
+    "provenance": "SIMULATION — valeurs fictives produites par scripts/demo-seeder à partir de cette configuration et de la graine du lot. Elles ne représentent aucune donnée réelle de l'entreprise.",
+    "postes": {
+      "note": "Horaires de poste SIMULÉS. Aucun horaire de poste n'est défini dans le CRM : ceux-ci servent uniquement à produire des fiches cohérentes avec les validations existantes.",
+      "matin": {
+        "debut": "06:00",
+        "fin": "14:00"
+      },
+      "nuit": {
+        "debut": "22:00",
+        "fin": "06:00"
+      }
+    },
+    "montantMarche": {
+      "note": "Montants SIMULÉS, en dinars. Posés uniquement sur les projets de modèle revendeur ou applicateur, comme le fait la route de création.",
+      "min": 15000,
+      "max": 450000
+    },
+    "productionM2": {
+      "note": "Production PROMESH SIMULÉE, en m².",
+      "min": 400,
+      "max": 2600
+    },
+    "quantiteProbar": {
+      "note": "Quantité PROBAR SIMULÉE. Le CRM ne définit pas l'unité de ce champ.",
+      "min": 600,
+      "max": 2400
+    },
+    "dechetKg": {
+      "note": "Déchets SIMULÉS, en kg.",
+      "min": 0,
+      "max": 60
+    },
+    "tauxValidationFiches": 0.75,
+    "tauxNonConformite": 0.12
+  }
+}

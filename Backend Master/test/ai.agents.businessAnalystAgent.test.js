@@ -183,7 +183,9 @@ describe("BusinessAnalystAgent — un Tool qui échoue n'invalide pas les autres
     expect(result.answer).toContain("### Projets");
     expect(result.answer).toContain("Chantier A");
     expect(result.answer).toContain("### Interventions");
-    expect(result.answer).toMatch(/Impossible d'analyser ce domaine.*not allowed to call tool/);
+    // Le refus est dit en clair ; le texte technique (rôle, nom de l'outil) n'est plus affiché.
+    expect(result.answer).toMatch(/Impossible d'analyser ce domaine : ces indicateurs sont réservés aux administrateurs/);
+    expect(result.answer).not.toMatch(/not allowed to call tool|Role "/);
   });
 
   test("un Tool absent des Tools disponibles est signalé honnêtement plutôt que de faire planter tout le tour", async () => {

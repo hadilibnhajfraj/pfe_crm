@@ -1,0 +1,521 @@
+{
+  "logicalCpus": 8,
+  "totalMemMb": 24268,
+  "sampleCount": 40,
+  "summary": {
+    "systemCpuPct": {
+      "avg": 41.8,
+      "max": 69.9
+    },
+    "nodeCpuPctOfOneCore": {
+      "avg": 106.1,
+      "max": 151.7
+    },
+    "nodeRssMb": {
+      "avg": 538.5,
+      "max": 584
+    },
+    "nodeHeapUsedMb": {
+      "avg": 187.2,
+      "max": 325
+    },
+    "nodeEventLoopLagP99Ms": {
+      "avg": 217,
+      "max": 737.1
+    },
+    "postgresTransactionsPerSec": {
+      "avg": 284.9,
+      "max": 552.1
+    },
+    "postgresActiveConnections": {
+      "avg": 2.7,
+      "max": 11
+    },
+    "postgresConnections": {
+      "avg": 10.5,
+      "max": 11
+    }
+  },
+  "samples": [
+    {
+      "at": "2026-10-05T16:20:25.314Z",
+      "systemCpuPct": 14.2,
+      "systemFreeMemMb": 3627,
+      "nodeCpuPctOfOneCore": 1.5,
+      "nodeRssMb": 271,
+      "nodeHeapUsedMb": 79,
+      "nodeEventLoopLagP99Ms": 31.8,
+      "postgresTransactionsPerSec": 1.5,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 1
+    },
+    {
+      "at": "2026-10-05T16:20:27.319Z",
+      "systemCpuPct": 26.9,
+      "systemFreeMemMb": 3605,
+      "nodeCpuPctOfOneCore": 49.1,
+      "nodeRssMb": 271,
+      "nodeHeapUsedMb": 79,
+      "nodeEventLoopLagP99Ms": 27.4,
+      "postgresTransactionsPerSec": 1.5,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 2
+    },
+    {
+      "at": "2026-10-05T16:20:29.335Z",
+      "systemCpuPct": 37,
+      "systemFreeMemMb": 3513,
+      "nodeCpuPctOfOneCore": 94.5,
+      "nodeRssMb": 309,
+      "nodeHeapUsedMb": 101,
+      "nodeEventLoopLagP99Ms": 106.6,
+      "postgresTransactionsPerSec": 9.9,
+      "postgresActiveConnections": 7,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:31.347Z",
+      "systemCpuPct": 43.9,
+      "systemFreeMemMb": 3453,
+      "nodeCpuPctOfOneCore": 115.8,
+      "nodeRssMb": 338,
+      "nodeHeapUsedMb": 111,
+      "nodeEventLoopLagP99Ms": 84.1,
+      "postgresTransactionsPerSec": 225.6,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:33.357Z",
+      "systemCpuPct": 33.3,
+      "systemFreeMemMb": 3428,
+      "nodeCpuPctOfOneCore": 115.8,
+      "nodeRssMb": 371,
+      "nodeHeapUsedMb": 124,
+      "nodeEventLoopLagP99Ms": 126.4,
+      "postgresTransactionsPerSec": 301.5,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:35.359Z",
+      "systemCpuPct": 34.2,
+      "systemFreeMemMb": 3336,
+      "nodeCpuPctOfOneCore": 103,
+      "nodeRssMb": 446,
+      "nodeHeapUsedMb": 227,
+      "nodeEventLoopLagP99Ms": 254.3,
+      "postgresTransactionsPerSec": 235.8,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:37.374Z",
+      "systemCpuPct": 38,
+      "systemFreeMemMb": 3236,
+      "nodeCpuPctOfOneCore": 114,
+      "nodeRssMb": 554,
+      "nodeHeapUsedMb": 323,
+      "nodeEventLoopLagP99Ms": 128.6,
+      "postgresTransactionsPerSec": 326.6,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:39.377Z",
+      "systemCpuPct": 36.3,
+      "systemFreeMemMb": 3245,
+      "nodeCpuPctOfOneCore": 110.8,
+      "nodeRssMb": 555,
+      "nodeHeapUsedMb": 164,
+      "nodeEventLoopLagP99Ms": 132.7,
+      "postgresTransactionsPerSec": 276.6,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:41.386Z",
+      "systemCpuPct": 34.4,
+      "systemFreeMemMb": 3242,
+      "nodeCpuPctOfOneCore": 114.3,
+      "nodeRssMb": 556,
+      "nodeHeapUsedMb": 277,
+      "nodeEventLoopLagP99Ms": 239.6,
+      "postgresTransactionsPerSec": 304.1,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:43.390Z",
+      "systemCpuPct": 37.7,
+      "systemFreeMemMb": 3243,
+      "nodeCpuPctOfOneCore": 121.7,
+      "nodeRssMb": 555,
+      "nodeHeapUsedMb": 145,
+      "nodeEventLoopLagP99Ms": 123.8,
+      "postgresTransactionsPerSec": 369.8,
+      "postgresActiveConnections": 5,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:45.393Z",
+      "systemCpuPct": 40,
+      "systemFreeMemMb": 3241,
+      "nodeCpuPctOfOneCore": 121.7,
+      "nodeRssMb": 556,
+      "nodeHeapUsedMb": 249,
+      "nodeEventLoopLagP99Ms": 157,
+      "postgresTransactionsPerSec": 344,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:47.398Z",
+      "systemCpuPct": 31.4,
+      "systemFreeMemMb": 3240,
+      "nodeCpuPctOfOneCore": 106.7,
+      "nodeRssMb": 554,
+      "nodeHeapUsedMb": 97,
+      "nodeEventLoopLagP99Ms": 141,
+      "postgresTransactionsPerSec": 200.5,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:49.406Z",
+      "systemCpuPct": 46,
+      "systemFreeMemMb": 3231,
+      "nodeCpuPctOfOneCore": 110.5,
+      "nodeRssMb": 558,
+      "nodeHeapUsedMb": 166,
+      "nodeEventLoopLagP99Ms": 122.2,
+      "postgresTransactionsPerSec": 429.8,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:51.417Z",
+      "systemCpuPct": 31.3,
+      "systemFreeMemMb": 3240,
+      "nodeCpuPctOfOneCore": 119.6,
+      "nodeRssMb": 560,
+      "nodeHeapUsedMb": 302,
+      "nodeEventLoopLagP99Ms": 286.5,
+      "postgresTransactionsPerSec": 277.5,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:53.431Z",
+      "systemCpuPct": 34.9,
+      "systemFreeMemMb": 3248,
+      "nodeCpuPctOfOneCore": 106.3,
+      "nodeRssMb": 556,
+      "nodeHeapUsedMb": 146,
+      "nodeEventLoopLagP99Ms": 124.1,
+      "postgresTransactionsPerSec": 375.4,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:55.439Z",
+      "systemCpuPct": 40.7,
+      "systemFreeMemMb": 3245,
+      "nodeCpuPctOfOneCore": 113.6,
+      "nodeRssMb": 556,
+      "nodeHeapUsedMb": 235,
+      "nodeEventLoopLagP99Ms": 222,
+      "postgresTransactionsPerSec": 370.5,
+      "postgresActiveConnections": 6,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:57.441Z",
+      "systemCpuPct": 31.9,
+      "systemFreeMemMb": 3224,
+      "nodeCpuPctOfOneCore": 134.2,
+      "nodeRssMb": 580,
+      "nodeHeapUsedMb": 100,
+      "nodeEventLoopLagP99Ms": 737.1,
+      "postgresTransactionsPerSec": 161.3,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:20:59.446Z",
+      "systemCpuPct": 49,
+      "systemFreeMemMb": 3226,
+      "nodeCpuPctOfOneCore": 108.4,
+      "nodeRssMb": 582,
+      "nodeHeapUsedMb": 159,
+      "nodeEventLoopLagP99Ms": 112,
+      "postgresTransactionsPerSec": 524.2,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:01.452Z",
+      "systemCpuPct": 30.5,
+      "systemFreeMemMb": 3223,
+      "nodeCpuPctOfOneCore": 112.9,
+      "nodeRssMb": 582,
+      "nodeHeapUsedMb": 286,
+      "nodeEventLoopLagP99Ms": 572.5,
+      "postgresTransactionsPerSec": 308.1,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:03.454Z",
+      "systemCpuPct": 28.3,
+      "systemFreeMemMb": 3222,
+      "nodeCpuPctOfOneCore": 102.2,
+      "nodeRssMb": 581,
+      "nodeHeapUsedMb": 119,
+      "nodeEventLoopLagP99Ms": 291,
+      "postgresTransactionsPerSec": 126.9,
+      "postgresActiveConnections": 6,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:05.455Z",
+      "systemCpuPct": 50.3,
+      "systemFreeMemMb": 3225,
+      "nodeCpuPctOfOneCore": 107.7,
+      "nodeRssMb": 579,
+      "nodeHeapUsedMb": 174,
+      "nodeEventLoopLagP99Ms": 129.6,
+      "postgresTransactionsPerSec": 516.7,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:07.471Z",
+      "systemCpuPct": 31.9,
+      "systemFreeMemMb": 3221,
+      "nodeCpuPctOfOneCore": 105.4,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 306,
+      "nodeEventLoopLagP99Ms": 185.2,
+      "postgresTransactionsPerSec": 245,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:09.484Z",
+      "systemCpuPct": 43.1,
+      "systemFreeMemMb": 3220,
+      "nodeCpuPctOfOneCore": 111.8,
+      "nodeRssMb": 580,
+      "nodeHeapUsedMb": 112,
+      "nodeEventLoopLagP99Ms": 127.8,
+      "postgresTransactionsPerSec": 456,
+      "postgresActiveConnections": 11,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:11.488Z",
+      "systemCpuPct": 39,
+      "systemFreeMemMb": 3218,
+      "nodeCpuPctOfOneCore": 107.5,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 216,
+      "nodeEventLoopLagP99Ms": 180.4,
+      "postgresTransactionsPerSec": 341.3,
+      "postgresActiveConnections": 5,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:13.496Z",
+      "systemCpuPct": 33.1,
+      "systemFreeMemMb": 3207,
+      "nodeCpuPctOfOneCore": 125.3,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 108,
+      "nodeEventLoopLagP99Ms": 389.5,
+      "postgresTransactionsPerSec": 177.3,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:15.503Z",
+      "systemCpuPct": 47.3,
+      "systemFreeMemMb": 3210,
+      "nodeCpuPctOfOneCore": 103.5,
+      "nodeRssMb": 581,
+      "nodeHeapUsedMb": 155,
+      "nodeEventLoopLagP99Ms": 89.4,
+      "postgresTransactionsPerSec": 496.8,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:17.504Z",
+      "systemCpuPct": 55.4,
+      "systemFreeMemMb": 3206,
+      "nodeCpuPctOfOneCore": 118.7,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 261,
+      "nodeEventLoopLagP99Ms": 252.8,
+      "postgresTransactionsPerSec": 299.4,
+      "postgresActiveConnections": 4,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:19.509Z",
+      "systemCpuPct": 50.6,
+      "systemFreeMemMb": 3205,
+      "nodeCpuPctOfOneCore": 116.9,
+      "nodeRssMb": 582,
+      "nodeHeapUsedMb": 118,
+      "nodeEventLoopLagP99Ms": 406.3,
+      "postgresTransactionsPerSec": 57.4,
+      "postgresActiveConnections": 4,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:21.516Z",
+      "systemCpuPct": 52.3,
+      "systemFreeMemMb": 3212,
+      "nodeCpuPctOfOneCore": 103.5,
+      "nodeRssMb": 584,
+      "nodeHeapUsedMb": 178,
+      "nodeEventLoopLagP99Ms": 115.2,
+      "postgresTransactionsPerSec": 519.2,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:23.520Z",
+      "systemCpuPct": 32.8,
+      "systemFreeMemMb": 3192,
+      "nodeCpuPctOfOneCore": 108.4,
+      "nodeRssMb": 584,
+      "nodeHeapUsedMb": 287,
+      "nodeEventLoopLagP99Ms": 136.4,
+      "postgresTransactionsPerSec": 310.4,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:25.535Z",
+      "systemCpuPct": 52.5,
+      "systemFreeMemMb": 3209,
+      "nodeCpuPctOfOneCore": 120.9,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 161,
+      "nodeEventLoopLagP99Ms": 486,
+      "postgresTransactionsPerSec": 150.4,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:27.541Z",
+      "systemCpuPct": 69.9,
+      "systemFreeMemMb": 3208,
+      "nodeCpuPctOfOneCore": 100.5,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 198,
+      "nodeEventLoopLagP99Ms": 81.3,
+      "postgresTransactionsPerSec": 490,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:29.549Z",
+      "systemCpuPct": 60.3,
+      "systemFreeMemMb": 3186,
+      "nodeCpuPctOfOneCore": 151.7,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 325,
+      "nodeEventLoopLagP99Ms": 616,
+      "postgresTransactionsPerSec": 327.7,
+      "postgresActiveConnections": 2,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:31.553Z",
+      "systemCpuPct": 51.4,
+      "systemFreeMemMb": 3186,
+      "nodeCpuPctOfOneCore": 83.4,
+      "nodeRssMb": 581,
+      "nodeHeapUsedMb": 154,
+      "nodeEventLoopLagP99Ms": 274.2,
+      "postgresTransactionsPerSec": 7,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:33.558Z",
+      "systemCpuPct": 69.8,
+      "systemFreeMemMb": 3187,
+      "nodeCpuPctOfOneCore": 102,
+      "nodeRssMb": 582,
+      "nodeHeapUsedMb": 208,
+      "nodeEventLoopLagP99Ms": 82.6,
+      "postgresTransactionsPerSec": 552.1,
+      "postgresActiveConnections": 5,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:35.571Z",
+      "systemCpuPct": 52,
+      "systemFreeMemMb": 3194,
+      "nodeCpuPctOfOneCore": 119.6,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 311,
+      "nodeEventLoopLagP99Ms": 346.6,
+      "postgresTransactionsPerSec": 290.1,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:37.586Z",
+      "systemCpuPct": 32.4,
+      "systemFreeMemMb": 3205,
+      "nodeCpuPctOfOneCore": 106.2,
+      "nodeRssMb": 582,
+      "nodeHeapUsedMb": 192,
+      "nodeEventLoopLagP99Ms": 358.6,
+      "postgresTransactionsPerSec": 193.1,
+      "postgresActiveConnections": 3,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:39.594Z",
+      "systemCpuPct": 67.2,
+      "systemFreeMemMb": 3198,
+      "nodeCpuPctOfOneCore": 93.4,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 245,
+      "nodeEventLoopLagP99Ms": 164.9,
+      "postgresTransactionsPerSec": 483.6,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:41.595Z",
+      "systemCpuPct": 25.2,
+      "systemFreeMemMb": 3154,
+      "nodeCpuPctOfOneCore": 114,
+      "nodeRssMb": 583,
+      "nodeHeapUsedMb": 126,
+      "nodeEventLoopLagP99Ms": 202.2,
+      "postgresTransactionsPerSec": 283.4,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    },
+    {
+      "at": "2026-10-05T16:21:43.602Z",
+      "systemCpuPct": 54.2,
+      "systemFreeMemMb": 3193,
+      "nodeCpuPctOfOneCore": 68.6,
+      "nodeRssMb": 582,
+      "nodeHeapUsedMb": 165,
+      "nodeEventLoopLagP99Ms": 35.2,
+      "postgresTransactionsPerSec": 29.4,
+      "postgresActiveConnections": 1,
+      "postgresConnections": 11
+    }
+  ]
+}

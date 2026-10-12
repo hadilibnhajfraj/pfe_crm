@@ -42,17 +42,30 @@ class InMemoryVectorStore extends IVectorStore {
     return { upserted: records.length };
   }
 
-  async query(collection, vector, { topK = 10, minScore = 0 } = {}) {
+  // `filter` (optionnel, Phase 2 — documents utilisateur) : prédicat sur les
+  // métadonnées, appliqué AVANT le calcul de similarité — un enregistrement
+  // exclu (ex. document d'un autre utilisateur) n'est jamais évalué, jamais
+  // renvoyé. Sans `filter`, comportement strictement inchangé.
+  async query(collection, vector, { topK = 10, minScore = 0, filter = null } = {}) {
     const store = this._collections.get(collection);
     if (!store) return [];
 
     const scored = [];
     for (const [id, record] of store.entries()) {
+      if (filter && !filter(record.metadata)) continue;
       const score = cosineSimilarity(vector, record.vector);
       if (score >= minScore) scored.push({ id, score, metadata: record.metadata });
     }
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, topK);
+  }
+
+  // Phase 2 — relecture ciblée de chunks connus (résumé d'un document
+  // utilisateur : quelques extraits représentatifs, jamais le document entier).
+  async getMany(collection, ids) {
+    const store = this._collections.get(collection);
+    if (!store) return [];
+    return ids.filter((id) => store.has(id)).map((id) => ({ id, metadata: store.get(id).metadata }));
   }
 
   async delete(collection, ids) {

@@ -11,6 +11,7 @@ const { CitationBuilder } = require("./citations");
 const { DocumentRegistry } = require("./documentRegistry");
 const { RagIngestionService, DEFAULT_COLLECTION } = require("./ingestionService");
 const { RagRetrievalService } = require("./retrievalService");
+const { UserDocumentService, USER_DOCUMENT_COLLECTION } = require("./userDocumentService");
 
 /**
  * Composition root for the RAG subsystem (mirrors manager/index.js and
@@ -62,8 +63,28 @@ function createRagPipeline({ allowedRoots, collection = DEFAULT_COLLECTION, disp
     minScore: config.minScore,
   });
 
+  // Phase 2 — documents téléversés dans le Copilot : MÊMES composants (chunker,
+  // embeddings, vector store, reranker, citations), collection dédiée. Voir
+  // userDocumentService.js pour le cloisonnement par propriétaire.
+  const userDocumentRetrievalService = new RagRetrievalService({
+    embeddingProvider,
+    vectorStore,
+    reranker,
+    citationBuilder,
+    collection: USER_DOCUMENT_COLLECTION,
+    topK: config.topK,
+    candidateK: config.candidateK,
+    minScore: config.minScore,
+  });
+  const userDocumentService = new UserDocumentService({
+    ingestionService,
+    retrievalService: userDocumentRetrievalService,
+    vectorStore,
+  });
+
   return {
     config,
+    userDocumentService,
     sourceGuard,
     loaderRegistry,
     scanner,

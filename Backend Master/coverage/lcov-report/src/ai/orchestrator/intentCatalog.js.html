@@ -1,0 +1,1543 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/ai/orchestrator/intentCatalog.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/ai/orchestrator</a> intentCatalog.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>2/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>2/2</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a>
+<a name='L437'></a><a href='#L437'>437</a>
+<a name='L438'></a><a href='#L438'>438</a>
+<a name='L439'></a><a href='#L439'>439</a>
+<a name='L440'></a><a href='#L440'>440</a>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a>
+<a name='L444'></a><a href='#L444'>444</a>
+<a name='L445'></a><a href='#L445'>445</a>
+<a name='L446'></a><a href='#L446'>446</a>
+<a name='L447'></a><a href='#L447'>447</a>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a>
+<a name='L450'></a><a href='#L450'>450</a>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a>
+<a name='L470'></a><a href='#L470'>470</a>
+<a name='L471'></a><a href='#L471'>471</a>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a>
+<a name='L475'></a><a href='#L475'>475</a>
+<a name='L476'></a><a href='#L476'>476</a>
+<a name='L477'></a><a href='#L477'>477</a>
+<a name='L478'></a><a href='#L478'>478</a>
+<a name='L479'></a><a href='#L479'>479</a>
+<a name='L480'></a><a href='#L480'>480</a>
+<a name='L481'></a><a href='#L481'>481</a>
+<a name='L482'></a><a href='#L482'>482</a>
+<a name='L483'></a><a href='#L483'>483</a>
+<a name='L484'></a><a href='#L484'>484</a>
+<a name='L485'></a><a href='#L485'>485</a>
+<a name='L486'></a><a href='#L486'>486</a>
+<a name='L487'></a><a href='#L487'>487</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
+&nbsp;
+// Data, not code (SOLID-OCP): the default mapping from "what the user
+// probably wants" to "which MCP tool module (if any) and whether RAG
+// grounding applies". One entry per Tool module already built in mcp/tools/
+// (see Backend Master/src/ai/README.md, "69 Tools sur 10 modules") plus two
+// module-less intents (documentation questions, and an unrecognized-intent
+// fallback). Callers may swap this catalog entirely (IntentDetector accepts
+// any catalog shaped like this) — this default is CRM-specific, the
+// mechanism (IntentDetector + IRouter) is not.
+//
+// `moduleKey` must match a key of `byModule` in ../mcp/tools/index.js
+// exactly — that's the join key ToolRouter uses to restrict candidate tools
+// to the right module (see orchestrator/pipeline.js::buildToolModuleIndex).
+//
+// `requiredRoles`/`allowedEmails` (optional, omitted = open to any
+// authenticated actor) are the coarse, EARLY permission check requested by
+// the workflow spec ("vérifier les permissions" before building context or
+// selecting Tools — see AIManager.handleMessage) — same
+// utils/authorization.js::isAuthorized predicate already used by
+// PermissionManager (Tools) and BaseAgent (Agents), so this is a third,
+// consistent use of the ONE existing authorization mechanism, never a
+// parallel one. Deliberately left unset on every entry below: this kernel's
+// own rule (see mcp/permissionManager.js) is that the real authorization
+// boundary lives at the Tool/Agent level, not a coarser intent-level guess —
+// this field exists so a caller CAN restrict an intent (e.g. a future
+// "administration" intent) without inventing a new mechanism, not so this
+// catalog invents restrictions it has no CRM route to verify against.
+const DEFAULT_INTENT_CATALOG = [
+  {
+    // DÉLIBÉRÉMENT LA PREMIÈRE ENTRÉE DU CATALOGUE — voir
+    // AI-Business-Copilot/10_INTENT_ROUTING_FIX.md, étape 3 : "une question
+    // procédurale doit toujours être traitée comme une demande d'aide".
+    // `LexicalIntentRouter` (langchain/router/lexicalIntentRouter.js)
+    // départage une égalité de score par ordre d'enregistrement dans ce
+    // tableau — un message comme "Comment créer un projet ?" obtient
+    // TOUJOURS 1 point ici ("comment") ET 1 point pour `projects`
+    // ("projet") : une vraie égalité. Garder cette entrée en tête est ce
+    // qui fait gagner l'aide procédurale sur l'intention métier — jamais un
+    // hasard d'ordre de tableau à corriger, une règle explicite que
+    // `test/ai.intentRouting.priority.test.js` verrouille : si un futur
+    // changement déplace cette entrée plus bas dans le tableau, ce test
+    // casse immédiatement au lieu de régresser silencieusement. Voir aussi
+    // `orchestrator/intentConfidence.js` (palier de confiance 0.95 "PRIORITÉ
+    // PROCÉDURALE DÉLIBÉRÉE", qui documente et s'appuie sur ce même fait).
+    key: "documentation_question",
+    moduleKey: null,
+    requiresRag: true,
+    requiresTools: false,
+    keywords: ["comment", "pourquoi", "documentation", "guide", "expliquer", "fonctionne", "architecture", "aide", "procedure", "procédure"],
+    description: "Question sur le fonctionnement du CRM, une procédure, ou la documentation.",
+  },
+  {
+    key: "users",
+    moduleKey: "users",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["utilisateur", "utilisateurs", "compte", "comptes", "role", "rôle", "profil", "desactiver", "désactiver", "activer"],
+    description: "Gestion des comptes utilisateurs : liste, rôle, activation/désactivation, profil.",
+  },
+  {
+    key: "projects",
+    moduleKey: "projects",
+    // Une question projet ("quels projets sont en retard ?") ne trouve pas
+    // toujours sa réponse dans le seul module `projects` (list/move-stage/
+    // assign-owner) — les indicateurs agrégés (retard, avancement) vivent
+    // dans le module `dashboard`. `relatedModules` élargit le pool de Tools
+    // candidats du ToolRouter SANS changer `moduleKey` (qui reste la classe
+    // "propriétaire" de cette intention) — voir orchestrator/toolRouter.js
+    // et TOOL_ROUTER.md pour l'exemple complet (Tool Router).
+    relatedModules: ["dashboard"],
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["projet", "projets", "etape", "étape", "proprietaire", "propriétaire", "owner", "retard", "retards"],
+    description: "Gestion des projets : liste, changement d'étape, propriétaire, et indicateurs associés (retard, avancement).",
+  },
+  {
+    key: "pipeline",
+    moduleKey: "pipeline",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["pipeline", "opportunite", "opportunité", "stage", "etape", "étape"],
+    description: "Gestion des étapes du pipeline commercial.",
+  },
+  {
+    // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md — mission
+    // "CORRIGER LE COPILOT POUR LE RÔLE COMMERCIAL" : "relance" (déjà présent)
+    // ne couvre littéralement QUE le nom singulier — "Quels clients dois-je
+    // relancer ?"/"...relancer cette semaine ?" (verbe) et "Montre-moi mes
+    // relances prioritaires"/"...automatiser les relances clients..."
+    // (pluriel) ne matchaient aucun mot-clé (tokenize() ne fait aucune
+    // racinisation) et retombaient sur `general_chat` (RAG documentaire),
+    // confirmé en exécutant le vrai routeur. "relancer"/"relances"/
+    // "rappeler" ajoutés — vérifiés SANS collision contre le corpus de
+    // validation entier : "relancer" et "rappeler" n'apparaissent dans
+    // AUCUN autre scénario existant ; "relances" apparaît une fois dans un
+    // scénario `automation` ("...automatiser les relances clients..."), qui
+    // reste net gagnant sur SES PROPRES mots-clés forts (automatiser +
+    // séquence + étapes = 3 points, contre 1 seul point ici) — jamais une
+    // coïncidence de score. "rappel"/"rappels"/"rappelle" (mots-clés de
+    // `reminders`) volontairement NON touchés : "rappeler" (verbe) en est
+    // lexicalement distinct, aucune racinisation n'existe dans ce routeur.
+    key: "commercial_contacts",
+    moduleKey: "commercialContacts",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["contact", "contacts", "commercial", "kpi", "relance", "relancer", "relances", "rappeler"],
+    description: "Contacts commerciaux et leurs indicateurs (KPI), y compris les relances/rappels clients.",
+    // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md — mission
+    // "CORRIGER LES ACTIONS COMMERCIALES DEPUIS LA LISTE DES CONTACTS" :
+    // même mécanisme exact que `meetings`/`reminders` (voir leurs
+    // commentaires respectifs) — CommercialAgent porte désormais, lui aussi,
+    // un vrai cycle PendingAction multi-tours (propose une relance/une
+    // affectation -&gt; attend "oui"/"confirme"/"non"/"annule"). Sans ce
+    // marqueur, un simple "confirme" au tour suivant (mot-clé RÉEL de
+    // l'intention `automation`, sans concurrent) se faisait reclasser vers
+    // `automation_agent` — refusé pour un rôle "commercial" — au lieu de
+    // rester sur `commercial_agent`, qui a la proposition réellement en
+    // attente (voir conversationContinuityResolver.js, `looksLikeBareConfirmation`).
+    conversational: true,
+  },
+  {
+    key: "maintenance",
+    moduleKey: "maintenance",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["maintenance", "panne", "technicien", "intervention", "reparation", "réparation"],
+    description: "Demandes de maintenance : création, suivi, affectation d'un technicien.",
+  },
+  {
+    key: "notifications",
+    moduleKey: "notifications",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["notification", "notifications", "alerte", "lu", "lue"],
+    description: "Notifications de l'utilisateur : liste, marquage lu, suppression.",
+  },
+  {
+    key: "industrial",
+    moduleKey: "industrial",
+    requiresRag: false,
+    requiresTools: true,
+    // Mission "CORRIGER DÉFINITIVEMENT LES REQUÊTES FICHES PRO PROMESH / PRO
+    // PROBAR" — "probar"/"melange"/"mélange" ajoutés : ce sont les 3 VRAIES
+    // valeurs de l'ENUM IndustrialRecord.module (voir
+    // src/models/IndustrialRecord.js), jamais inventées. Sans eux, "donne-moi
+    // les fiches PROBAR" (aucun mot-clé industrial ne matchait "fiches" au
+    // pluriel, ni "PROBAR") retombait sur `general_chat`. "fiches" (pluriel)
+    // a été VOLONTAIREMENT écarté d'ici (essayé puis retiré) : il collisionne
+    // avec `data_quality` (garde son propre mot-clé "qualité"/"doublon(s)"/
+    // "incohérence(s)" sur des messages qui mentionnent aussi "fiches" —
+    // "Quelle est la qualité globale de mes fiches ?" par ex., voir
+    // test/fixtures/copilotValidationScenarios.js scénarios dq-05/dq-10/dq-11/
+    // dq-13) — régression détectée et corrigée en retirant "fiches" plutôt
+    // qu'en la gardant. "maintenance" est DÉLIBÉRÉMENT absent d'ici : mot-clé
+    // RÉEL et distinct de l'intention `maintenance` (demandes CRM/
+    // techniciens, plus haut dans ce fichier) — l'ajouter ici créerait une
+    // collision avec CETTE intention. Voir industrialPromeshOverride.js pour
+    // la garde qui empêche "fiche"(singulier)+"promesh" de retomber sur
+    // `industrial` au lieu de `por_promesh` sur une VRAIE égalité de score.
+    keywords: ["industriel", "industrielle", "production", "fiche", "enregistrement", "probar", "melange", "mélange"],
+    description: "Fiches industrielles : création, consultation, mise à jour.",
+  },
+  {
+    key: "por_promesh",
+    moduleKey: "porPromesh",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["por", "promesh", "validation", "operateur", "opérateur"],
+    description: "Dossiers POR PROMESH : création, validation, statistiques.",
+  },
+  {
+    // "taux"/"reussite"/"réussite" ajoutés (AI-Business-Copilot/14_PROJECT_ANALYSIS_ROUTING.md,
+    // étape 9 — "Quel est mon taux de réussite ?" retombait sur
+    // `general_chat`, 0 mot-clé) : vérifié SANS régression contre le corpus
+    // entier — "taux" apparaît aussi dans des messages `commercial_contacts`
+    // (ex. "Quel est mon taux de validation sur mes contacts commerciaux ?"),
+    // mais `commercial_contacts` est enregistrée AVANT `dashboard` dans ce
+    // tableau et gagne déjà sur son propre mot-clé "contacts" — une égalité
+    // ajoutée par "taux" ne change jamais ce gagnant.
+    key: "dashboard",
+    moduleKey: "dashboard",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["dashboard", "tableau", "bord", "kpi", "statistique", "statistiques", "stats", "taux", "reussite", "réussite"],
+    description: "Tableaux de bord et indicateurs clés (KPI).",
+  },
+  {
+    key: "hr",
+    moduleKey: "hr",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["rh", "conge", "congé", "demande", "absence"],
+    description: "Demandes RH : congés, absences, suivi.",
+  },
+  {
+    key: "reporting",
+    moduleKey: "dashboard",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["rapport", "rapports", "synthese", "synthèse", "bilan", "resume", "résumé", "reporting"],
+    description: "Génération d'un rapport ou d'une synthèse à partir des indicateurs disponibles.",
+  },
+  {
+    // AI-Business-Copilot/11_MEETING_AGENT_FIX.md — intention réelle
+    // manquante, découverte en diagnostiquant "Programmer une réunion" qui
+    // retombait sur `general_chat` (0 mot-clé) puis se faisait absorber à
+    // tort par le contexte d'écran Dashboard (voir aiCopilotBridge.service.js,
+    // la garde "intention &gt; contexte" — conçue pour un message FAIBLE mais
+    // pertinent au contexte, pas pour une demande hors-sujet comme celle-ci).
+    // `moduleKey: "googleCalendar"` — le SEUL module Tool déjà réel pour ce
+    // domaine (`mcp/tools/googleCalendar/`, 4 Tools déjà construits pour
+    // AutomationAgent : `create_calendar_event`/`update_calendar_event`/
+    // `delete_calendar_event`/`get_calendar_status`) — aucun Tool créé pour
+    // cette passe, seulement un Agent dédié qui les utilise en premier
+    // rôle plutôt qu'en second rôle d'automatisation (voir meetingAgent.js).
+    // Enregistrée AVANT `automation` : "planifier" est un mot-clé partagé
+    // ("Planifier une réunion" doit aller vers ce module dédié aux
+    // réunions, pas vers l'automatisation générique multi-étapes) — un
+    // gagnant par ORDRE explicite, même discipline que `documentation_question`
+    // en tête de catalogue.
+    key: "meetings",
+    moduleKey: "googleCalendar",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["reunion", "réunion", "rendez", "rdv", "meeting"],
+    description: "Réunions et rendez-vous : création, modification, annulation sur le calendrier Google de l'utilisateur.",
+    // AI-Business-Copilot/26_MEETING_AGENT_CONTINUITY.md — reproduit en
+    // direct : au tour 2 d'une collecte d'informations pour une réunion,
+    // un message comme "...pour le projet cbi10 le 17/08/2026 à 12h"
+    // contient le mot "projet" et se fait reclasser vers `projects` —
+    // IntentDetector reclasse CHAQUE message indépendamment, sans savoir
+    // qu'une collecte meeting_agent est en cours. `conversational: true`
+    // marque les intentions qui portent un VRAI workflow multi-tours (une
+    // suite de questions/réponses avant une action réelle) — consommé
+    // uniquement par `ConversationContinuityResolver` (voir ce fichier),
+    // jamais par IntentDetector/AgentRouter eux-mêmes (comportement
+    // inchangé pour toute intention qui ne porte pas ce marqueur).
+    conversational: true,
+  },
+  {
+    // AI-Business-Copilot/16_REMINDER_ROUTING.md — même famille de bug que
+    // `meetings` (11_MEETING_AGENT_FIX.md) : "Créer un rappel" n'avait
+    // AUCUN mot-clé de catalogue (0 point), retombait sur `general_chat`,
+    // puis se faisait absorber par le contexte d'écran Dashboard →
+    // `dashboard`/`kpi_agent`, qui répond TOUJOURS par la même analyse KPI
+    // déterministe quel que soit le message (voir kpiAgent.js::_run — ne
+    // lit jamais vraiment `message`, sauf pour LEGACY_MARKERS). Recherché
+    // AVANT toute implémentation (voir le rapport) : ce CRM n'a PAS de
+    // rappel autonome/personnel — `ProjectReminder` exige un `projectId` ET
+    // un `actionId` (jamais un enregistrement indépendant, par conception
+    // — voir le commentaire de `createProjectActionTool.js`). Le seul
+    // mécanisme RÉEL, déjà construit, déjà testé, capable d'un rappel SANS
+    // projet (date + heure + sujet, rien d'autre requis) est le calendrier
+    // Google — les 4 MÊMES Tools que `meetings`, le MÊME `meeting_agent`
+    // (voir `agents/manifest.js` — `intentNames: ["meetings", "reminders"]`,
+    // jamais un second Agent). Enregistrée APRÈS `commercial_contacts` :
+    // "Quels contacts commerciaux nécessitent un rappel ?" (corpus, `com-40`)
+    // doit rester `commercial_contacts` sur une égalité avec "contacts".
+    key: "reminders",
+    moduleKey: "googleCalendar",
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["rappel", "rappels", "rappelle"],
+    description: "Rappels personnels : création, modification, annulation — même mécanisme que les réunions (calendrier Google), sans projet requis.",
+    // Même workflow multi-tours que "meetings" (même Agent, mêmes 4 Tools
+    // googleCalendar — voir meetingAgent.js) — voir le commentaire sur
+    // "meetings" ci-dessus pour la justification complète.
+    conversational: true,
+  },
+  {
+    // moduleKey: null on purpose — an automation may need a Tool from ANY
+    // module (see ReportingAgent vs AutomationAgent in
+    // Backend Master/src/ai/README.md). ToolRouter already treats a null
+    // moduleKey as "search across every module" (no filtering, only the
+    // lexical ranking pass) — see toolRouter.js — so this is a legitimate,
+    // intentional exception to the "moduleKey implies a single module"
+    // pattern every other requiresTools:true entry follows here.
+    key: "automation",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    // "confirme"/"confirmer"/"annule"/"annuler" ajoutés pour le cycle
+    // proposer → confirmer/annuler d'AutomationAgent (voir
+    // AUTOMATION_WORKFLOWS.md) : ce sont EXACTEMENT les mots que le Copilot
+    // demande lui-même à l'utilisateur de répondre
+    // (automationAnswerBuilder.js::buildProposalAnswer), donc garantis de
+    // router vers cet Agent au tour suivant — jamais "oui"/"non", trop
+    // génériques pour un mot-clé global (auraient capturé une immense partie
+    // de la conversation courante, sans rapport avec une automatisation).
+    keywords: [
+      "automatiser", "automatisation", "enchainer", "enchaîner", "sequence", "séquence", "workflow", "planifier", "etapes", "étapes",
+      "confirme", "confirmer", "annule", "annuler",
+    ],
+    description: "Enchaînement automatisé de plusieurs actions à travers différents modules — chaque action est PROPOSÉE puis exécutée seulement après confirmation explicite (« confirme »/« annule »).",
+  },
+  {
+    // Comme "automation" : traverse délibérément plusieurs modules (KPI,
+    // projets, ventes, pipeline, interventions, ...), moduleKey: null.
+    // Mots-clés volontairement EXCLUSIFS à cette intention ("analyse(r)",
+    // "performance(s)", "recommandation(s)") — jamais "risque"/"cause", trop
+    // génériques et déjà utilisés comme marqueurs LOCAUX ailleurs (ex.
+    // ATTENTION_MARKERS de ProjectAgent) : les ajouter ici casserait le
+    // routage déjà validé de messages existants (voir
+    // BUSINESS_ANALYST.md, section "Sécurité des mots-clés"). Placée en
+    // AVANT-DERNIÈRE position du catalogue (juste avant "general_chat") :
+    // en cas d'égalité de score avec une intention plus ancienne
+    // (ex. "performance" apparaît aussi dans une question purement
+    // commerciale), c'est TOUJOURS l'intention la plus spécifique déjà
+    // enregistrée qui gagne — cette intention ne l'emporte que sur un
+    // signal net, jamais par coïncidence.
+    key: "business_analysis",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["analyse", "analyser", "analytique", "performance", "performances", "recommandation", "recommandations"],
+    description: "Analyse transversale des données CRM (KPI, projets, ventes, pipeline, devis, activités, interventions, performance) avec causes, risques et recommandations.",
+  },
+  {
+    // Distinct de "business_analysis" : celle-ci EXPLIQUE des données déjà
+    // choisies par l'utilisateur ("analyse les projets"), celle-ci CONSEILLE
+    // sans qu'un domaine précis soit nommé ("conseille-moi", "priorise mes
+    // tâches") — voir RECOMMENDATION_AGENT.md, "Recommendation Agent vs
+    // Business Analyst Agent". Mots-clés à nouveau volontairement EXCLUSIFS
+    // ("conseiller/conseille/conseils", "prioriser/priorise/priorises",
+    // "anomalie(s)") — jamais "priorité"/"risque"/"important", trop
+    // génériques et déjà utilisés comme marqueurs LOCAUX ailleurs (les
+    // ATTENTION_MARKERS de ProjectAgent incluent "priorité"/"risque"), donc
+    // déjà présents dans des messages "projects" existants du corpus de
+    // validation — les ajouter ICI, au niveau du catalogue, casserait leur
+    // routage déjà validé. Placée juste avant "general_chat", même
+    // discipline de sécurité des mots-clés que "business_analysis".
+    key: "recommendation",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["conseiller", "conseille", "conseils", "prioriser", "priorise", "priorises", "anomalie", "anomalies"],
+    description: "Conseil proactif : priorités, tâches importantes, clients à relancer, projets critiques, risques, anomalies et actions recommandées — chaque recommandation justifiée.",
+  },
+  {
+    // Distinct de "recommendation" (qui conseille sur l'URGENCE métier) et
+    // de "business_analysis" (qui explique un domaine choisi) : celle-ci
+    // audite la FIABILITÉ des données elles-mêmes — doublons, champs
+    // manquants, emails/téléphones invalides, documents manquants,
+    // incohérences, erreurs de workflow, données orphelines — voir
+    // DATA_QUALITY_AGENT.md. Mots-clés à nouveau EXCLUSIFS ("doublon(s)",
+    // "orphelin(e/s)", "incohérence(s)", "qualité") — jamais "manquant"/
+    // "invalide", trop génériques (apparaîtraient dans des messages métier
+    // sans rapport, ex. "champ obligatoire manquant" dans un tout autre
+    // contexte). Placée juste avant "general_chat", même discipline de
+    // sécurité des mots-clés que "business_analysis"/"recommendation".
+    key: "data_quality",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["doublon", "doublons", "orphelin", "orpheline", "orphelins", "orphelines", "incohérence", "incohérences", "qualité"],
+    description: "Audit de la fiabilité des données CRM : doublons, informations manquantes, emails/téléphones invalides, documents manquants, incohérences, erreurs de workflow, données orphelines — avec un score qualité et des corrections proposées, jamais appliquées automatiquement.",
+  },
+  {
+    // Recherches complexes multi-critères (date, seuil de montant, absence
+    // de correspondance) traversant plusieurs modules — voir
+    // ADVANCED_SEARCH_AGENT.md. Mots-clés EXCLUSIFS de vocabulaire de
+    // recherche ("recherche(s)", "rechercher", "trouve(r)", "cherche(r)",
+    // "filtrer", "filtre") — jamais "projet"/"client"/"montant" etc., déjà
+    // pris par d'autres intentions. Placée juste avant "general_chat", même
+    // discipline que "business_analysis"/"recommendation"/"data_quality" —
+    // enregistrée EN DERNIER : en cas d'égalité de score avec une intention
+    // existante, elle perd toujours (jamais un détournement accidentel d'un
+    // scénario déjà couvert ailleurs).
+    key: "advanced_search",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: ["recherche", "recherches", "rechercher", "trouve", "trouver", "cherche", "chercher", "filtrer", "filtre"],
+    description: "Recherches complexes multi-critères à travers plusieurs modules du CRM (période, seuil de montant, absence de correspondance), en combinant plusieurs AI Tools.",
+  },
+  {
+    // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md — le Copilot doit
+    // pouvoir répondre honnêtement à "qu'est-ce que je peux faire ?"/"pourquoi
+    // c'est refusé ?" en LISANT les mécanismes RBAC déjà en place (jamais un
+    // second système — voir reasoning/capabilityMatrixService.js, qui réutilise
+    // AgentRegistry.findHandler()/isAuthorized() tels quels). `moduleKey: null`,
+    // `requiresTools: false` : cet Agent n'appelle JAMAIS un Tool MCP — il
+    // n'interroge que des registres déjà en mémoire (catalogue, agents),
+    // jamais une donnée métier.
+    //
+    // Enregistrée EN TOUTE DERNIÈRE position avant `general_chat` — même
+    // discipline que business_analysis/recommendation/data_quality/
+    // advanced_search (voir leurs commentaires respectifs) : sur une égalité
+    // de score avec N'IMPORTE QUELLE intention plus ancienne du catalogue,
+    // `LexicalIntentRouter` garde TOUJOURS le premier gagnant trouvé (`score &gt;
+    // bestScore`, jamais `&gt;=` — voir langchain/router/lexicalIntentRouter.js) —
+    // cette intention ne l'emporte donc que sur un signal NET, jamais par
+    // coïncidence, et ne peut RÉGRESSER aucun scénario déjà validé
+    // (test/fixtures/copilotValidationScenarios.js) : vérifié un par un contre
+    // chaque occurrence existante de ces mots-clés dans le corpus avant ajout
+    // (ex. "Refuse la demande de congé..." reste `hr` : 2 mots-clés hr contre 1
+    // ici, gagne net ; "...techniciens... disponibles" reste `maintenance` :
+    // égalité 1-1, `maintenance` déjà enregistrée avant, gagne le départage).
+    // "disponible"/"disponibles" délibérément ABSENTS malgré leur pertinence
+    // apparente ("Quels agents sont disponibles ?") : reproduit en exécutant
+    // le corpus existant — "Bonsoir, es-tu disponible pour discuter ?"/"...es-tu
+    // toujours disponible à cette heure ?" (gen-04/gen-21, `general_chat`
+    // légitime, aucun autre mot-clé present) auraient basculé à tort vers
+    // cette intention : "disponible" est un mot de conversation courante, pas
+    // un signal métier exclusif — même discipline que "priorité"/"risque"
+    // déjà exclus ailleurs dans ce fichier pour la même raison.
+    key: "capability_audit",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: false,
+    keywords: [
+      "capacités", "capacité",
+      "permissions", "permission",
+      "autorisations", "autorisation", "autorisé", "autorisée", "autorisés", "autorisées",
+      "accessible", "accessibles",
+      "intentions", "intention",
+      "refusé", "refuse", "refusée", "refusee", "refusés", "refuses", "refusées", "refusees",
+    ],
+    description: "Ce que votre compte permet réellement de faire dans le Copilot : agents, intentions et modules accessibles à votre rôle, et pourquoi une action précise serait refusée.",
+  },
+  // Phase 2 — assistant documentaire : questions sur les documents que
+  // l'utilisateur a lui-même téléversés dans le Copilot (DocumentAgent).
+  // `keywords: []` DÉLIBÉRÉMENT : jamais atteinte par la détection lexicale
+  // (aucun des 577 scénarios validés ne peut basculer ici) — uniquement par
+  // SemanticIntentResolver.resolveDocumentFocus(), quand un document est
+  // réellement joint à la conversation.
+  {
+    // Ingénieurs du CRM (table `engineers`) : liste des ingénieurs référencés,
+    // ou ingénieur d'un projet précis. Aucun mot-clé : choisie par le parseur
+    // déterministe (analytics/analyticsQueryParser.js) ou par le repli
+    // sémantique LLM grâce à cette description — jamais un comptage/classement
+    // (→ crm_analytics).
+    key: "engineers",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Ingénieurs du CRM : liste des ingénieurs référencés (responsables techniques des projets), ou ingénieur affecté à un projet précis.",
+  },
+  {
+    // Analytique CRM (PROBAR ASSISTANT) — comptages, classements et
+    // répartitions sur les DONNÉES du CRM (« quel ingénieur a le plus de
+    // projets ? », « combien de relances ce mois-ci ? », FR/EN/RU). Aucun
+    // mot-clé : choisie uniquement par AnalyticsQueryParser (voir
+    // aiManager.js), jamais par la détection lexicale ; les chiffres viennent
+    // toujours d'un Tool statistique, jamais de la documentation.
+    key: "crm_analytics",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Statistiques du CRM : nombre, classement et répartition des projets (par ingénieur, commercial, statut, client, famille, mois), des contacts et relances, et des fiches industrielles (par machine, module, opérateur).",
+  },
+  {
+    // Phase 3 — demande composée (« trouve mes projets … et prépare une
+    // relance pour chacun ») : lecture → analyse → écritures préparées puis
+    // exécutées après « confirme ». Aucun mot-clé : choisie uniquement par
+    // TaskPlanner.detect() (voir aiManager.js), jamais par la détection
+    // lexicale ; aucun parcours existant n'est donc détourné.
+    key: "multi_step_task",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Tâche en plusieurs étapes sur vos projets ou contacts (rechercher, analyser, puis préparer une action pour chacun) — exécutée seulement après votre confirmation.",
+  },
+  {
+    key: "document_question",
+    moduleKey: null,
+    requiresRag: true,
+    requiresTools: false,
+    keywords: [],
+    description: "Questions sur un document que vous avez joint au Copilot : résumé, recherche d'informations, problèmes mentionnés, comparaison avec le CRM.",
+  },
+  {
+    key: "general_chat",
+    moduleKey: null,
+    requiresRag: true,
+    requiresTools: false,
+    keywords: [],
+    description: "Message sans intention métier précise identifiée — repli par défaut.",
+  },
+];
+&nbsp;
+module.exports = { DEFAULT_INTENT_CATALOG };
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-10-03T21:53:08.117Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

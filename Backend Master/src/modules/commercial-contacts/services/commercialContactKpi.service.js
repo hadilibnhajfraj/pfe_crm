@@ -530,9 +530,19 @@ async function getPersonalKPISummary(userId, commercialName = null) {
 // (nom/prenom/nomSociete), volontairement réduit (pas telephone/localisation/
 // sujetDiscussion/matriculeFiscale) : ce paramètre sert à retrouver UN
 // contact par son nom, pas une recherche libre multi-champs.
-async function listCommercialContacts(userId, { status, search, limit = 20, offset = 0 } = {}) {
+// `scope` (3ᵉ argument) :
+//   "created"  (défaut) — contacts créés par l'utilisateur ("createdBy") ;
+//   "assigned" — périmètre du rôle « commercial » (terrain), IDENTIQUE à
+//                contactAccess.policy.js::contactListScope : contacts qu'il a
+//                créés, qui lui sont affectés ("commercialId") ou qu'il suit
+//                par une relance (commercial_contact_relances."commercialId").
+async function listCommercialContacts(userId, { status, search, limit = 20, offset = 0 } = {}, { scope = "created" } = {}) {
   const whereParts = [];
-  if (userId) whereParts.push(`"createdBy" = :userId`);
+  if (userId && scope === "assigned") {
+    whereParts.push(
+      `("createdBy" = :userId OR "commercialId" = :userId OR id IN (SELECT r."commercialContactId" FROM commercial_contact_relances r WHERE r."commercialId" = :userId))`
+    );
+  } else if (userId) whereParts.push(`"createdBy" = :userId`);
   if (status) whereParts.push(`statut = :status`);
   // Le nom capturé par commercialActionSlotExtractor.js est souvent le nom
   // d'affichage COMPLET ("Pépinière awled el HAJ" = prenom+nom concaténés,

@@ -38,6 +38,10 @@ class PendingActionStore {
     this._now = now;
   }
 
+  get ttlMs() {
+    return this._ttlMs;
+  }
+
   propose(conversationId, action) {
     if (!conversationId) return action;
     this._byConversation.set(conversationId, { ...action, proposedAt: this._now() });

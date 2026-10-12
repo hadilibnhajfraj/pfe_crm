@@ -11,9 +11,18 @@ function authRequired(req, res, next) {
     }
 
     const decoded = verifyAccessToken(token);
-    req.user = decoded; // { sub, email, role }
+    req.user = decoded; // { sub, email, role, rv }
     return next();
   } catch (e) {
+    // Token antérieur au vocabulaire de rôles v2 (constants/roles.js) : même
+    // 401 que tout token invalide (le client Flutter vide alors sa session),
+    // avec un code explicite pour le diagnostic.
+    if (e.name === "OutdatedRoleVersionError") {
+      return res.status(401).json({
+        message: "Session expirée : veuillez vous reconnecter",
+        code: "ROLE_VERSION_OUTDATED",
+      });
+    }
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 }

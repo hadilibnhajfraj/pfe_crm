@@ -3,6 +3,8 @@ const express = require("express");
 const { Op, fn, col, where, literal } = require("sequelize");
 const { User, Project, UserProject, ProjectComment, UserProfile, PipelineStage } = require("../models/associations");
 const { authRequired } = require("../middleware/auth.middleware");
+const { requireRole } = require("../middleware/requireRole");
+const { ROLES, ADMIN_TIER_ROLES } = require("../constants/roles");
 const { sequelize } = require("../db");
 const path = require("path");
 const fs = require("fs");
@@ -24,6 +26,8 @@ const { PRODUCT_FAMILIES, DIAMETERS_BY_FAMILY } = require("../constants/productF
 const router = express.Router();
 const ADMIN_ROLES = ["admin", "superadmin", "superadmin2"];
 const uploads = require("../middleware/uploads");
+// Contrôle d'accès par périmètre (propriétaire, partage, administrateur) — voir la politique.
+const access = require("../modules/projects/policies/projectAccess.policy");
 
 // ---------------- Helpers ----------------
 function reqStr(v) {
@@ -384,7 +388,7 @@ function adminOnly(req, res, next) {
   return res.status(403).json({ message: "Forbidden" });
 }
 // routes/projects.routes.js (or equivalent file where routes are defined)
-router.get("/applicateur", async (req, res) => {
+router.get("/applicateur", authRequired, async (req, res) => {
   try {
     const { page = 1, limit = 10, q } = req.query;
 
@@ -395,6 +399,7 @@ router.get("/applicateur", async (req, res) => {
     const where = {
       projectModele: "applicateur",
     };
+    where[Op.and] = [await access.projectScopeWhere(req.user)];
 
     if (q) {
       where[Op.or] = [
@@ -423,9 +428,9 @@ router.get("/applicateur", async (req, res) => {
   }
 });
 
-router.get("/revendeur", async (req, res) => {
+router.get("/revendeur", authRequired, async (req, res) => {
   const data = await Project.findAll({
-    where: { projectModele: "revendeur" },
+    where: { projectModele: "revendeur", [Op.and]: [await access.projectScopeWhere(req.user)] },
   });
 
   res.json(data);
@@ -433,6 +438,7 @@ router.get("/revendeur", async (req, res) => {
 router.get("/calendar", authRequired, async (req, res) => {
   try {
     const projects = await Project.findAll({
+      where: await access.projectScopeWhere(req.user),
       attributes: ['id', 'nomProjet', 'dateDemarrage', 'statut', 'validationStatut'],
     });
 
@@ -628,6 +634,7 @@ router.get("/kpi/validation-by-location", authRequired, async (req, res) => {
     `);
 
     const rows = await Project.findAll({
+      where: await access.projectScopeWhere(req.user),
       attributes: [
         [latExpr, "lat"],
         [lngExpr, "lng"],
@@ -890,6 +897,7 @@ router.get("/kpi/projects-by-status-and-date", authRequired, async (req, res) =>
   try {
     // Récupérer les projets groupés par validationStatut et dateDemarrage
     const rows = await Project.findAll({
+      where: await access.projectScopeWhere(req.user),
       attributes: [
         "validationStatut", // Le statut de validation
         "dateDemarrage", // La date de démarrage
@@ -1338,6 +1346,7 @@ router.get("/projectsusers", authRequired, async (req, res) => {
   try {
     const { q } = req.query;
     const where = {};
+    where[Op.and] = [await access.projectScopeWhere(req.user)];
 
     if (typeof q === "string" && q.trim()) {
       const s = q.trim();
@@ -1578,7 +1587,14 @@ router.get("/admin/user/:userId/projects", authRequired, adminOnly, async (req, 
    ============================================================ */
 
 // ---------------- CREATE ----------------
-router.post("/", authRequired, async (req, res) => {
+// Règle C (vocabulaire v2, constants/roles.js) : un projet est créé par un
+// commercial (terrain) ; les administrateurs conservent ce droit. Le
+// créateur devient ownerId (commercial responsable) et reçoit le lien
+// user_projects "owner" ci-dessous — mécanisme existant, inchangé.
+// commercial_sedentaire, accueil, responsable_logistique_achat → 403.
+const PROJECT_CREATOR_ROLES = [ROLES.COMMERCIAL, ...ADMIN_TIER_ROLES];
+
+router.post("/", authRequired, requireRole(...PROJECT_CREATOR_ROLES), async (req, res) => {
   try {
     const body = normalizePayload(req.body);
 
@@ -1912,8 +1928,12 @@ router.get("/", authRequired, async (req, res) => {
     const whereClause = {};
 
     // User filter — applied BEFORE count, pagination, stats, and export
-    if (req.query.userId) {
-      whereClause.ownerId = req.query.userId;
+    // ?userId= n'est honoré que pour un administrateur ; tout autre rôle est
+    // limité à son périmètre (propriétaire ou partage), quel que soit le paramètre.
+    if (access.isAdmin(req.user)) {
+      if (req.query.userId) whereClause.ownerId = req.query.userId;
+    } else {
+      whereClause[Op.and] = [await access.projectScopeWhere(req.user)];
     }
 
     if (typeof q === "string" && q.trim()) {
@@ -2090,7 +2110,7 @@ router.get("/", authRequired, async (req, res) => {
 // DASHBOARD COMMERCIAL
 // =======================================================
 
-router.get("/dashboard/commercial", authRequired, async (req,res)=>{
+router.get("/dashboard/commercial", authRequired, access.requireAdmin, async (req,res)=>{
 
   try{
 
@@ -2164,7 +2184,7 @@ router.get("/dashboard/commercial", authRequired, async (req,res)=>{
 // PROJETS PAR USER
 // =======================================================
 
-router.get("/:id/projects", authRequired, async (req,res)=>{
+router.get("/:id/projects", authRequired, access.requireSelfOrAdmin("id"), async (req,res)=>{
 
   try{
 
@@ -2499,7 +2519,7 @@ router.get("/myprojects", authRequired, async (req, res) => {
 // GET PROJECT CRM ACTIONS
 // ===============================
 
-router.get("/:id/actions", authRequired, async (req, res) => {
+router.get("/:id/actions", authRequired, access.requireProjectAccess("view"), async (req, res) => {
 
   try {
 
@@ -2539,7 +2559,7 @@ router.get("/:id/actions", authRequired, async (req, res) => {
 // multipart/form-data. handleUploadError converts Multer rejections to 400.
 router.post(
   "/:id/actions",
-  authRequired,
+  authRequired, access.requireProjectAccess("edit"),
   actionUpload.single("file"),
   handleUploadError,
   async (req, res) => {
@@ -2652,7 +2672,7 @@ router.post(
     }
   }
 );
-router.delete("/actions/:actionId", authRequired, async (req, res) => {
+router.delete("/actions/:actionId", authRequired, access.requireActionAccess("edit"), async (req, res) => {
 
   try {
 
@@ -2684,7 +2704,7 @@ router.delete("/actions/:actionId", authRequired, async (req, res) => {
 // ===============================
 // ADD REMINDER
 // ===============================
-router.post("/actions/:actionId/reminders", authRequired, async (req, res) => {
+router.post("/actions/:actionId/reminders", authRequired, access.requireActionAccess("edit"), async (req, res) => {
 
   try {
 
@@ -2722,7 +2742,7 @@ router.post("/actions/:actionId/reminders", authRequired, async (req, res) => {
 // ===============================
 // DELETE REMINDER
 // ===============================
-router.delete("/reminders/:id", authRequired, async (req, res) => {
+router.delete("/reminders/:id", authRequired, access.requireReminderAccess("edit"), async (req, res) => {
 
   try {
 
@@ -2758,7 +2778,7 @@ router.delete("/reminders/:id", authRequired, async (req, res) => {
 // multipart/form-data. handleUploadError converts Multer rejections to 400.
 router.put(
   "/actions/:actionId",
-  authRequired,
+  authRequired, access.requireActionAccess("edit"),
   actionUpload.single("file"),
   handleUploadError,
   async (req, res) => {
@@ -2814,7 +2834,7 @@ router.put(
 );
 // ---------------- GET BY ID ----------------
 // ---------------- GET BY ID ----------------
-router.get("/:id", authRequired, async (req, res) => {
+router.get("/:id", authRequired, access.requireProjectAccess("view"), async (req, res) => {
   try {
     if (!isUUID(req.params.id)) {
       return res.status(400).json({ message: "Invalid project id (UUID required)" });
@@ -3366,7 +3386,7 @@ router.delete("/:id", authRequired, async (req, res) => {
   }
 });
 
-router.post("/:id/reminders", authRequired, async (req, res) => {
+router.post("/:id/reminders", authRequired, access.requireProjectAccess("edit"), async (req, res) => {
 
   try {
 
@@ -3396,7 +3416,7 @@ router.post("/:id/reminders", authRequired, async (req, res) => {
 
 });
 // ---------------- COMMENTS ----------------
-router.get("/:id/comments", authRequired, async (req, res) => {
+router.get("/:id/comments", authRequired, access.requireProjectAccess("view"), async (req, res) => {
   try {
 
     const projectId = req.params.id;
@@ -3454,7 +3474,7 @@ router.get("/:id/comments", authRequired, async (req, res) => {
   }
 });
 
-router.post("/:id/comments", authRequired, async (req, res) => {
+router.post("/:id/comments", authRequired, access.requireProjectAccess("view"), async (req, res) => {
   try {
     const projectId = req.params.id;
     if (!isUUID(projectId)) return res.status(400).json({ message: "Invalid project id (UUID required)" });
@@ -3593,7 +3613,7 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-router.get("/:id/devis", authRequired, async (req, res) => {
+router.get("/:id/devis", authRequired, access.requireProjectAccess("view"), async (req, res) => {
   try {
     const projectId = req.params.id;
     if (!isUUID(projectId)) return res.status(400).json({ message: "Invalid project id" });
@@ -3795,7 +3815,7 @@ const bdcUpload = multer({
   fileFilter: bdcFileFilter,
   limits: { fileSize: 10 * 1024 * 1024 },
 });
-router.get("/:id/bondecommande", authRequired, async (req, res) => {
+router.get("/:id/bondecommande", authRequired, access.requireProjectAccess("view"), async (req, res) => {
   try {
     const projectId = req.params.id;
     if (!isUUID(projectId)) return res.status(400).json({ message: "Invalid project id" });
@@ -3810,7 +3830,7 @@ router.get("/:id/bondecommande", authRequired, async (req, res) => {
     return res.status(500).json({ message: e.message || "Server error" });
   }
 });
-router.get("/:id/bondecommande", authRequired, async (req, res) => {
+router.get("/:id/bondecommande", authRequired, access.requireProjectAccess("view"), async (req, res) => {
   try {
     const projectId = req.params.id;
     if (!isUUID(projectId)) return res.status(400).json({ message: "Invalid project id" });
@@ -3929,7 +3949,7 @@ router.delete("/:id/bondecommande/:bdcId", authRequired, async (req, res) => {
     return res.status(500).json({ message: e.message || "Server error" });
   }
 });
-router.get("/kpi/projects-per-user-daily", authRequired, async (req, res) => {
+router.get("/kpi/projects-per-user-daily", authRequired, access.requireRoles(...access.USER_STATS_ROLES), async (req, res) => {
   try {
     const wanted = [
       "id",
@@ -3992,7 +4012,7 @@ router.get("/kpi/projects-per-user-daily", authRequired, async (req, res) => {
     return res.status(500).json({ message: e.message || "Server error" });
   }
 });
-router.get("/kpi/projects-per-user-weekly", authRequired, async (req, res) => {
+router.get("/kpi/projects-per-user-weekly", authRequired, access.requireRoles(...access.USER_STATS_ROLES), async (req, res) => {
   try {
     const wanted = [
       "id",
@@ -4057,7 +4077,7 @@ router.get("/kpi/projects-per-user-weekly", authRequired, async (req, res) => {
     return res.status(500).json({ message: e.message || "Server error" });
   }
 });
-router.get("/kpi/projects-per-user-monthly", authRequired, async (req, res) => {
+router.get("/kpi/projects-per-user-monthly", authRequired, access.requireRoles(...access.USER_STATS_ROLES), async (req, res) => {
   try {
     const wanted = [
       "id",
@@ -4122,7 +4142,7 @@ router.get("/kpi/projects-per-user-monthly", authRequired, async (req, res) => {
     return res.status(500).json({ message: e.message || "Server error" });
   }
 });
-router.get("/kpi/projects-per-user-summary", authRequired, async (req, res) => {
+router.get("/kpi/projects-per-user-summary", authRequired, access.requireRoles(...access.USER_STATS_ROLES), async (req, res) => {
   try {
     const wanted = [
       "id",
@@ -4246,7 +4266,9 @@ router.get("/reminders/upcoming", authRequired, async (req, res) => {
         [Op.gte]: today
       }
     },
-    include: [Project]
+    include: access.isAdmin(req.user)
+      ? [Project]
+      : [{ model: Project, required: true, where: await access.projectScopeWhere(req.user) }]
   });
 
   res.json(reminders);

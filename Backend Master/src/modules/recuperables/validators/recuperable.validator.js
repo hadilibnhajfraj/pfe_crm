@@ -28,8 +28,12 @@ const saveFicheSchema = Joi.object({
     "any.only": "Le module doit être PROBAR ou PROMESH.",
     "any.required": "Le module est obligatoire.",
   }),
-  machine: Joi.string().valid("1", "2", "3", "4").required().messages({
-    "any.only": "La machine doit être 1, 2, 3 ou 4.",
+  // Numéro de la machine dans le référentiel Machines (plus de liste fixe
+  // 1..4 : PROBAR-05 / PROMESH-05 sont acceptées). L'existence et le statut
+  // ACTIVE de la machine (type = module) sont vérifiés à l'enregistrement
+  // par le hook linkMachine (models/helpers/machineLink.js) → 400 sinon.
+  machine: Joi.string().trim().pattern(/^[1-9]\d{0,2}$/).required().messages({
+    "string.pattern.base": "La machine doit être un numéro de machine (1, 2, 3…).",
     "any.required": "La machine est obligatoire.",
   }),
   ligne: Joi.string().valid("L1", "L2", "L3", "L4").required().messages({

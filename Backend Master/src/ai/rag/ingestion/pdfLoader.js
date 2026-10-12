@@ -21,14 +21,32 @@ class PdfLoader extends ISourceLoader {
     return { text: pageTexts.join("\n\n"), title, pages: pageTexts };
   }
 
-  _parse(absolutePath) {
+  // Phase 2 — document téléversé dans le Copilot : même extraction page par
+  // page que load(), mais depuis un Buffer EN MÉMOIRE (pdf2json.parseBuffer) —
+  // aucun fichier temporaire n'est jamais écrit sur disque.
+  async loadBuffer(buffer, title = "document") {
+    // pdf2json.parseBuffer lit l'ArrayBuffer SOUS-JACENT en entier : un petit
+    // Buffer Node alloué dans le pool partagé (byteOffset ≠ 0) lui ferait lire
+    // des octets étrangers (« Invalid XRef stream header », reproduit en test).
+    // Copie isolée dans ce cas seulement.
+    const isolated =
+      buffer.byteOffset === 0 && buffer.buffer.byteLength === buffer.length
+        ? buffer
+        : Buffer.from(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.length));
+    const pdfData = await this._parse(isolated, { fromBuffer: true });
+    const pageTexts = (pdfData.Pages || []).map((page) => this._extractPageText(page));
+    return { text: pageTexts.join("\n\n"), title, pages: pageTexts };
+  }
+
+  _parse(source, { fromBuffer = false } = {}) {
     return new Promise((resolve, reject) => {
       const parser = new PDFParser();
       parser.on("pdfParser_dataError", (err) => {
         reject(new Error((err && err.parserError && err.parserError.message) || "PDF parse error"));
       });
       parser.on("pdfParser_dataReady", (pdfData) => resolve(pdfData));
-      parser.loadPDF(absolutePath);
+      if (fromBuffer) parser.parseBuffer(source);
+      else parser.loadPDF(source);
     });
   }
 

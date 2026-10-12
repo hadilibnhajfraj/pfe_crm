@@ -7,6 +7,7 @@ const Notification = require("../../../models/Notification");
 const MaintenanceActivity = require("../../../models/MaintenanceActivity");
 const { sendEmail } = require("../../../services/email.service");
 const { MAINTENANCE_REQUESTER_EMAIL, MAINTENANCE_NOTIFY_EMAIL } = require("../../../config/maintenanceRequester");
+const { businessDateTime, validateFicheTimes, isBlankValue } = require("../../production/services/ficheRules");
 
 // responsable_logistique_achat ne voit/édite que ses propres fiches —
 // admin/superadmin voient tout (même règle que POR PROMESH).
@@ -41,6 +42,76 @@ function assertProbarCanValidate(record, body) {
       message: `Impossible de valider la fiche : champ(s) manquant(s) — ${missing.join(", ")}.`,
     };
   }
+}
+
+// Heures d'une fiche PROBAR : saisies dans le blob JSON `description`
+// (clés "hd" / "hf"), pas dans des colonnes dédiées.
+function parseDescription(value) {
+  if (value == null || typeof value === "object") return value || {};
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" ? parsed : { texte: value };
+  } catch (_e) {
+    return { texte: value }; // texte libre : une saisie, pas un formulaire vide
+  }
+}
+
+// Cohérence des heures et de la date, contrôlée seulement au passage à
+// "validee" — jamais sur un brouillon. Une fiche PROBAR peut être validée
+// sans heures (règle existante, inchangée) : elles ne sont vérifiées que si
+// elles sont saisies. Voir production/services/ficheRules.js.
+function assertProbarTimesCoherent(record, body) {
+  const merged = { ...record.get({ plain: true }), ...body };
+  const description = parseDescription(merged.description);
+  const errors = validateFicheTimes({
+    date: merged.dateFiche,
+    heureDebut: description.hd,
+    heureFin: description.hf,
+    poste: merged.poste,
+    heuresObligatoires: false,
+  });
+  if (errors.length) {
+    throw { status: 400, message: `Impossible de valider la fiche : ${errors.join(" ; ")}.` };
+  }
+}
+
+// Un brouillon PROBAR est « vide » si l'opérateur n'y a rien saisi : ni
+// quantité, ni qualité, ni observation, ni aucune valeur dans le formulaire.
+function isEmptyProbarDraft(record) {
+  const plain = typeof record.get === "function" ? record.get({ plain: true }) : record;
+  if (plain.module !== "probar" || plain.statut === "validee") return false;
+  return isBlankValue(plain.quantiteProduite) && isBlankValue(plain.statutQualite) && isBlankValue(plain.observations) && isBlankValue(parseDescription(plain.description));
+}
+
+// Fiches PROBAR déjà présentes pour la même machine, la même date et le même
+// poste. Plusieurs fiches pour un même poste sont un fonctionnement normal :
+// cette lecture sert seulement à prévenir l'utilisateur et à lui proposer de
+// reprendre un brouillon. Elle ne bloque, ne fusionne et ne supprime rien.
+// Mêmes règles de visibilité que la liste.
+async function findExistingFiches(actor, { machine, poste, date } = {}) {
+  const day = date || businessDateTime().date;
+  const where = isOwnerScoped(actor.role) ? { createdBy: actor.id } : {};
+  Object.assign(where, { module: "probar", machine: String(machine), poste, dateFiche: day });
+  const rows = await repo.findAll(where, { limit: 200 });
+  const fiches = rows
+    .map((r) => {
+      const description = parseDescription(r.description);
+      return {
+        id: r.id,
+        statut: r.statut,
+        isLocked: r.statut === "validee",
+        dateFiche: r.dateFiche,
+        heureDebut: description.hd || null,
+        heureFin: description.hf || null,
+        quantiteProduite: r.quantiteProduite,
+        statutQualite: r.statutQualite,
+        operateur: r.operateur,
+        createdAt: r.createdAt,
+        isEmptyDraft: isEmptyProbarDraft(r),
+      };
+    })
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  return { machine: String(machine), poste, date: day, count: fiches.length, emptyDraftId: (fiches.find((f) => f.isEmptyDraft) || {}).id || null, fiches };
 }
 
 function assertOwnership(record, actor) {
@@ -240,6 +311,7 @@ async function updateRecord(id, body, actor) {
 
   if (body.statut === "validee" && record.module === "probar") {
     assertProbarCanValidate(record, body);
+    assertProbarTimesCoherent(record, body);
   }
 
   await repo.update(record, body);
@@ -255,4 +327,4 @@ async function deleteRecord(id, actor) {
   return { id };
 }
 
-module.exports = { createRecord, listRecords, getRecordById, updateRecord, deleteRecord };
+module.exports = { createRecord, listRecords, getRecordById, updateRecord, deleteRecord, findExistingFiches, isEmptyProbarDraft };

@@ -253,7 +253,7 @@ describe("AIManager — étape 4 du workflow : vérification des permissions (pa
     const response = await manager.handleMessage({ message: "admin stuff", user: { id: "u1", role: "user" }, conversationId: "c1" });
 
     expect(response.mode).toBe("error");
-    expect(response.error.message).toMatch(/not allowed to use intent "admin_only"/);
+    expect(response.error.message).toMatch(/ne vous autorise pas à utiliser cette fonction/);
     expect(collaborators.toolRouter.select).not.toHaveBeenCalled();
     expect(collaborators.workflowManager.run).not.toHaveBeenCalled();
     expect(collaborators.agentRouter.select).not.toHaveBeenCalled();

@@ -27,7 +27,7 @@ let mockRealUserId;
 
 jest.mock("../src/middleware/auth.middleware", () => ({
   authRequired: (req, _res, next) => {
-    req.user = { sub: mockRealUserId, role: "user", email: "u@crmprobar.com" };
+    req.user = { sub: mockRealUserId, role: "commercial", email: "u@crmprobar.com" };
     next();
   },
 }));

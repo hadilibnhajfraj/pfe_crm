@@ -31,8 +31,9 @@ exports.createAction = async (req, res) => {
 
   const { projectId } = req.params;
 
+  // L'auteur vient toujours du jeton (req.user.sub), jamais du corps de la requête.
   const createdBy =
-    req.user?.id || req.body.createdBy;
+    req.user?.sub;
 
   // =====================================
   // LEGACY ACTION TYPE

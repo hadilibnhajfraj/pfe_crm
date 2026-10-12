@@ -1,0 +1,71 @@
+{
+  "description": "Agent d'alimentation de la base de DÉMONSTRATION du CRM, pour tester les tableaux de bord Power BI. Aucune donnée réelle : tout ce que produit ce générateur est fictif.",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "user": "postgres",
+    "database": "cbigestionnairepfe_demo",
+    "passwordEnv": "DEMO_DB_PASSWORD",
+    "passwordFallbackEnv": "DB_PASSWORD"
+  },
+  "structureSource": {
+    "database": "cbigestionnairepfe",
+    "note": "Lue seulement (pg_dump --schema-only). Aucune donnée métier n'en est copiée.",
+    "referenceTables": ["SequelizeMeta", "pipeline_stages", "project_action_types", "machines", "product_families"]
+  },
+  "batch": {
+    "name": "demo-powerbi-v1",
+    "seed": 20261010
+  },
+  "period": {
+    "from": "2026-04-01",
+    "to": "2026-09-30",
+    "note": "Toutes les dates générées tombent dans cette période, donc dans le passé."
+  },
+  "identity": {
+    "emailDomain": "demo.invalid",
+    "accountEmailDomain": "cbi_tunisia.com",
+    "accountEmailNote": "Domaine des 10 comptes de connexion, choisi pour la présentation. Le tiret bas rend ce nom de domaine invalide sur Internet : aucune boîte aux lettres ne peut exister à ces adresses. Les autres adresses (ingénieurs, architectes, contacts) restent en emailDomain.",
+    "prefix": "DEMO",
+    "note": "Le domaine .invalid est réservé (RFC 2606) : aucune adresse ne peut exister. Tous les noms portent le préfixe DEMO."
+  },
+  "volumes": {
+    "commerciaux": 6,
+    "commerciauxSedentaires": 2,
+    "responsablesProduction": 1,
+    "administrateurs": 1,
+    "societes": 40,
+    "ingenieurs": 25,
+    "architectes": 10,
+    "clients": 60,
+    "projets": 80,
+    "actionsProjet": 300,
+    "contacts": 150,
+    "relances": 100,
+    "fichesPromesh": 90,
+    "fichesProbar": 70,
+    "fichesDechets": 20
+  },
+  "limits": {
+    "maxRowsPerTable": 2000,
+    "maxTotalRows": 8000
+  },
+  "simulation": {
+    "provenance": "SIMULATION — valeurs fictives produites par scripts/demo-seeder à partir de cette configuration et de la graine du lot. Elles ne représentent aucune donnée réelle de l'entreprise.",
+    "postes": {
+      "note": "Horaires de poste SIMULÉS. Aucun horaire de poste n'est défini dans le CRM : ceux-ci servent uniquement à produire des fiches cohérentes avec les validations existantes.",
+      "matin": { "debut": "06:00", "fin": "14:00" },
+      "nuit": { "debut": "22:00", "fin": "06:00" }
+    },
+    "montantMarche": {
+      "note": "Montants SIMULÉS, en dinars. Posés uniquement sur les projets de modèle revendeur ou applicateur, comme le fait la route de création.",
+      "min": 15000,
+      "max": 450000
+    },
+    "productionM2": { "note": "Production PROMESH SIMULÉE, en m².", "min": 400, "max": 2600 },
+    "quantiteProbar": { "note": "Quantité PROBAR SIMULÉE. Le CRM ne définit pas l'unité de ce champ.", "min": 600, "max": 2400 },
+    "dechetKg": { "note": "Déchets SIMULÉS, en kg.", "min": 0, "max": 60 },
+    "tauxValidationFiches": 0.75,
+    "tauxNonConformite": 0.12
+  }
+}

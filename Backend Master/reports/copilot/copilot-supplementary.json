@@ -1,0 +1,148 @@
+{
+  "executedAt": "2026-10-05T19:52:17.001Z",
+  "note": "Cas complémentaires, non comptés dans le taux des 22 cas de référence.",
+  "S01": {
+    "title": "Relance formulée simplement puis confirmation",
+    "relances": {
+      "before": 178,
+      "afterRequest": 178,
+      "afterDetails": 178,
+      "afterConfirmation": 179
+    },
+    "pendingAfterRequest": false,
+    "pendingAfterDetails": true,
+    "steps": [
+      {
+        "http": 200,
+        "ms": 13,
+        "conversationId": "6986f05d-3008-4a6d-af9a-456e97a02e4e",
+        "intent": "commercial_contacts",
+        "agent": "commercial_agent",
+        "answer": "Pour programmer une relance pour \"NFR Atlas\", il me manque encore une date. Le CRM ne permet pas d'affecter un commercial ou de créer une relance sans date de relance.",
+        "tools": [
+          {
+            "tool": "get_my_commercial_contacts",
+            "input": {
+              "search": "Atlas NFR",
+              "limit": 20
+            },
+            "output": "1 candidat(s), 1 correspondance(s) pour « Atlas NFR »"
+          }
+        ],
+        "pendingAction": null,
+        "citations": []
+      },
+      {
+        "http": 200,
+        "ms": 12,
+        "conversationId": "6986f05d-3008-4a6d-af9a-456e97a02e4e",
+        "intent": "commercial_contacts",
+        "agent": "commercial_agent",
+        "answer": "Je vous propose :\n\n- Contact : NFR Atlas\n- Date de relance : 2026-10-06\n\nConfirmez-vous cette action ? Répondez « confirme »/« oui » pour l'exécuter, « annule »/« non » pour abandonner. Cette proposition expire dans 15 minutes.",
+        "tools": [
+          {
+            "tool": "get_my_commercial_contacts",
+            "input": {
+              "search": "Atlas NFR",
+              "limit": 20
+            },
+            "output": "1 candidat(s), 1 correspondance(s) pour « Atlas NFR »"
+          }
+        ],
+        "pendingAction": {
+          "id": "7196df96-3706-426a-b0d9-d7885eb50f3a",
+          "steps": [
+            {
+              "tool": "schedule_commercial_contact_relance",
+              "input": {
+                "contactId": "81142afb-9c48-4e02-84d9-6b6bfd387e44",
+                "dateRelance": "2026-10-06"
+              },
+              "reason": "Programmer une relance pour NFR Atlas le 2026-10-06"
+            }
+          ]
+        },
+        "citations": []
+      },
+      {
+        "http": 200,
+        "ms": 223,
+        "conversationId": "6986f05d-3008-4a6d-af9a-456e97a02e4e",
+        "intent": "commercial_contacts",
+        "agent": "commercial_agent",
+        "answer": "Action effectuée avec succès.\n\n- Relance id : a9d20654-4999-410c-aa95-c7ccfbbbe959\n- Contact id : 81142afb-9c48-4e02-84d9-6b6bfd387e44 (NFR Atlas)\n- Date de relance : 2026-10-06T00:00:00.000Z\n- Calendrier CRM : événement créé\n- Google Calendar : non connecté — la relance CRM reste créée",
+        "tools": [
+          {
+            "tool": "schedule_commercial_contact_relance",
+            "input": {
+              "contactId": "81142afb-9c48-4e02-84d9-6b6bfd387e44",
+              "dateRelance": "2026-10-06"
+            },
+            "output": "[object Object]"
+          }
+        ],
+        "pendingAction": null,
+        "citations": []
+      }
+    ]
+  },
+  "S02": {
+    "title": "RAG — téléversement multipart puis question",
+    "uploadHttp": 201,
+    "uploadBody": "{\"success\":true,\"data\":{\"documentId\":\"e7608c64-90b4-4e81-a556-b7b2020dfbd5\",\"filename\":\"procedure-nfr-7421.txt\",\"sourceType\":\"text\",\"size\":146,\"pageCount\":null,\"chunkCount\":1,\"uploadedAt\":\"2026-10-05T19:52:17.349Z\",\"expiresAt\":\"2026-10-06T19:52:17.349Z\"}}",
+    "factRestituted": false,
+    "citations": 5,
+    "question": {
+      "http": 200,
+      "ms": 2479,
+      "conversationId": "1743bf60-78e5-489e-8a77-091d4d8a8877",
+      "intent": "general_chat",
+      "agent": "assistant_agent",
+      "answer": "Je ne trouve pas cette information dans la documentation.",
+      "tools": [],
+      "pendingAction": null,
+      "citations": [
+        {
+          "index": 1,
+          "title": "Utiliser le Copilot IA",
+          "sourceType": "markdown",
+          "path": "C:\\Users\\bhfha\\Documents\\sj_final_pfe\\source code\\Backend Master\\docs\\user-guide\\06-utiliser-le-copilot-ia.md",
+          "excerpt": "ature ? » |\n| Le RH | Cite les demandes de congé réelles | « Qui est absent aujourd'hui ? », « Quel est le statut de ma demande de congé ? » |\n| La maintenance | Cite les demandes/interventions réelles | « Signale une panne sur la ligne 3 »…",
+          "score": 0.5203
+        },
+        {
+          "index": 2,
+          "title": "Comment créer une intervention (demande de maintenance) dans le CRM",
+          "sourceType": "markdown",
+          "path": "C:\\Users\\bhfha\\Documents\\sj_final_pfe\\source code\\Backend Master\\docs\\user-guide\\04-creer-une-intervention.md",
+          "excerpt": "Consulter la liste de ses propres demandes de maintenance, ajouter un commentaire sur une demande existante, consulter l'historique complet d'une demande (créée, acceptée/refusée, démarrée, terminée).\n\n## Erreurs possibles\n\n| Message affich…",
+          "score": 0.483
+        },
+        {
+          "index": 3,
+          "title": "Comment modifier une opportunité dans le CRM",
+          "sourceType": "markdown",
+          "path": "C:\\Users\\bhfha\\Documents\\sj_final_pfe\\source code\\Backend Master\\docs\\user-guide\\05-modifier-une-opportunite.md",
+          "excerpt": "1. Ouvrez la liste des contacts commerciaux.\n2. Repérez le contact concerné et cliquez sur l'icône crayon (\"Edit contact\").\n3. Dans la boîte de dialogue qui s'ouvre, retrouvez le champ **\"Next Action\"** — c'est la liste déroulante de l'étap…",
+          "score": 0.4708
+        },
+        {
+          "index": 4,
+          "title": "Comment modifier une opportunité dans le CRM",
+          "sourceType": "markdown",
+          "path": "C:\\Users\\bhfha\\Documents\\sj_final_pfe\\source code\\Backend Master\\docs\\user-guide\\05-modifier-une-opportunite.md",
+          "excerpt": "1. Ouvrez la liste des contacts commerciaux.\n2. Repérez le contact concerné et cliquez sur l'icône crayon (\"Edit contact\").\n3. Dans la boîte de dialogue qui s'ouvre, retrouvez le champ **\"Next Action\"** — c'est la liste déroulante de l'étap…",
+          "score": 0.4695
+        },
+        {
+          "index": 5,
+          "title": "Comment créer une intervention (demande de maintenance) dans le CRM",
+          "sourceType": "markdown",
+          "path": "C:\\Users\\bhfha\\Documents\\sj_final_pfe\\source code\\Backend Master\\docs\\user-guide\\04-creer-une-intervention.md",
+          "excerpt": "| Bouton | Effet |\n|---|---|\n| **Annuler** | Ferme la boîte de dialogue sans rien enregistrer. |\n| **Envoyer** | Valide et envoie la demande de maintenance (affiche \"Envoi...\" pendant l'envoi). |\n\n## Étape par étape\n\n1. Ouvrez \"Nouvelle dem…",
+          "score": 0.4608
+        }
+      ]
+    }
+  }
+}

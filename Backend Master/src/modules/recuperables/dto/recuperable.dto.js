@@ -23,6 +23,7 @@ function toFicheResponse(fiche, meta = {}) {
     id: f.id,
     module: f.module,
     machine: f.machine,
+    machineId: f.machineId ?? null,
     ligne: f.ligne,
     poste: f.poste,
     date: f.date,

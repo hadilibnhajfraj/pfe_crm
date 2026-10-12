@@ -66,6 +66,7 @@ function toIndustrialRecordResponse(record, { light = false } = {}) {
     id: r.id,
     module: r.module,
     machine: r.machine,
+    machineId: r.machineId ?? null,
     poste: r.poste,
     dateFiche: r.dateFiche,
     operateur: r.operateur,

@@ -32,7 +32,7 @@ const {
 const { scopeInputForActingUser, ADMIN_TIER_ROLES } = require("../src/ai/mcp/tools/commercialContacts/getPersonalKpiSummaryTool");
 
 const ADMIN = { id: "a1", role: "admin" };
-const COMMERCIAL = { id: "c1", role: "commercial" };
+const COMMERCIAL = { id: "c1", role: "commercial_sedentaire" };
 
 beforeEach(() => jest.clearAllMocks());
 
@@ -64,7 +64,7 @@ describe("get_commercial_contact_analytics tool", () => {
 
   test("requires commercial or admin-tier — a plain 'user' role is denied at PermissionManager level, not here (schema-only test)", () => {
     expect(createGetCommercialContactAnalyticsTool().requiredRoles).toEqual([
-      "commercial",
+      "commercial_sedentaire",
       "admin",
       "superadmin",
       "superadmin2",
@@ -86,7 +86,7 @@ describe("get_commercial_personal_kpi_summary tool", () => {
 
   // AI-Business-Copilot/34_PERSONAL_KPI_SUMMARY_RBAC.md — TESTS OBLIGATOIRES
   // du correctif RBAC (voir getPersonalKpiSummaryTool.js::scopeInputForActingUser).
-  const COMMERCIAL_B = { id: "b2", role: "commercial" };
+  const COMMERCIAL_B = { id: "b2", role: "commercial_sedentaire" };
 
   test("TEST 1 — commercial A demande ses KPI (aucun commercialName) : actingUser.id = A, KPI de A uniquement", async () => {
     kpiService.getPersonalKPISummary.mockResolvedValue({ totalContacts: 5 });
@@ -170,14 +170,22 @@ describe("get_my_commercial_contacts tool", () => {
     const tool = createGetMyCommercialContactsTool();
 
     await tool.execute({ status: "rappeler_plus_tard", limit: 20 }, { actingUser: COMMERCIAL });
-    expect(kpiService.listCommercialContacts).toHaveBeenLastCalledWith("c1", { status: "rappeler_plus_tard", limit: 20 });
+    expect(kpiService.listCommercialContacts).toHaveBeenLastCalledWith("c1", { status: "rappeler_plus_tard", limit: 20 }, { scope: "created" });
 
     await tool.execute({ status: "rappeler_plus_tard" }, { actingUser: ADMIN });
-    expect(kpiService.listCommercialContacts).toHaveBeenLastCalledWith(null, { status: "rappeler_plus_tard" });
+    expect(kpiService.listCommercialContacts).toHaveBeenLastCalledWith(null, { status: "rappeler_plus_tard" }, { scope: "created" });
+  });
+
+  test("commercial (terrain) -> ses contacts créés, affectés ou suivis : périmètre « assigned », jamais transverse, jamais choisi par l'appelant", async () => {
+    kpiService.listCommercialContacts.mockResolvedValue({ contacts: [], total: 0 });
+    const tool = createGetMyCommercialContactsTool();
+    const terrain = { id: "t1", role: "commercial" };
+    await tool.execute({ limit: 20, userId: "autre", createdBy: "autre", ownerId: "autre", commercialName: "najeh" }, { actingUser: terrain });
+    expect(kpiService.listCommercialContacts).toHaveBeenLastCalledWith("t1", { limit: 20 }, { scope: "assigned" });
   });
 
   test("requires commercial or admin-tier", () => {
-    expect(createGetMyCommercialContactsTool().requiredRoles).toEqual(["commercial", "admin", "superadmin", "superadmin2"]);
+    expect(createGetMyCommercialContactsTool().requiredRoles).toEqual(["commercial", "commercial_sedentaire", "admin", "superadmin", "superadmin2"]);
   });
 });
 
@@ -195,7 +203,7 @@ describe("schedule_commercial_contact_relance tool", () => {
   });
 
   test("requires commercial or admin-tier", () => {
-    expect(createScheduleCommercialContactRelanceTool().requiredRoles).toEqual(["commercial", "admin", "superadmin", "superadmin2"]);
+    expect(createScheduleCommercialContactRelanceTool().requiredRoles).toEqual(["commercial", "commercial_sedentaire", "admin", "superadmin", "superadmin2"]);
   });
 
   test("ownerId/userId/createdBy/commercialName ne sont PAS déclarés dans le schéma — Joi les élimine avant run()", () => {

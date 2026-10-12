@@ -36,12 +36,41 @@ const NAME_PATTERNS = [CONTACT_KEYWORD_RE, AFFECT_TO_RE, RELANCER_POUR_RE, POUR_
 // entière (même discipline que ProjectAgent::_extractOwnerName/_extractProjectName).
 const MAX_NAME_TOKENS = 8;
 
+// Un nom de contact ne commence pas par un déterminant, un pronom ou un mot de
+// liaison (« le statut refusé », « dont le statut est ok », « moi mes
+// contacts », « ce mois »), et ne contient pas un mot générique du CRM
+// (« contacts », « statut », « client refusé »…). Sans ce filtre, les motifs
+// ci-dessus — insensibles à la casse — prenaient une demande de LECTURE pour
+// une action sur un contact, qui échouait ensuite en « aucun contact
+// correspondant ».
+const NOT_A_NAME_START = new Set(
+  ("le la les l un une des du de d mes mon ma ce cet cette ces tous toutes tout toute chaque quel quelle quels quelles dont qui que quoi " +
+    "moi toi nous vous eux lui elle ils elles demain aujourd hier chacun chacune pour avec au aux et ou sur dans par sans " +
+    "the a an my all this that these those each every which whose me us them tomorrow today").split(" ")
+);
+const GENERIC_WORDS = new Set(
+  ("contact contacts client clients prospect prospects statut statuts status projet projets liste listes mois semaine semaines annee jour jours " +
+    "statistique statistiques kpi ok refuse refuses refusee refusees refuser injoignable injoignables perimetre activite compte " +
+    "customer customers list month week year day statistics refused rejected unreachable").split(" ")
+);
+
+function foldWord(word) {
+  return String(word || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+}
+
+function isPlausibleContactName(candidate) {
+  const words = String(candidate || "").split(/[\s'’]+/).map(foldWord).filter(Boolean);
+  if (!words.length) return false;
+  if (NOT_A_NAME_START.has(words[0])) return false;
+  return !words.some((w) => GENERIC_WORDS.has(w));
+}
+
 function extractContactName(text) {
   for (const re of NAME_PATTERNS) {
     const m = text.match(re);
     if (m && m[1]) {
       const candidate = m[1].trim().replace(/\s+/g, " ");
-      if (candidate && candidate.split(" ").length <= MAX_NAME_TOKENS) return candidate;
+      if (candidate && candidate.split(" ").length <= MAX_NAME_TOKENS && isPlausibleContactName(candidate)) return candidate;
     }
   }
   return null;
@@ -86,4 +115,5 @@ module.exports = {
   emptyActionSlots,
   isCommercialActionRequest,
   extractContactName,
+  isPlausibleContactName,
 };

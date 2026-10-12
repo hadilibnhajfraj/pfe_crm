@@ -21,7 +21,7 @@ const { createServer } = require("../src/ai/mcp/server/start");
 const { createMcpToolAdapters } = require("../src/ai/langchain/tools/mcpToolAdapter");
 const { PermissionManager } = require("../src/ai/mcp/permissionManager");
 
-const REAL_COMMERCIAL = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial", email: "info@probardistribution.com" };
+const REAL_COMMERCIAL = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial_sedentaire", email: "info@probardistribution.com" };
 
 afterAll(async () => {
   await sequelize.close();

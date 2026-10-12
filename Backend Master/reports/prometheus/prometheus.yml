@@ -1,0 +1,22 @@
+# Prometheus — collecte des métriques du backend CRM PROBAR (instance de test, port 4100).
+# Le jeton doit être identique à METRICS_TOKEN côté backend.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: crm-probar-backend
+    metrics_path: /metrics
+    authorization:
+      type: Bearer
+      credentials: nfr-metrics-token
+    static_configs:
+      - targets: ["host.docker.internal:4100"]
+        labels:
+          instance: backend-test
+
+  - job_name: postgres
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ["postgres-exporter:9187"]

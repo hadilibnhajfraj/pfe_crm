@@ -419,6 +419,74 @@ const DEFAULT_INTENT_CATALOG = [
     ],
     description: "Ce que votre compte permet réellement de faire dans le Copilot : agents, intentions et modules accessibles à votre rôle, et pourquoi une action précise serait refusée.",
   },
+  // Phase 2 — assistant documentaire : questions sur les documents que
+  // l'utilisateur a lui-même téléversés dans le Copilot (DocumentAgent).
+  // `keywords: []` DÉLIBÉRÉMENT : jamais atteinte par la détection lexicale
+  // (aucun des 577 scénarios validés ne peut basculer ici) — uniquement par
+  // SemanticIntentResolver.resolveDocumentFocus(), quand un document est
+  // réellement joint à la conversation.
+  {
+    // Ingénieurs du CRM (table `engineers`) : liste des ingénieurs référencés,
+    // ou ingénieur d'un projet précis. Aucun mot-clé : choisie par le parseur
+    // déterministe (analytics/analyticsQueryParser.js) ou par le repli
+    // sémantique LLM grâce à cette description — jamais un comptage/classement
+    // (→ crm_analytics).
+    key: "engineers",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Ingénieurs du CRM : liste des ingénieurs référencés (responsables techniques des projets), ou ingénieur affecté à un projet précis.",
+  },
+  {
+    // Une personne, une société ou un promoteur PRÉCIS (« Qui est Zakariah
+    // Derbel ? », « informations sur CBI Tunisia », « promoteur de ce
+    // projet ») : fiche CRM et/ou informations publiques du Web, sources
+    // citées. Aucun mot-clé : choisie uniquement par le QueryRouter
+    // (routing/queryRouter.js, voir aiManager.js), jamais par la détection
+    // lexicale — aucun parcours existant n'est détourné.
+    key: "entity_lookup",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Fiche d'un ingénieur, d'une personne ou d'une société précise (données CRM, projets associés) et informations publiques trouvées sur le Web, ou promoteur d'un projet.",
+  },
+  {
+    // Analytique CRM (PROBAR ASSISTANT) — comptages, classements et
+    // répartitions sur les DONNÉES du CRM (« quel ingénieur a le plus de
+    // projets ? », « combien de relances ce mois-ci ? », FR/EN/RU). Aucun
+    // mot-clé : choisie uniquement par AnalyticsQueryParser (voir
+    // aiManager.js), jamais par la détection lexicale ; les chiffres viennent
+    // toujours d'un Tool statistique, jamais de la documentation.
+    key: "crm_analytics",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Statistiques du CRM : nombre, classement et répartition des projets (par ingénieur, commercial, statut, client, famille, mois), des contacts et relances, et des fiches industrielles (par machine, module, opérateur).",
+  },
+  {
+    // Phase 3 — demande composée (« trouve mes projets … et prépare une
+    // relance pour chacun ») : lecture → analyse → écritures préparées puis
+    // exécutées après « confirme ». Aucun mot-clé : choisie uniquement par
+    // TaskPlanner.detect() (voir aiManager.js), jamais par la détection
+    // lexicale ; aucun parcours existant n'est donc détourné.
+    key: "multi_step_task",
+    moduleKey: null,
+    requiresRag: false,
+    requiresTools: true,
+    keywords: [],
+    description: "Tâche en plusieurs étapes sur vos projets ou contacts (rechercher, analyser, puis préparer une action pour chacun) — exécutée seulement après votre confirmation.",
+  },
+  {
+    key: "document_question",
+    moduleKey: null,
+    requiresRag: true,
+    requiresTools: false,
+    keywords: [],
+    description: "Questions sur un document que vous avez joint au Copilot : résumé, recherche d'informations, problèmes mentionnés, comparaison avec le CRM.",
+  },
   {
     key: "general_chat",
     moduleKey: null,

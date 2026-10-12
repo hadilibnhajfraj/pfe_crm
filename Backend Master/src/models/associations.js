@@ -45,6 +45,7 @@ const RecuperableFiche = require("./RecuperableFiche");
 const RecuperableLigne = require("./RecuperableLigne");
 const GoogleCalendarAccount = require("./GoogleCalendarAccount");
 const CommercialContactStatusHistory = require("./CommercialContactStatusHistory");
+const Machine = require("./Machine");
 
 // ── PIPELINE STAGE <-> PROJECT ────────────────────────────
 
@@ -238,6 +239,11 @@ User.hasMany(CommercialContact, { as: "commercialContacts", foreignKey: "created
 // distincte de commercial_contact_relances.commercialId).
 CommercialContact.belongsTo(User, { as: "commercial", foreignKey: "commercialId" });
 User.hasMany(CommercialContact, { as: "assignedContacts", foreignKey: "commercialId" });
+
+// Auteur de l'affectation (commercial_sedentaire ou admin) — distinct du
+// commercial affecté ci-dessus.
+CommercialContact.belongsTo(User, { as: "assignedByUser", foreignKey: "assignedBy" });
+User.hasMany(CommercialContact, { as: "contactAssignmentsMade", foreignKey: "assignedBy" });
 
 CommercialContactRelance.belongsTo(User, { as: "creator", foreignKey: "createdBy" });
 User.hasMany(CommercialContactRelance, {
@@ -439,6 +445,18 @@ RecuperableLigne.belongsTo(RecuperableFiche, { foreignKey: "ficheId" });
 RecuperableFiche.belongsTo(User, { foreignKey: "createdBy", as: "creator" });
 User.hasMany(RecuperableFiche, { foreignKey: "createdBy", as: "recuperableFiches" });
 
+// ── MACHINES (référentiel PROBAR / PROMESH → fiches) ──────
+// Alias "machineRef" : "machine" est déjà l'attribut texte des fiches.
+
+Machine.hasMany(IndustrialRecord, { foreignKey: "machineId", as: "industrialRecords" });
+IndustrialRecord.belongsTo(Machine, { foreignKey: "machineId", as: "machineRef" });
+
+Machine.hasMany(PorPromesh, { foreignKey: "machineId", as: "porPromeshFiches" });
+PorPromesh.belongsTo(Machine, { foreignKey: "machineId", as: "machineRef" });
+
+Machine.hasMany(RecuperableFiche, { foreignKey: "machineId", as: "recuperableFiches" });
+RecuperableFiche.belongsTo(Machine, { foreignKey: "machineId", as: "machineRef" });
+
 // ── GOOGLE CALENDAR (comptes connectés) ───────────────────
 
 User.hasOne(GoogleCalendarAccount, {
@@ -492,4 +510,5 @@ module.exports = {
   IndustrialRecord,
   GoogleCalendarAccount,
   CommercialContactStatusHistory,
+  Machine,
 };

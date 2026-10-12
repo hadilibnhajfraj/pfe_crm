@@ -10,6 +10,12 @@ const ALLOWED_PREFIXES_BY_ROLE = {
     "/industrial-records",
     "/hr-requests",
     "/recuperables",
+    // Référentiel machines PROBAR/PROMESH — consultation et gestion
+    // (machine.routes.js).
+    "/machines",
+    // Vue consolidée PROMESH + PROBAR en lecture seule (production.routes.js)
+    // — mêmes fiches que /por-promesh et /industrial-records, même périmètre.
+    "/production",
     "/maintenance-requests",
     "/auth",
     "/users/me",

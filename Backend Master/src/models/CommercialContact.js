@@ -115,13 +115,27 @@ matriculeFiscale: {
       allowNull: false,
     },
 
-    // Rattachement direct et persistant du contact à un commercial —
+    // Commercial (role "commercial") AUQUEL le contact est affecté —
     // distinct de commercial_contact_relances.commercialId (qui ne vaut
-    // que pour une relance ponctuelle). Renseigné soit automatiquement à
-    // la création (createdBy si commercial), soit via l'action admin
-    // "Affecter des contacts" (POST /commercial-contacts/assign).
+    // que pour une relance ponctuelle). Renseigné par l'action "Affecter
+    // des contacts" (POST /commercial-contacts/assign). Les 485 contacts
+    // antérieurs à la migration 20260929090100 conservent la valeur posée
+    // par le backfill historique 20260718090100 (commercialId = createdBy).
     commercialId: {
       type: DataTypes.UUID,
+      allowNull: true,
+    },
+
+    // Utilisateur QUI a réalisé l'affectation (commercial_sedentaire ou
+    // admin) et date de cette affectation — même convention que
+    // maintenance_requests.assignedBy/assignedAt. NULL pour les affectations
+    // antérieures à la migration 20260929090100 (auteur historique inconnu).
+    assignedBy: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    assignedAt: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
   },

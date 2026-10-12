@@ -4,6 +4,7 @@ const User = require("../models/User");
 const { Project, UserProject } = require("../models/associations");
 const { authRequired } = require("../middleware/auth.middleware");
 const { requireRole } = require("../middleware/requireRole");
+const { ALL_ROLES } = require("../constants/roles");
 
 const router = express.Router();
 
@@ -33,10 +34,13 @@ router.put("/users/:id/active", authRequired, requireRole("admin", "superadmin",
   return res.json({ message: "Updated", user: { id: user.id, email: user.email, isActive: user.isActive } });
 });
 
-// ✅ Changer rôle (superadmin only)
+// ✅ Changer rôle (superadmin only) — les 7 rôles réels du vocabulaire v2
+// (constants/roles.js) ; "user" n'est plus un rôle métier. Le nouveau rôle
+// prend effet à la prochaine obtention d'un access token (connexion ou
+// POST /auth/refresh, qui relit le rôle en base).
 router.put("/users/:id/role", authRequired, requireRole("superadmin", "superadmin2"), async (req, res) => {
   const { role } = req.body || {};
-  if (!["user", "admin", "superadmin"].includes(role)) return res.status(400).json({ message: "Invalid role" });
+  if (!ALL_ROLES.includes(role)) return res.status(400).json({ message: "Invalid role" });
 
   const user = await User.findByPk(req.params.id);
   if (!user) return res.status(404).json({ message: "User not found" });

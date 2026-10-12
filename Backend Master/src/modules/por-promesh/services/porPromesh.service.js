@@ -6,6 +6,7 @@ const repo = require("../repositories/porPromesh.repository");
 const User = require("../../../models/User");
 const UserProfile = require("../../../models/UserProfile");
 require("../../../models/associations");
+const { businessDateTime, validateFicheTimes, timeToSeconds, isBlankValue } = require("../../production/services/ficheRules");
 
 // Mêmes rôles que READ_WRITE_ROLES (routes) — qui peut opérer ce module peut
 // aussi apparaître dans la liste déroulante "Opérateur".
@@ -236,14 +237,83 @@ async function listPorPromesh(actor, filters = {}) {
   return { data, total };
 }
 
+// ── Fiches déjà présentes pour la même machine, la même date et le même
+// poste ──────────────────────────────────────────────────────────────────
+// Plusieurs fiches pour un même poste sont un fonctionnement normal : cette
+// lecture sert seulement à PRÉVENIR l'utilisateur avant d'en créer une de
+// plus, et à lui proposer de reprendre un brouillon resté vide. Elle ne
+// bloque, ne fusionne et ne supprime jamais rien.
+
+// Colonnes posées par le serveur à la création (ou purement techniques) :
+// elles ne comptent pas comme une saisie de l'opérateur.
+const DRAFT_SYSTEM_FIELDS = new Set([
+  "id", "sequenceNumber", "dateProduction", "heureDebut", "heureFin", "machine", "machineId", "poste", "operateur",
+  "createdBy", "createdAt", "updatedAt", "status", "isLocked", "validatedAt", "creator",
+]);
+// Champs de saisie de chaque table enfant. Les autres colonnes (heure
+// pré-remplie d'un contrôle, indicateurs de correction, lignes « Paramètres
+// du Poste » générées automatiquement) existent même sur une fiche vierge.
+const CHILD_CONTENT_FIELDS = {
+  controlesQualite: ["numeroPlaque", "maille", "longueur", "largeur", "statutCOQ"],
+  arretsMachine: ["tArret", "observationMachine"],
+  consommations: ["designationArticle", "metrage", "observation"],
+  processControl: ["valeurP1", "valeurP2"],
+  nonConformites: ["typeNC", "gravite", "description", "photoUrl"],
+};
+
+// Un brouillon est « vide » si l'opérateur n'y a rien saisi : aucune valeur
+// hors des champs posés à la création, heure de fin jamais modifiée, aucune
+// ligne enfant renseignée, aucune pièce jointe.
+function isEmptyDraft(report) {
+  const plain = typeof report.get === "function" ? report.get({ plain: true }) : report;
+  if (plain.status !== "BROUILLON" || plain.isLocked) return false;
+  if (timeToSeconds(plain.heureFin) !== timeToSeconds(plain.heureDebut)) return false;
+  if ((plain.attachments || []).length) return false;
+  for (const [key, value] of Object.entries(plain)) {
+    if (DRAFT_SYSTEM_FIELDS.has(key) || key === "attachments") continue;
+    if (CHILD_CONTENT_FIELDS[key]) {
+      const filled = (value || []).some((row) => CHILD_CONTENT_FIELDS[key].some((field) => !isBlankValue(row[field])));
+      if (filled) return false;
+      continue;
+    }
+    if (typeof value === "boolean") continue;
+    if (!isBlankValue(value)) return false;
+  }
+  return true;
+}
+
+// Mêmes règles de visibilité que la liste (responsable_logistique_achat ne
+// voit que ses propres fiches). `date` absent = aujourd'hui (fuseau métier).
+async function findExistingFiches(actor, { machine, poste, date } = {}) {
+  const day = date || businessDateTime().date;
+  const where = buildWhere(actor, { machine: machine == null ? null : String(machine), poste, date: day });
+  const rows = await repo.findAll(where, { order: "date_asc" });
+  const fiches = rows.map((r) => ({
+    id: r.id,
+    sequenceNumber: r.sequenceNumber,
+    status: r.status,
+    isLocked: r.isLocked,
+    dateProduction: r.dateProduction,
+    heureDebut: r.heureDebut,
+    heureFin: r.heureFin,
+    productionM2: r.productionM2,
+    conformite: r.conformite,
+    operateur: r.operateur,
+    createdAt: r.createdAt,
+    isEmptyDraft: isEmptyDraft(r),
+  }));
+  return { machine: machine == null ? null : String(machine), poste, date: day, count: fiches.length, emptyDraftId: (fiches.find((f) => f.isEmptyDraft) || {}).id || null, fiches };
+}
+
 // ── Bouton "Nouvelle fiche" : crée toujours une fiche neuve et indépendante,
 // jamais de réutilisation d'un brouillon existant — aucune donnée d'une
 // fiche précédente (même non validée) ne doit réapparaître.
 async function createOrOpenDraft(actor, { machine, poste, operateurName }) {
   const machineStr = machine == null ? null : String(machine);
-  const now = new Date();
-  const dateProduction = now.toISOString().slice(0, 10);
-  const heureDebut = now.toTimeString().slice(0, 8);
+  // Date et heure tirées du MÊME instant, dans le fuseau métier. L'ancienne
+  // date venait de l'heure universelle : une fiche créée entre minuit et 1 h
+  // était datée de la veille alors que son heure de début était locale.
+  const { date: dateProduction, time: heureDebut } = businessDateTime();
   // heureFin ne doit jamais être vide — par défaut = heureDebut (modifiable
   // par l'utilisateur avant validation).
   // Nom affiché de l'opérateur : la table users n'a pas de champ "nom", mais
@@ -429,6 +499,18 @@ async function validatePorPromesh(id, actor) {
     };
   }
 
+  // Cohérence des heures : contrôlée ici seulement, jamais sur un brouillon
+  // (qui naît avec heure de fin = heure de début). Voir ficheRules.js.
+  const timeErrors = validateFicheTimes({
+    date: report.dateProduction,
+    heureDebut: report.heureDebut,
+    heureFin: report.heureFin,
+    poste: report.poste,
+  });
+  if (timeErrors.length) {
+    throw { status: 400, message: `Impossible de terminer la saisie : ${timeErrors.join(" ; ")}.` };
+  }
+
   await repo.update(report, { status: "VALIDE", isLocked: true, validatedAt: new Date() });
   return repo.findById(id);
 }
@@ -545,6 +627,8 @@ async function getPorPromeshPdf(id, actor) {
 module.exports = {
   createPorPromesh,
   createOrOpenDraft,
+  findExistingFiches,
+  isEmptyDraft,
   listOperators,
   listPorPromesh,
   getDashboard,

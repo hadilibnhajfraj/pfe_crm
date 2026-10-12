@@ -47,7 +47,7 @@ async function createTestUser(email, opts = {}) {
     email,
     passwordHash: await bcrypt.hash(PASSWORD, 12),
     isActive: true,
-    role: opts.role || "user",
+    role: opts.role || "commercial",
     mfaLastVerifiedAt: opts.mfaLastVerifiedAt ?? null,
     lastLoginIp: opts.lastLoginIp ?? null,
     lastLoginBrowser: opts.lastLoginBrowser ?? null,
@@ -147,7 +147,7 @@ describe("MFA (multi-factor authentication)", () => {
     test("30h d'ancienneté pour un utilisateur standard → pas encore de MFA (fenêtre 3 jours)", async () => {
       const email = emailFor("standard-30h");
       await createTestUser(email, {
-        role: "user",
+        role: "commercial",
         mfaLastVerifiedAt: new Date(Date.now() - 30 * 60 * 60 * 1000),
         lastLoginDeviceId: "device-10b",
       });

@@ -1,16 +1,24 @@
 "use strict";
 
-// Rôles NE POUVANT JAMAIS être sélectionnés comme "Commercial" dans le
-// module Follow-up CRM (admin-tier + rôles techniques/opérationnels). Tout
-// rôle NON listé ici est automatiquement éligible — aucune liste blanche à
-// maintenir : un nouveau rôle commercial ajouté plus tard (ex.
-// "responsable_commercial") est inclus sans modifier ce fichier.
+const { ROLES } = require("./roles");
+
+// Rôles NE POUVANT JAMAIS être sélectionnés comme "Commercial" — destinataire
+// d'une affectation de contact (commercial_contacts.commercialId) ou d'une
+// relance (commercial_contact_relances.commercialId) et menu déroulant
+// GET /users/commercials. Vocabulaire v2 (constants/roles.js) : seul le rôle
+// "commercial" est éligible. commercial_sedentaire RÉALISE les affectations
+// mais n'en est jamais le destinataire.
+//
+// La règle reste exprimée par exclusion (liste noire) pour conserver le
+// comportement historique : un futur rôle commercial ajouté à l'ENUM serait
+// éligible sans modifier ce fichier.
 const NON_COMMERCIAL_ROLES = [
-  "admin",
-  "superadmin",
-  "superadmin2",
-  "responsable_logistique_achat",
-  "accueil", // accueil / réception — fonction non commerciale
+  ROLES.ADMIN,
+  ROLES.SUPERADMIN,
+  ROLES.SUPERADMIN2,
+  ROLES.RESPONSABLE_LOGISTIQUE_ACHAT,
+  ROLES.ACCUEIL, // accueil / réception — fonction non commerciale
+  ROLES.COMMERCIAL_SEDENTAIRE, // réalise l'affectation, n'en est jamais le destinataire
 ];
 
 function isCommercialEligibleRole(role) {

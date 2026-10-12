@@ -2,6 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../db");
+const { attachMachineLink } = require("./helpers/machineLink");
 
 // Fiche "Récupérables Traités" — identifiée par (module, machine, ligne,
 // poste, date), unique (contrainte DB). Reste ouverte 6 jours à partir de
@@ -15,6 +16,17 @@ const RecuperableFiche = sequelize.define(
     module: { type: DataTypes.ENUM("PROBAR", "PROMESH"), allowNull: false },
     
     machine: { type: DataTypes.STRING(50), allowNull: false },
+    // Lien vers le référentiel `machines` (typeMachine = module), dérivé de
+    // `machine` par le hook linkMachine — toujours renseigné. NOT NULL en
+    // base (migration) mais `allowNull: true` ici : la validation Sequelize
+    // s'exécute AVANT le hook beforeSave qui pose la valeur, elle rejetterait
+    // sinon toute création (`notNull Violation`).
+    machineId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "machines", key: "id" },
+      onDelete: "RESTRICT",
+    },
     ligne: { type: DataTypes.ENUM("L1", "L2", "L3", "L4"), allowNull: false },
     poste: { type: DataTypes.ENUM("matin", "soir"), allowNull: false },
     date: { type: DataTypes.DATEONLY, allowNull: false },
@@ -40,8 +52,11 @@ const RecuperableFiche = sequelize.define(
       },
       { fields: ["statut"] },
       { fields: ["createdBy"] },
+      { fields: ["machineId"] },
     ],
   }
 );
+
+attachMachineLink(RecuperableFiche, (fiche) => ({ defaultType: fiche.module, strict: true }));
 
 module.exports = RecuperableFiche;

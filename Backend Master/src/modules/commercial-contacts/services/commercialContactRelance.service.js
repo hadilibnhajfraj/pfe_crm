@@ -29,6 +29,7 @@
 const crypto = require("crypto");
 const { sequelize } = require("../../../db");
 const { isCommercialEligibleRole } = require("../../../constants/commercialRoles");
+const { canAccessContact, LEVELS } = require("../policies/contactAccess.policy");
 const { resolveFullName } = require("../../../utils/userDisplay");
 const { resolveRecipients, syncTaskForRecipients, syncEventForRecipients } = require("../../../services/multiRecipientCalendarSync.service");
 const { combineDateTime } = require("../../../services/calendar.service");
@@ -45,13 +46,14 @@ const ADMIN_TIER_ROLES = new Set(["admin", "superadmin", "superadmin2"]);
 async function _resolveCommercial(commercialId) {
   if (!commercialId) return null;
   const [row] = await sequelize.query(
-    `SELECT u.id, u.email, u.role, up.name, up.nom, up.prenom
+    `SELECT u.id, u.email, u.role, u."isActive", up.name, up.nom, up.prenom
        FROM users u
        LEFT JOIN user_profiles up ON up."userId" = u.id
       WHERE u.id = :commercialId`,
     { replacements: { commercialId }, type: sequelize.QueryTypes.SELECT }
   );
-  if (!row || !isCommercialEligibleRole(row.role)) return null;
+  // Commercial actif uniquement (un compte désactivé n'est jamais désigné).
+  if (!row || !row.isActive || !isCommercialEligibleRole(row.role)) return null;
   return {
     id: row.id,
     email: row.email || null,
@@ -153,7 +155,7 @@ async function _syncCalendars(relance, contact) {
 // décider comment le formuler, jamais une invention de succès.
 async function scheduleContactRelance(contactId, { dateRelance, heureRelance, commercialId, commentaire } = {}, actingUser) {
   const [contact] = await sequelize.query(
-    `SELECT id, statut, "createdBy", nom, prenom, "nomSociete" FROM commercial_contacts WHERE id = :contactId`,
+    `SELECT id, statut, "createdBy", "commercialId", nom, prenom, "nomSociete" FROM commercial_contacts WHERE id = :contactId`,
     { replacements: { contactId }, type: sequelize.QueryTypes.SELECT }
   );
   if (!contact) {
@@ -164,10 +166,10 @@ async function scheduleContactRelance(contactId, { dateRelance, heureRelance, co
     return { ok: false, reason: "invalid_status", statut: contact.statut };
   }
 
-  // Même règle RBAC EXACTE que POST /:id/relances : admin-tier ou créateur
-  // du contact, jamais un tiers — actingUser.id est la SEULE source
-  // possible du propriétaire, jamais un champ fourni par l'appelant.
-  if (!ADMIN_TIER_ROLES.has(actingUser.role) && contact.createdBy !== actingUser.id) {
+  // Même règle RBAC EXACTE que POST /:id/relances : politique centralisée
+  // contactAccess.policy.js (niveau MANAGE) — actingUser.id est la SEULE
+  // source possible de l'identité, jamais un champ fourni par l'appelant.
+  if (!(await canAccessContact(actingUser, contact, LEVELS.MANAGE))) {
     return { ok: false, reason: "forbidden" };
   }
 

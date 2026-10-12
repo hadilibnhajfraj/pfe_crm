@@ -10,7 +10,7 @@ const { createKpiAnalyzer, DEFAULT_DATA_SOURCES: KPI_SOURCES } = require("../src
 const { DashboardPermissionError } = require("../src/ai/dashboard/errors");
 
 const ADMIN = { id: "a1", role: "admin" };
-const USER = { id: "u1", role: "user" };
+const USER = { id: "u1", role: "commercial" };
 
 function tool(name, impl) {
   return { name, invoke: jest.fn(async (input) => JSON.stringify(await impl(input))) };
@@ -66,7 +66,7 @@ describe("SalesAnalyzer", () => {
   test("domain is 'sales', restricted to commercial/admin-tier roles (matches the underlying Tools)", async () => {
     const analyzer = createSalesAnalyzer({});
     expect(analyzer.domain).toBe("sales");
-    expect(analyzer.requiredRoles).toEqual(["commercial", "admin", "superadmin", "superadmin2"]);
+    expect(analyzer.requiredRoles).toEqual(["commercial_sedentaire", "admin", "superadmin", "superadmin2"]);
     await expect(analyzer.analyze({ actingUser: USER })).rejects.toThrow(DashboardPermissionError);
   });
 

@@ -188,6 +188,9 @@ describe("Copilot — refus de permission bout-en-bout (mode: 'error', jamais un
     // pour compenser le refus.
     expect(response.mode).toBe("error");
     expect(response.answer).toBeNull();
-    expect(response.error.message).toMatch(/not allowed to invoke agent/i);
+    // Message clair pour l'utilisateur ; le détail technique (rôle, Agent) reste au journal.
+    expect(response.error.message).toMatch(/ne vous autorise pas à utiliser cette fonction/);
+    expect(response.error.message).not.toMatch(/not allowed|agent "/i);
+    expect(response.error).toMatchObject({ code: "PERMISSION_DENIED", retryable: false });
   });
 });

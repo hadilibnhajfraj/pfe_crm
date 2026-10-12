@@ -19,6 +19,8 @@ const porPromesh = require("./porPromesh");
 const dashboard = require("./dashboard");
 const hr = require("./hr");
 const googleCalendar = require("./googleCalendar");
+// Recherche Web contrôlée (informations publiques) — ne lit aucune donnée CRM.
+const web = require("./web");
 
 const defaultToolFactories = [
   ...users.toolFactories,
@@ -33,6 +35,7 @@ const defaultToolFactories = [
   ...dashboard.toolFactories,
   ...hr.toolFactories,
   ...googleCalendar.toolFactories,
+  ...web.toolFactories,
 ];
 
 module.exports = {
@@ -50,5 +53,6 @@ module.exports = {
     dashboard,
     hr,
     googleCalendar,
+    web,
   },
 };

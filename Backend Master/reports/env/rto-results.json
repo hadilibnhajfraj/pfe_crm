@@ -1,0 +1,57 @@
+{
+  "measuredAt": "2026-10-03T21:33:08.225Z",
+  "target": "http://127.0.0.1:4100",
+  "method": "SIGKILL du processus Node puis relance manuelle par script (aucun superviseur automatique)",
+  "runs": [
+    {
+      "run": 1,
+      "killedPid": 30768,
+      "at": "2026-10-03T21:28:55.270Z",
+      "unavailableAfterMs": 53,
+      "restartToHealthMs": 9677,
+      "killToHealthMs": 9730,
+      "killToBusinessCallMs": 10352,
+      "businessCallStatus": 200
+    },
+    {
+      "run": 2,
+      "killedPid": 9376,
+      "at": "2026-10-03T21:29:11.836Z",
+      "unavailableAfterMs": 1,
+      "restartToHealthMs": 3896,
+      "killToHealthMs": 3897,
+      "killToBusinessCallMs": 4408,
+      "businessCallStatus": 200
+    },
+    {
+      "run": 3,
+      "killedPid": 27312,
+      "at": "2026-10-03T21:29:21.835Z",
+      "unavailableAfterMs": 11,
+      "restartToHealthMs": 3688,
+      "killToHealthMs": 3699,
+      "killToBusinessCallMs": 4216,
+      "businessCallStatus": 200
+    },
+    {
+      "run": 4,
+      "killedPid": 20828,
+      "at": "2026-10-03T21:31:34.605Z",
+      "unavailableAfterMs": 31,
+      "restartToHealthMs": 5581,
+      "killToHealthMs": 5612,
+      "killToBusinessCallMs": 6135,
+      "businessCallStatus": 200
+    }
+  ],
+  "killToHealthMs": {
+    "min": 3699,
+    "avg": 5735,
+    "max": 9730
+  },
+  "killToBusinessCallMs": {
+    "min": 4216,
+    "avg": 6278,
+    "max": 10352
+  }
+}

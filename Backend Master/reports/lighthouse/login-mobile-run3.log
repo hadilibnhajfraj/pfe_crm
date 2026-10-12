@@ -1,0 +1,10 @@
+LanternError: NO_LCP
+    at LargestContentfulPaint.getOptimisticGraph (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/lantern/metrics/LargestContentfulPaint.js:30:19)
+    at LargestContentfulPaint.compute (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/lantern/metrics/Metric.js:46:38)
+    at LargestContentfulPaint.compute (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/lantern/metrics/LargestContentfulPaint.js:63:36)
+    at #createLanternContext (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/Processor.js:275:66)
+    at #computeInsightsForNavigation (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/Processor.js:498:49)
+    at #computeInsights (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/Processor.js:467:47)
+    at TraceProcessor.parse (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/@paulirish/trace_engine/models/trace/Processor.js:122:38)
+    at async TraceEngineResult.runTraceEngine (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/lighthouse/core/computed/trace-engine-result.js:42:5)
+    at async TraceEngineResult.compute_ (file:///C:/Users/bhfha/AppData/Local/npm-cache/_npx/0f94ee7615faf582/node_modules/lighthouse/core/computed/trace-engine-result.js:254:7)

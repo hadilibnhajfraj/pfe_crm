@@ -1,0 +1,167 @@
+{
+  "measuredAt": "2026-10-05T16:29:51.818Z",
+  "target": "http://127.0.0.1:4100/auth/signin",
+  "attemptsSent": 22,
+  "acceptedBeforeBlock": 19,
+  "firstBlockedAttempt": 20,
+  "declaredLimitHeader": "20",
+  "retryAfterSeconds": "591",
+  "validPasswordWhileBlocked": 429,
+  "blocked": true,
+  "attempts": [
+    {
+      "n": 1,
+      "status": 401,
+      "limit": "20",
+      "remaining": "18",
+      "retryAfter": null
+    },
+    {
+      "n": 2,
+      "status": 401,
+      "limit": "20",
+      "remaining": "17",
+      "retryAfter": null
+    },
+    {
+      "n": 3,
+      "status": 401,
+      "limit": "20",
+      "remaining": "16",
+      "retryAfter": null
+    },
+    {
+      "n": 4,
+      "status": 401,
+      "limit": "20",
+      "remaining": "15",
+      "retryAfter": null
+    },
+    {
+      "n": 5,
+      "status": 401,
+      "limit": "20",
+      "remaining": "14",
+      "retryAfter": null
+    },
+    {
+      "n": 6,
+      "status": 401,
+      "limit": "20",
+      "remaining": "13",
+      "retryAfter": null
+    },
+    {
+      "n": 7,
+      "status": 401,
+      "limit": "20",
+      "remaining": "12",
+      "retryAfter": null
+    },
+    {
+      "n": 8,
+      "status": 401,
+      "limit": "20",
+      "remaining": "11",
+      "retryAfter": null
+    },
+    {
+      "n": 9,
+      "status": 401,
+      "limit": "20",
+      "remaining": "10",
+      "retryAfter": null
+    },
+    {
+      "n": 10,
+      "status": 401,
+      "limit": "20",
+      "remaining": "9",
+      "retryAfter": null
+    },
+    {
+      "n": 11,
+      "status": 401,
+      "limit": "20",
+      "remaining": "8",
+      "retryAfter": null
+    },
+    {
+      "n": 12,
+      "status": 401,
+      "limit": "20",
+      "remaining": "7",
+      "retryAfter": null
+    },
+    {
+      "n": 13,
+      "status": 401,
+      "limit": "20",
+      "remaining": "6",
+      "retryAfter": null
+    },
+    {
+      "n": 14,
+      "status": 401,
+      "limit": "20",
+      "remaining": "5",
+      "retryAfter": null
+    },
+    {
+      "n": 15,
+      "status": 401,
+      "limit": "20",
+      "remaining": "4",
+      "retryAfter": null
+    },
+    {
+      "n": 16,
+      "status": 401,
+      "limit": "20",
+      "remaining": "3",
+      "retryAfter": null
+    },
+    {
+      "n": 17,
+      "status": 401,
+      "limit": "20",
+      "remaining": "2",
+      "retryAfter": null
+    },
+    {
+      "n": 18,
+      "status": 401,
+      "limit": "20",
+      "remaining": "1",
+      "retryAfter": null
+    },
+    {
+      "n": 19,
+      "status": 401,
+      "limit": "20",
+      "remaining": "0",
+      "retryAfter": null
+    },
+    {
+      "n": 20,
+      "status": 429,
+      "limit": "20",
+      "remaining": "0",
+      "retryAfter": "591"
+    },
+    {
+      "n": 21,
+      "status": 429,
+      "limit": "20",
+      "remaining": "0",
+      "retryAfter": "591"
+    },
+    {
+      "n": 22,
+      "status": 429,
+      "limit": "20",
+      "remaining": "0",
+      "retryAfter": "591"
+    }
+  ]
+}

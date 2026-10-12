@@ -100,6 +100,13 @@ Confirmer ou rejeter un workflow proposé par une alerte proactive (voir `src/ai
 
 `confirm` EXÉCUTE réellement l'action (via `McpServer.handleMessage()`, avec l'`actingUser` de l'appelant — jamais celui du cron qui a détecté le risque) ; `reject` ne fait qu'écarter la proposition. `404` dans les 3 cas suivants, **jamais distingués** (pour ne jamais révéler qu'un workflow existe pour quelqu'un d'autre) : `workflowId` inconnu, expiré (TTL 48h), ou proposé à un autre utilisateur. Consommé une seule fois — une seconde confirmation/rejet du même `workflowId` renvoie aussi `404`.
 
+### Documents joints (Phase 2) — `POST /ai-copilot/documents`, `GET /ai-copilot/documents`, `DELETE /ai-copilot/documents/:id`
+
+- `POST` : multipart, un seul champ `file` (PDF, DOCX, XLSX, CSV, TXT ; 10 Mo max. ; 10 envois/min). Stockage **en mémoire uniquement** (aucun fichier temporaire, aucun chemin fourni par le client n'est utilisé). Validation extension + signature réelle, garde anti « zip bomb », extraction, découpage, indexation dans la collection RAG `user_documents` (même pipeline que la documentation). `201 { data: { documentId, filename, sourceType, pageCount, chunkCount, uploadedAt, expiresAt } }` — jamais le contenu. Erreurs : `400/413/422/429 { success:false, reason: "DOCUMENT_*", message }`.
+- `GET` : uniquement les documents de l'appelant. `DELETE` : `404 DOCUMENT_NOT_FOUND` si inconnu **ou** appartenant à quelqu'un d'autre (jamais distingués, même pour un admin).
+- `POST /ai-copilot/chat` et `ai-copilot:send` acceptent `documentIds` (5 max.) ; chaque identifiant est revérifié contre l'utilisateur connecté, les autres sont ignorés. Le document reste « actif » dans la conversation pour les questions suivantes.
+- Limites : documents perdus au redémarrage du serveur, expirés après 24 h, 10 documents par utilisateur ; PDF scannés (image) non lus (pas d'OCR).
+
 ## WebSocket — `src/socket.js`, un canal `ai-copilot:*` supplémentaire
 
 Réutilise EXACTEMENT l'authentification/les rooms déjà en place (`user:${id}`, JWT dans le handshake) — voir `PROACTIVE_AI.md` pour le même principe côté alertes proactives. Câblé depuis `src/app.js` (jamais depuis `src/socket.js` lui-même — voir `socket/aiCopilotSocket.js`, en-tête du fichier, pour pourquoi ce choix délibéré : garder `socket.js` léger pour ses propres appelants qui n'ont pas besoin de charger tout le kernel IA/MCP).

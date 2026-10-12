@@ -136,8 +136,8 @@ describe("createLexicalIntentDetector (default, offline)", () => {
     }
   });
 
-  test("'automation', 'business_analysis', 'recommendation', 'data_quality' and 'advanced_search' are the intentional exceptions: requiresTools true with moduleKey null (a cross-module Tool search, not a missing module)", () => {
+  test("'automation', 'business_analysis', 'recommendation', 'data_quality', 'advanced_search', 'engineers', 'entity_lookup', 'crm_analytics' and 'multi_step_task' (Phase 3) are the intentional exceptions: requiresTools true with moduleKey null (a cross-module Tool search, not a missing module)", () => {
     const entries = DEFAULT_INTENT_CATALOG.filter((e) => e.requiresTools && !e.moduleKey);
-    expect(entries.map((e) => e.key)).toEqual(["automation", "business_analysis", "recommendation", "data_quality", "advanced_search"]);
+    expect(entries.map((e) => e.key)).toEqual(["automation", "business_analysis", "recommendation", "data_quality", "advanced_search", "engineers", "entity_lookup", "crm_analytics", "multi_step_task"]);
   });
 });

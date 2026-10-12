@@ -37,11 +37,38 @@ describe("POST /auth/signup — password strength (audit sécurité)", () => {
 
   test("accepts a strong password (upper+lower+digit+special) and creates the account", async () => {
     User.findOne.mockResolvedValue(null);
-    User.create.mockResolvedValue({ id: "u1", email: "new@example.com", role: "user", isActive: false });
+    User.create.mockResolvedValue({ id: "u1", email: "new@example.com", role: "commercial", isActive: false });
     UserProfile.create.mockResolvedValue({});
 
     const res = await request(buildApp()).post("/auth/signup").send({ email: "new@example.com", password: "Str0ng!Pass" });
     expect(res.status).toBe(201);
     expect(User.create).toHaveBeenCalled();
+  });
+});
+
+describe("POST /auth/signup — rôle attribué (vocabulaire des rôles v2)", () => {
+  async function signupAs(email) {
+    User.findOne.mockResolvedValue(null);
+    User.create.mockImplementation(async (data) => ({ id: "u1", ...data }));
+    UserProfile.create.mockResolvedValue({});
+    const res = await request(buildApp()).post("/auth/signup").send({ email, password: "Str0ng!Pass" });
+    expect(res.status).toBe(201);
+    return User.create.mock.calls[0][0];
+  }
+
+  test("toute inscription reçoit le rôle commercial, compte inactif (jamais \"user\")", async () => {
+    const created = await signupAs("nouveau@example.com");
+    expect(created.role).toBe("commercial");
+    expect(created.isActive).toBe(false);
+  });
+
+  test("@probardistribution.com ne détermine plus le rôle : commercial, jamais commercial_sedentaire automatiquement", async () => {
+    const created = await signupAs("quelquun@probardistribution.com");
+    expect(created.role).toBe("commercial");
+  });
+
+  test("l'e-mail accueil conserve le rôle accueil", async () => {
+    const created = await signupAs("accueilcbif@gmail.com");
+    expect(created.role).toBe("accueil");
   });
 });

@@ -316,8 +316,12 @@ describe("ProjectAgent — comportement par défaut inchangé (non-régression)"
     );
     const agent = createProjectAgent({ chatModel, tools: [listTool], workflowEngine: new LangChainWorkflowEngine() });
 
-    const result = await agent.execute({ intent: { name: "projects" }, message: "Montre-moi les projets.", user: USER, conversationId: null });
+    const result = await agent.execute({ intent: { name: "projects" }, message: "Quelle est l'étape actuelle du projet Sfax ?", user: USER, conversationId: null });
 
+    // « Montre-moi les projets. » était l'exemple d'origine : c'est désormais
+    // une liste simple, servie sans modèle (voir
+    // test/ai.agents.projectAgent.listAll.test.js). Une question précise sur
+    // un projet reste, elle, sur le chemin tool-calling.
     expect(result.answer).toBe("Voici les projets.");
     expect(listTool.invoke).toHaveBeenCalledWith({ mine: true });
     // Toujours distinct du chemin déterministe d'attention (arguments fixes

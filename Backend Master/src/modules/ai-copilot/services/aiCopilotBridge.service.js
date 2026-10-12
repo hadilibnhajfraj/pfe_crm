@@ -52,6 +52,10 @@ const { createCopilotMeeting } = require("../../../services/meetingCopilotSync.s
 // restriction — que ce soit le middleware Express ou RoleCapabilityAuditAgent
 // (via CapabilityMatrixService) qui la consulte.
 const { ALLOWED_PREFIXES_BY_ROLE } = require("../../../middleware/moduleAccessGuard");
+const { validateCopilotDocument } = require("./copilotDocumentValidation");
+
+// Phase 2 — nombre maximal de documents joints à UN message.
+const MAX_DOCUMENTS_PER_MESSAGE = 5;
 
 const logger = withNamespace("copilot:http");
 
@@ -90,6 +94,13 @@ function getRagPipeline() {
 // long-vivant"). This bridge singleton IS that long-lived process; every
 // caller awaits the SAME promise, so concurrent first-requests never
 // trigger a duplicate ingestion.
+// Phase 2 — documents téléversés : service unique, partagé par le process,
+// construit à partir du MÊME pipeline RAG (même vector store, collection
+// dédiée) — voir src/ai/rag/userDocumentService.js.
+function getUserDocumentService() {
+  return getRagPipeline().userDocumentService;
+}
+
 function ensureRagIngested() {
   if (!ragIngestionPromise) {
     ragIngestionPromise = getRagPipeline().ingestionService.ingestDirectories(DEFAULT_CORPUS_ROOTS);
@@ -157,6 +168,7 @@ function getOrchestratorFor(actingUser) {
       auditLog: security.auditLog,
       createCopilotMeeting,
       moduleAccessByRole: ALLOWED_PREFIXES_BY_ROLE,
+      userDocumentService: getUserDocumentService(),
     });
     orchestratorsByUserId.set(actingUser.id, orchestrator);
     logger.info(`orchestrator built for user ${actingUser.id}`);
@@ -207,15 +219,35 @@ function getOrchestratorFor(actingUser) {
 // supprimé (fonction pure, sa propre suite de tests existante) au cas où un
 // futur canal RÉELLEMENT auxiliaire (jamais vu par IntentDetector) serait
 // construit plus tard.
-async function sendMessageAsActingUser(actingUser, { message, conversationId, pageContext: _pageContext }) {
+//
+// Phase 1 (compréhension naturelle) — `pageContext` est de nouveau utilisé,
+// mais par un canal RÉELLEMENT auxiliaire, conforme à la conclusion
+// ci-dessus : il est transmis tel quel à AIManager.handleMessage() comme
+// donnée STRUCTURÉE ({screen, entity?, recordId?, label?}), stocké par le
+// ContextManager (orchestrator/contextManager.js) et utilisé UNIQUEMENT pour
+// résoudre une référence (« celui-ci » sur une fiche projet ouverte). Il ne
+// transite JAMAIS par le texte classé par IntentDetector (message inchangé),
+// et `recordId` n'est jamais une autorisation : l'Agent le revérifie par un
+// Tool scopé par le RBAC de l'utilisateur.
+//
+// Phase 2 — `documentIds` : documents joints à CE message. Seuls ceux qui
+// appartiennent RÉELLEMENT à l'utilisateur authentifié sont transmis
+// (`filterOwned`, identité issue du JWT) — un identifiant deviné, expiré ou
+// appartenant à un autre utilisateur est ignoré silencieusement, sans jamais
+// révéler son existence.
+async function sendMessageAsActingUser(actingUser, { message, conversationId, pageContext = null, documentIds = [] }) {
   await ensureRagIngested();
   const orchestrator = getOrchestratorFor(actingUser);
   const effectiveConversationId = conversationId || uuidv4();
+  const requestedIds = Array.isArray(documentIds) ? documentIds.slice(0, MAX_DOCUMENTS_PER_MESSAGE) : [];
+  const documents = requestedIds.length ? getUserDocumentService().filterOwned(actingUser.id, requestedIds) : [];
 
   const response = await orchestrator.aiManager.handleMessage({
     message,
     user: actingUser,
     conversationId: effectiveConversationId,
+    pageContext,
+    documents,
   });
 
   if (response.conversationId) {
@@ -229,6 +261,22 @@ async function sendMessageAsActingUser(actingUser, { message, conversationId, pa
 
 async function sendMessage(reqUser, opts) {
   return sendMessageAsActingUser(toActingUser(reqUser), opts);
+}
+
+// ── Phase 2 — documents du Copilot (toujours scopés à l'utilisateur du JWT) ──
+async function uploadDocument(reqUser, file) {
+  const { kind, filename } = validateCopilotDocument(file);
+  return getUserDocumentService().addDocument({ ownerId: toActingUser(reqUser).id, filename, kind, buffer: file.buffer });
+}
+
+function listDocuments(reqUser) {
+  return getUserDocumentService().listDocuments(toActingUser(reqUser).id);
+}
+
+// `false` (jamais une exception) si le document n'existe pas OU appartient à
+// un autre utilisateur — même réponse dans les deux cas (404 côté contrôleur).
+function deleteDocument(reqUser, documentId) {
+  return getUserDocumentService().removeDocument(toActingUser(reqUser).id, documentId);
 }
 
 function listConversations(reqUser, options) {
@@ -316,4 +364,7 @@ module.exports = {
   getConversationHistory,
   confirmProactiveWorkflow,
   rejectProactiveWorkflow,
+  uploadDocument,
+  listDocuments,
+  deleteDocument,
 };

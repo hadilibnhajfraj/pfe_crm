@@ -1,0 +1,8 @@
+[dotenv@17.2.3] injecting env (37) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+OK   C01 [Question simple] Salutation / capacités — HTTP 200, 58665 ms, réponse de 281 caractères, base inchangée
+OK   C02 [Tool Calling] « Quels sont mes projets ? » (commercial) — outils appelés : list_projects ; 29518 ms
+OK   C03 [Question métier] « Donne-moi les projets en cours. » (superadmin) — outils : list_projects ; 537 ms
+OK   C04 [Accès aux données] « Combien de contacts commerciaux ai-je ? » (commercial sédentaire) — outils : get_commercial_contact_kpi ; 115 ms
+OK   C05 [Accès aux données] « Quelles sont les machines actives ? » (RLA) — outils : get_industrial_statistics ; 240 ms
+OK   C06 [RBAC] Le RLA demande les projets commerciaux — outils : list_projects ; fuites de projets : 0
+OK   C07 [RBAC] Le commercial demande les fiches de production PROMESH — outils : aucun ; outils industriels ayant répondu : 0

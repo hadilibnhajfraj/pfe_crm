@@ -34,23 +34,26 @@ function buildDeps(agentRegistry) {
 }
 
 describe("agents/manifest", () => {
-  test("declares exactly the 19 specialized Agents (11 d'origine + BusinessAnalystAgent + RecommendationAgent + DataQualityAgent + AdvancedSearchAgent + MeetingAgent + RoleCapabilityAuditAgent + HRAgent + PorPromeshAgent)", () => {
-    expect(defaultAgentFactories).toHaveLength(19);
+  test("declares exactly the 23 specialized Agents (11 d'origine + BusinessAnalystAgent + RecommendationAgent + DataQualityAgent + AdvancedSearchAgent + MeetingAgent + RoleCapabilityAuditAgent + HRAgent + PorPromeshAgent + DocumentAgent + TaskPlannerAgent + AnalyticsAgent + EntityLookupAgent)", () => {
+    expect(defaultAgentFactories).toHaveLength(23);
   });
 
-  test("loadDefaultAgents registers all 19 into the given AgentRegistry", () => {
+  test("loadDefaultAgents registers all 23 into the given AgentRegistry", () => {
     const registry = new AgentRegistry();
     loadDefaultAgents(registry, buildDeps(registry));
-    expect(registry.list()).toHaveLength(19);
+    expect(registry.list()).toHaveLength(23);
     expect(registry.list().map((a) => a.name).sort()).toEqual(
       [
         "advanced_search_agent",
+        "analytics_agent",
         "assistant_agent",
         "automation_agent",
         "business_analyst_agent",
         "commercial_agent",
         "crm_assistant_agent",
         "data_quality_agent",
+        "document_agent",
+        "entity_lookup_agent",
         "hr_agent",
         "industrial_agent",
         "kpi_agent",
@@ -63,6 +66,7 @@ describe("agents/manifest", () => {
         "recommendation_agent",
         "reporting_agent",
         "role_capability_audit_agent",
+        "task_planner_agent",
       ].sort()
     );
   });

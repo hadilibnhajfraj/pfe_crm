@@ -1,4 +1,5 @@
 const svc = require("../services/project.service");
+const { scopeListQuery } = require("../policies/projectAccess.policy");
 const projectRepo = require("../repositories/project.repository");
 const { computeCompletion } = require("../utils/project.completion");
 const ProjectAction = require("../../../models/ProjectAction");
@@ -182,7 +183,7 @@ async function listProjects(req, res) {
   try {
     console.log("=== USER FILTER ===");
     console.log(req.query.userId);
-    const result = await svc.listProjects(req.query, req.user.sub);
+    const result = await svc.listProjects(scopeListQuery(req.query, req.user), req.user.sub);
     console.log("PROJECT COUNT AFTER FILTER");
     console.log(result.stats?.total);
     res.json(result);

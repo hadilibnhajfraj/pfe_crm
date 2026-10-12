@@ -19,7 +19,7 @@ function createGetCommercialContactKpiTool() {
     description:
       "KPI des contacts commerciaux : globaux pour un rôle admin-tier, personnels (les siens) pour un commercial.",
     inputSchema: Joi.object({}),
-    requiredRoles: ["commercial", ...ADMIN_TIER_ROLES],
+    requiredRoles: ["commercial_sedentaire", ...ADMIN_TIER_ROLES],
     run: async (_input, { actingUser }) => {
       return ADMIN_TIER_ROLES.includes(actingUser.role)
         ? kpiService.getCommercialContactKPI(null)

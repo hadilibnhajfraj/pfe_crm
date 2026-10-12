@@ -6,6 +6,15 @@ const { detectMissingFields, buildFollowUpQuestion } = require("./missingInfoDet
 const { buildExplainability, buildErrorExplainability, buildClarificationExplainability } = require("./explainabilityBuilder");
 
 const GENERIC_ERROR_MESSAGE = "Le Copilot a rencontré une erreur interne.";
+// Refus RBAC (Agent ou intention) : le détail technique (rôle, nom de
+// l'Agent) reste dans le journal du serveur ; l'utilisateur lit un message
+// clair, et l'interface ne propose pas « Réessayer » (le résultat serait le même).
+const PERMISSION_DENIED_MESSAGE = "Votre rôle ne vous autorise pas à utiliser cette fonction de l'assistant. Si vous pensez qu'il s'agit d'une erreur, contactez un administrateur.";
+
+function isPermissionError(error) {
+  const name = error && error.constructor && error.constructor.name;
+  return name === "AgentPermissionError" || name === "OrchestratorPermissionError" || name === "PermissionDeniedError";
+}
 
 /**
  * # ResponseBuilder — enveloppe de réponse stable pour un tour de conversation
@@ -128,7 +137,8 @@ class ResponseBuilder {
   }
 
   buildErrorResponse(error, { conversationId = null, intent = null } = {}) {
-    const message = error instanceof AiError ? error.message : GENERIC_ERROR_MESSAGE;
+    const denied = isPermissionError(error);
+    const message = denied ? PERMISSION_DENIED_MESSAGE : error instanceof AiError ? error.message : GENERIC_ERROR_MESSAGE;
     return {
       conversationId,
       intent: intent ? intent.name : null,
@@ -143,23 +153,28 @@ class ResponseBuilder {
       dataQuality: [],
       followUpQuestion: null,
       agent: null,
-      error: { message },
+      error: denied ? { message, code: "PERMISSION_DENIED", retryable: false } : { message },
       generatedAt: new Date().toISOString(),
     };
   }
 
-  buildClarificationResponse({ conversationId = null, message = "Pouvez-vous préciser votre demande ?" } = {}) {
+  // `options` (Phase 1, compréhension naturelle — voir semanticIntentResolver.js) :
+  // choix proposés à l'utilisateur plutôt qu'un « je ne comprends pas ». Ajoutés
+  // à la réponse sous forme de liste numérotée ET exposés dans `suggestions`
+  // (format déjà existant {id, label, reason}) — jamais exécutés automatiquement.
+  buildClarificationResponse({ conversationId = null, message = "Pouvez-vous préciser votre demande ?", options = [] } = {}) {
+    const answer = options.length ? [message, ...options.map((o, i) => `${i + 1}. ${o.label}`)].join("\n") : message;
     return {
       conversationId,
       intent: null,
       mode: "clarification",
-      answer: message,
+      answer,
       explanation: null,
       explainability: buildClarificationExplainability(),
       pendingAction: null,
       citations: [],
       toolCalls: [],
-      suggestions: [],
+      suggestions: options.map((o) => ({ id: o.id, label: o.label, reason: o.reason || null })),
       dataQuality: [],
       followUpQuestion: null,
       agent: null,

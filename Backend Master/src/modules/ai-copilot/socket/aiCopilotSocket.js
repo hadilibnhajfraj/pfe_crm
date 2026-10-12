@@ -39,7 +39,7 @@ const defaultWait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 function attach(io, { chunkDelayMs = DEFAULT_CHUNK_DELAY_MS, wait = defaultWait } = {}) {
   io.on("connection", (socket) => {
     socket.on("ai-copilot:send", async (payload) => {
-      const { message, conversationId = null, pageContext = null } = payload || {};
+      const { message, conversationId = null, pageContext = null, documentIds = [] } = payload || {};
       const userId = socket.user.id;
 
       if (typeof message !== "string" || !message.trim()) {
@@ -58,7 +58,10 @@ function attach(io, { chunkDelayMs = DEFAULT_CHUNK_DELAY_MS, wait = defaultWait 
       emitToUser(userId, "ai-copilot:typing", { conversationId });
 
       try {
-        const response = await bridge.sendMessageAsActingUser(socket.user, { message, conversationId, pageContext });
+        const safeDocumentIds = Array.isArray(documentIds) ? documentIds.filter((id) => typeof id === "string" && id.length <= 64) : [];
+        const turn = { message, conversationId, pageContext };
+        if (safeDocumentIds.length) turn.documentIds = safeDocumentIds;
+        const response = await bridge.sendMessageAsActingUser(socket.user, turn);
 
         const chunks = chunkAnswerForStreaming(response.answer);
         for (const chunk of chunks) {

@@ -18,7 +18,7 @@ const { LangChainWorkflowEngine } = require("../src/ai/langchain/workflow");
 const { PendingActionStore } = require("../src/ai/orchestrator/pendingActionStore");
 
 const ADMIN = { id: "u-admin", role: "superadmin" };
-const COMMERCIAL = { id: "u-commercial", role: "commercial" };
+const COMMERCIAL = { id: "u-commercial", role: "commercial_sedentaire" };
 
 function chatModelNeverCalled() {
   return new LlmProviderChatModel({ llmProvider: { complete: jest.fn(async () => { throw new Error("LLM ne devrait jamais être sollicité — chemin déterministe"); }) } });

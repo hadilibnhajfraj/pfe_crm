@@ -4,6 +4,10 @@ const { OrchestratorError, ConfigurationError, OrchestratorPermissionError } = r
 const { createOrchestratorLogger } = require("./logger");
 const { isAuthorized } = require("../utils/authorization");
 const { DEFAULT_INTENT_CATALOG } = require("./intentCatalog");
+const { classifyDecision, TASK_PLAN_PENDING_TYPE } = require("../planning/confirmationManager");
+const { isFicheCreationFollowUp, INDUSTRIAL_CREATION_TYPE, PROMESH_CREATION_TYPE } = require("../reasoning/industrialRequest");
+const { buildAnalyticsErrorAnswer } = require("../reasoning/analyticsAnswerBuilder");
+const { UNROUTED_INTENTS } = require("../routing/queryRouter");
 
 const REQUIRED_COLLABORATORS = ["conversationManager", "intentDetector", "agentRouter", "toolRouter", "workflowManager", "responseBuilder"];
 
@@ -53,7 +57,13 @@ function wasSuccessfulCalendarWrite(step) {
 // — AutomationAgent n'a pas ce problème : ses propres marqueurs de
 // confirmation SONT déjà les mots-clés qui le font retrouver par
 // IntentDetector, jamais un conflit avec une autre intention.
-const PENDING_ACTION_TYPE_TO_INTENT_KEY = { create_meeting: "meetings" };
+const PENDING_ACTION_TYPE_TO_INTENT_KEY = {
+  create_meeting: "meetings",
+  [TASK_PLAN_PENDING_TYPE]: "multi_step_task",
+  [INDUSTRIAL_CREATION_TYPE]: "industrial",
+  [PROMESH_CREATION_TYPE]: "por_promesh",
+};
+const FICHE_CREATION_TYPES = new Set([INDUSTRIAL_CREATION_TYPE, PROMESH_CREATION_TYPE]);
 
 // Reconstruit un Intent EXACTEMENT comme IntentDetector.detect() le ferait
 // pour cette clé — jamais un objet inventé, toujours une entrée réelle du
@@ -262,6 +272,23 @@ class AIManager {
     continuityResolver = null,
     pendingActionStore = null,
     intentCatalog = DEFAULT_INTENT_CATALOG,
+    // Phase 1 — compréhension naturelle (voir entityExtractor.js,
+    // contextManager.js, semanticIntentResolver.js). Tous optionnels : sans
+    // eux, comportement strictement inchangé (tests existants inclus).
+    entityExtractor = null,
+    contextManager = null,
+    semanticResolver = null,
+    // Phase 3 — détection des demandes composées (planning/taskPlanner.js).
+    // Optionnel : sans lui, comportement strictement inchangé.
+    taskPlanner = null,
+    // Analytique CRM (analytics/analyticsQueryParser.js). Optionnel : sans
+    // lui, comportement strictement inchangé.
+    analyticsParser = null,
+    // Personne / société / promoteur précis (routing/queryRouter.js).
+    // Optionnels : sans eux, comportement strictement inchangé.
+    queryRouter = null,
+    engineerProbe = null,
+    entityProbe = null,
     logger = createOrchestratorLogger("manager"),
   } = {}) {
     const collaborators = { conversationManager, intentDetector, agentRouter, toolRouter, workflowManager, responseBuilder };
@@ -282,6 +309,14 @@ class AIManager {
     this.contextResolver = contextResolver;
     this.continuityResolver = continuityResolver;
     this.pendingActionStore = pendingActionStore;
+    this.entityExtractor = entityExtractor;
+    this.contextManager = contextManager;
+    this.semanticResolver = semanticResolver;
+    this.taskPlanner = taskPlanner;
+    this.analyticsParser = analyticsParser;
+    this.queryRouter = queryRouter;
+    this.engineerProbe = engineerProbe;
+    this.entityProbe = entityProbe;
     this._intentCatalogByKey = new Map(intentCatalog.map((entry) => [entry.key, entry]));
     this.logger = logger;
   }
@@ -294,11 +329,19 @@ class AIManager {
   // si aucun PendingAction pertinent n'est actif pour CET utilisateur sur
   // CETTE conversation — le flux normal (IntentDetector/ContextResolver)
   // reprend alors la main sans aucune intervention.
-  _resolvePendingAgentIntent(conversationId, user) {
+  _resolvePendingAgentIntent(conversationId, user, message = "") {
     if (!this.pendingActionStore) return null;
     const pending = this.pendingActionStore.peek(conversationId);
     if (!pending) return null;
     if (!user || pending.actingUserId !== user.id) return null;
+    // Phase 3 — un plan en attente ne capte QUE la réponse « confirme » /
+    // « annule » ; toute autre question suit le routage normal (le plan
+    // reste confirmable jusqu'à son expiration).
+    if (pending.type === TASK_PLAN_PENDING_TYPE && !classifyDecision(message)) return null;
+    // Création de fiche en cours : seuls « confirme », « annule » ou un champ
+    // attendu (machine, poste) y reviennent ; toute autre demande suit le
+    // routage normal.
+    if (FICHE_CREATION_TYPES.has(pending.type) && !isFicheCreationFollowUp(message)) return null;
     const catalogKey = PENDING_ACTION_TYPE_TO_INTENT_KEY[pending.type];
     if (!catalogKey) return null;
     const entry = this._intentCatalogByKey.get(catalogKey);
@@ -306,8 +349,17 @@ class AIManager {
     return buildIntentFromCatalogEntry(entry);
   }
 
-  async handleMessage({ message, user, conversationId = null }) {
+  // `pageContext` (Phase 1) : écran Flutter courant ({screen, entity?, recordId?, label?}).
+  // Jamais concaténé au texte classé (voir AI-Business-Copilot/33_PAGE_CONTEXT_INTENT_CONTAMINATION.md) :
+  // stocké dans le ContextManager et utilisé UNIQUEMENT pour résoudre une
+  // référence (« celui-ci ») — jamais comme autorisation.
+  // `documents` (Phase 2) : documents joints à CE message ({documentId, filename}),
+  // déjà vérifiés comme appartenant à `user` par le bridge.
+  async handleMessage({ message, user, conversationId = null, pageContext = null, documents = [] }) {
     let intent = null;
+    let entities = null;
+    let turnContext = null;
+    let lookupRoute = null;
     // Étape 17 (AI-Business-Copilot/11_MEETING_AGENT_FIX.md) —
     // observabilité : chaque tour, réussi ou non, journalise sa durée via
     // le MÊME auditLog déjà en place (jamais un second canal de logs) —
@@ -339,13 +391,35 @@ class AIManager {
       // branche) — un "oui" enrichi en "oui (à propos de reunion)" ferait
       // échouer MeetingAgent.classifyConfirmation() (message trop long pour
       // son marqueur faible).
-      intent = this._resolvePendingAgentIntent(conversationId, user);
+      intent = this._resolvePendingAgentIntent(conversationId, user, effectiveMessage);
       const viaPendingActionBypass = Boolean(intent);
 
       if (intent) {
         this.logger.info(`PendingAction actif ("${intent.name}") pour cette conversation : routage direct, IntentDetector/ContextResolver non appelés pour ce tour.`);
         await this.conversationManager.recordUserMessage(conversationId, effectiveMessage);
       } else {
+        const userId = user && user.id;
+        if (this.contextManager && pageContext) {
+          this.contextManager.setPageContext(conversationId, userId, pageContext);
+        }
+        entities = this.entityExtractor ? this.entityExtractor(effectiveMessage) : null;
+        const attachedThisTurn = Array.isArray(documents) && documents.length > 0;
+        if (this.contextManager && attachedThisTurn) {
+          this.contextManager.setActiveDocuments(conversationId, userId, documents);
+        }
+
+        // Personne / société / promoteur PRÉCIS (« Zakariah Derbel donne-moi
+        // plus de détails sur cet ingénieur », « Et ses projets ? ») : route
+        // calculée avant tout, à partir du message BRUT et du sujet de la
+        // conversation — un nom précis n'est jamais une demande de liste.
+        if (this.queryRouter && this._intentCatalogByKey.has("entity_lookup")) {
+          const preview = this.contextManager ? this.contextManager.buildTurnContext({ conversationId, userId, entities }) : null;
+          lookupRoute = this.queryRouter.route(effectiveMessage, {
+            focus: this.contextManager ? this.contextManager.getFocusEntity(conversationId, userId) : null,
+            currentProject: preview ? preview.currentProject : null,
+          });
+        }
+
         // Mémoriser le contexte — références et reformulations (voir
         // CONVERSATION_CONTEXT.md). Lu AVANT recordUserMessage ci-dessous,
         // pour que l'historique reflète les tours PRÉCÉDENTS uniquement, pas
@@ -358,7 +432,18 @@ class AIManager {
           const currentTopic = this.conversationManager.getCurrentTopic(conversationId);
           const resolution = this.contextResolver.resolve({ message: effectiveMessage, history, currentTopic });
 
-          if (resolution.ambiguous) {
+          const structuredPreview =
+            resolution.ambiguous && this.contextManager
+              ? this.contextManager.buildTurnContext({ conversationId, userId, entities })
+              : null;
+          // Un document actif lève aussi l'ambiguïté (« ceux mentionnés dans ce
+          // document ») : la question porte sur le document joint.
+          const resolvedByStructuredContext = Boolean(
+            structuredPreview &&
+              ((structuredPreview.inferredIntent && !structuredPreview.clarification) || (structuredPreview.documents && structuredPreview.documents.length))
+          );
+
+          if (resolution.ambiguous && !resolvedByStructuredContext && !lookupRoute) {
             this.logger.info("message ambigu : référence détectée sans sujet antérieur connu, demande de clarification");
             await this.conversationManager.recordUserMessage(conversationId, effectiveMessage);
             await this._audit({ actor: user, action: "conversation_turn", resource: null, outcome: "flagged", conversationId, metadata: { reason: "ambiguous_reference", executionTimeMs: Date.now() - turnStartedAt } });
@@ -396,6 +481,136 @@ class AIManager {
           intent = continuedIntent;
         }
 
+        // Phase 3 — demande composée (lecture + action pour chacun) : décidée
+        // de façon déterministe par TaskPlanner.detect(), avant tout le reste.
+        let taskFocused = false;
+        if (this.taskPlanner && this._intentCatalogByKey.has("multi_step_task") && this.taskPlanner.detect(effectiveMessage, entities)) {
+          this.logger.info(`demande composée : "${intent.name}" -> "multi_step_task"`);
+          intent = { ...buildIntentFromCatalogEntry(this._intentCatalogByKey.get("multi_step_task")), resolvedBy: "task_planner" };
+          taskFocused = true;
+        }
+
+        // Personne / société / promoteur précis : prioritaire sur la liste des
+        // ingénieurs et sur l'analytique (voir QueryRouter). « Les projets de
+        // X » sans le mot « ingénieur » n'est retenu que si X est un ingénieur
+        // du CRM — sinon le routage existant (projets d'un commercial) s'applique.
+        // Liste simple d'une entité qui a déjà son Agent (projets, contacts,
+        // demandes RH / maintenance) : si la détection lexicale n'a rien
+        // reconnu de précis (formulation anglaise ou russe), la demande lui est
+        // confiée — jamais une clarification pour « liste des X ».
+        if (!taskFocused && lookupRoute && lookupRoute.delegateIntent) {
+          const delegate = this._intentCatalogByKey.get(lookupRoute.delegateIntent);
+          // Délégation aussi quand le routeur indique explicitement quelle
+          // intention lexicale il corrige (« projets dont le client est refusé »
+          // est une question sur les contacts refusés).
+          const unrouted = UNROUTED_INTENTS.has(intent.name) || (Array.isArray(lookupRoute.overrideIntents) && lookupRoute.overrideIntents.includes(intent.name));
+          this._routerTrace(lookupRoute, { lexicalIntent: intent.name, accepted: Boolean(delegate) && (unrouted || intent.name === lookupRoute.delegateIntent) });
+          if (delegate && unrouted) {
+            this.logger.info(`liste "${lookupRoute.entity}" : "${intent.name}" -> "${delegate.key}"`);
+            intent = { ...buildIntentFromCatalogEntry(delegate), resolvedBy: "entity_list" };
+          }
+        }
+        if (!taskFocused && lookupRoute && !lookupRoute.delegateIntent) {
+          let accepted = this.queryRouter.accepts(lookupRoute, intent.name);
+          if (accepted && lookupRoute.requiresEngineerMatch) {
+            accepted = Boolean(this.engineerProbe) && (await this.engineerProbe(lookupRoute.target));
+            // « Les projets de 2M Batiment » : pas un ingénieur, mais une société du CRM.
+            if (!accepted && this.entityProbe) {
+              const known = await this.entityProbe(lookupRoute.target);
+              if (known && known.company && !known.person) {
+                lookupRoute = { ...lookupRoute, entity: "company", requiresEngineerMatch: false };
+                accepted = true;
+              }
+            }
+          }
+          // « Quels projets sont associés à X ? » : retenu seulement si X est une
+          // personne ou une société connue du CRM — sinon le routage existant
+          // (projets d'un commercial nommé) s'applique.
+          if (accepted === "known") {
+            const known = this.entityProbe ? await this.entityProbe(lookupRoute.target) : null;
+            accepted = Boolean(known && (known.person || known.company));
+          }
+          // « Informations de X » classé « projets » (ou contacts) : X est-il une
+          // personne du CRM ? Une personne connue l'emporte ; un nom inconnu
+          // partout (ni personne ni projet) reçoit « introuvable dans le CRM »
+          // plutôt qu'une réponse tirée de la documentation.
+          if (accepted === "probe") {
+            const known = this.entityProbe ? await this.entityProbe(lookupRoute.target) : null;
+            accepted = Boolean(known) && (known.person || (intent.name === "projects" && !known.project));
+          }
+          this._routerTrace(lookupRoute, { lexicalIntent: intent.name, accepted });
+          if (accepted) {
+            this.logger.info(`entité précise : "${intent.name}" -> "entity_lookup" (${lookupRoute.entity}/${lookupRoute.operation}, source ${lookupRoute.source})`);
+            intent = { ...buildIntentFromCatalogEntry(this._intentCatalogByKey.get("entity_lookup")), resolvedBy: "query_router", query: lookupRoute };
+            taskFocused = true;
+          }
+        }
+
+        // Analytique CRM — comptage / classement / répartition sur les données
+        // du CRM (« Quel ingénieur a le plus de projets ? », FR/EN/RU) : un Tool
+        // statistique, jamais la documentation. Déterministe, avant le reste.
+        // Même parseur pour les ingénieurs (intention `engineers` : liste,
+        // ingénieur d'un projet précis).
+        // « Afficher les suivants » : page suivante de la liste des ingénieurs
+        // en cours — uniquement si une liste vient d'être affichée.
+        const listCursor = !taskFocused && this.analyticsParser && this.contextManager && this.analyticsParser.isNextPage(effectiveMessage) ? this.contextManager.getListCursor(conversationId, userId) : null;
+        if (listCursor && listCursor.entity === "engineer" && this._intentCatalogByKey.has("engineers")) {
+          this.logger.info(`page suivante de la liste des ingénieurs (à partir de ${listCursor.nextOffset})`);
+          intent = { ...buildIntentFromCatalogEntry(this._intentCatalogByKey.get("engineers")), resolvedBy: "list_cursor", listCursor };
+          taskFocused = true;
+        }
+        if (listCursor && listCursor.entity === "project" && this._intentCatalogByKey.has("projects")) {
+          this.logger.info(`page suivante de la liste des projets (à partir de ${listCursor.nextOffset})`);
+          intent = { ...buildIntentFromCatalogEntry(this._intentCatalogByKey.get("projects")), resolvedBy: "list_cursor", listCursor };
+          taskFocused = true;
+        }
+        if (listCursor && ["promoter", "company"].includes(listCursor.entity) && this._intentCatalogByKey.has("entity_lookup")) {
+          this.logger.info(`page suivante de la liste (${listCursor.entity}, à partir de ${listCursor.nextOffset})`);
+          const language = listCursor.language || "fr";
+          const query = { language, source: "crm", mode: "CRM_ONLY", entity: listCursor.entity, operation: "list", target: null, offset: listCursor.nextOffset, fields: [], fromContext: true, crmSearch: true, webSearch: false, ...(listCursor.options || {}) };
+          intent = { ...buildIntentFromCatalogEntry(this._intentCatalogByKey.get("entity_lookup")), resolvedBy: "list_cursor", query };
+          taskFocused = true;
+        }
+        const crmQuery = !taskFocused && this.analyticsParser ? this.analyticsParser.parse(effectiveMessage) : null;
+        const crmIntentKey = crmQuery && crmQuery.domain === "engineer" ? "engineers" : "crm_analytics";
+        this._debugTrace({
+          stage: "intent",
+          message: effectiveMessage,
+          language: crmQuery ? crmQuery.language : undefined,
+          intent: intent.name,
+          confidence: intent.confidence,
+          entities: entities ? { entityType: entities.entityType, ownership: entities.ownership } : null,
+          crmQuery: crmQuery ? `${crmQuery.domain}/${crmQuery.groupBy || "-"}/${crmQuery.operation}` : null,
+        });
+        if (crmQuery && this._intentCatalogByKey.has(crmIntentKey) && this.analyticsParser.shouldRoute(crmQuery, intent.name)) {
+          this.logger.info(`question de données CRM : "${intent.name}" -> "${crmIntentKey}"`);
+          // Liste des ingénieurs / ingénieur d'un projet : nouvelle demande,
+          // sans cible — le sujet précédent (une personne) n'est pas repris.
+          if (crmQuery.domain === "engineer") {
+            this._routerTrace(
+              { language: crmQuery.language, entity: "engineer", operation: crmQuery.operation, target: crmQuery.projectName || null, source: "crm", crmSearch: true, webSearch: false, fromContext: false },
+              { lexicalIntent: intent.name, accepted: true }
+            );
+          }
+          intent = { ...buildIntentFromCatalogEntry(this._intentCatalogByKey.get(crmIntentKey)), resolvedBy: "analytics" };
+          taskFocused = true;
+        }
+
+        // Phase 2 — question sur un document joint : décidée AVANT le contrôle
+        // d'ambiguïté et la résolution sémantique (voir
+        // SemanticIntentResolver.resolveDocumentFocus pour les règles). Sans
+        // document actif dans la conversation, rien ne change.
+        let documentFocused = false;
+        if (!taskFocused && this.semanticResolver && this.contextManager) {
+          const docPreview = this.contextManager.buildTurnContext({ conversationId, userId, entities, intentName: intent.name });
+          const documentIntent = this.semanticResolver.resolveDocumentFocus({ intent, message: effectiveMessage, entities, turnContext: docPreview, attachedThisTurn });
+          if (documentIntent) {
+            this.logger.info(`question documentaire : "${intent.name}" -> "${documentIntent.name}"`);
+            intent = documentIntent;
+            documentFocused = true;
+          }
+        }
+
         // Étape 11 (AI-Business-Copilot/10_INTENT_ROUTING_FIX.md) : "si la
         // confiance est faible, ne pas choisir arbitrairement un Agent —
         // poser une question de clarification". `intent.ambiguous` est un
@@ -404,7 +619,7 @@ class AIManager {
         // validés du corpus, donc aucune régression de routage existant.
         // Toujours construite à partir de DEUX intentions réelles du
         // catalogue (`intent`/`intent.alternateIntent`), jamais inventée.
-        if (intent.ambiguous && intent.alternateIntent) {
+        if (!documentFocused && !taskFocused && intent.ambiguous && intent.alternateIntent) {
           this.logger.info(`intention ambiguë : "${intent.name}" vs "${intent.alternateIntent.name}", demande de clarification`);
           await this._audit({
             actor: user,
@@ -418,6 +633,40 @@ class AIManager {
             conversationId,
             message: `Votre question peut correspondre à deux besoins différents : ${intent.description} ou ${intent.alternateIntent.description} Pouvez-vous préciser votre demande ?`,
           });
+        }
+
+        // Phase 1 — compréhension au-delà des mots-clés : UNIQUEMENT quand la
+        // détection lexicale n'a rien trouvé de précis (general_chat), voir
+        // semanticIntentResolver.js. Une intention lexicale précise n'est
+        // jamais remplacée.
+        if (this.semanticResolver && !documentFocused && !taskFocused) {
+          const preview = this.contextManager ? this.contextManager.buildTurnContext({ conversationId, userId, entities, intentName: intent.name }) : null;
+          const semantic = await this.semanticResolver.resolve({ intent, message: effectiveMessage, entities, turnContext: preview, user });
+          if (semantic.clarification) {
+            this._debugTrace({ stage: "clarification", intent: intent.name, confidence: intent.confidence, fallback: "semantic_clarification", reason: semantic.intent.resolvedBy, entities: entities ? { entityType: entities.entityType } : null });
+            await this._audit({ actor: user, action: "conversation_turn", resource: intent.name, outcome: "flagged", conversationId, metadata: { reason: semantic.intent.resolvedBy, confidence: intent.confidence, executionTimeMs: Date.now() - turnStartedAt } });
+            const clarificationResponse = this.responseBuilder.buildClarificationResponse({ conversationId, message: semantic.clarification.message, options: semantic.clarification.options });
+            await this.conversationManager.recordAssistantMessage(conversationId, clarificationResponse.answer, { intent: null, mode: "clarification" });
+            return clarificationResponse;
+          }
+          if (semantic.intent.name !== intent.name) {
+            this.logger.info(`intention affinée : "${intent.name}" -> "${semantic.intent.name}" (${semantic.intent.resolvedBy}, confiance ${semantic.intent.confidence})`);
+          }
+          intent = semantic.intent;
+        }
+
+        // Une question de DONNÉES CRM (comptage, classement…) que l'analytique
+        // ne couvre pas encore ne part jamais vers la documentation : réponse
+        // honnête sur ce qui peut être analysé, au lieu de « je ne trouve pas
+        // cette information dans la documentation ».
+        if (intent.name === "general_chat" && this.analyticsParser && this.analyticsParser.looksLikeCrmDataQuestion(effectiveMessage)) {
+          await this._audit({ actor: user, action: "conversation_turn", resource: intent.name, outcome: "flagged", conversationId, metadata: { reason: "crm_data_question_unsupported", executionTimeMs: Date.now() - turnStartedAt } });
+          const clarificationResponse = this.responseBuilder.buildClarificationResponse({
+            conversationId,
+            message: buildAnalyticsErrorAnswer("notUnderstood", this.analyticsParser.languageOf(effectiveMessage)),
+          });
+          await this.conversationManager.recordAssistantMessage(conversationId, clarificationResponse.answer, { intent: null, mode: "clarification" });
+          return clarificationResponse;
         }
       }
 
@@ -448,11 +697,29 @@ class AIManager {
         throw new OrchestratorPermissionError(intent.name, user && user.role);
       }
 
+      // Phase 1 — contexte structuré du tour (filtres hérités, référence
+      // résolue, écran courant), transmis à l'Agent. Une référence qui ne
+      // peut pas être résolue (« le deuxième » sans liste, « celui-ci » sans
+      // fiche) donne une question de clarification, jamais une supposition.
+      if (this.contextManager && !viaPendingActionBypass) {
+        turnContext = this.contextManager.buildTurnContext({ conversationId, userId: user && user.id, entities, intentName: intent.name });
+        if (turnContext.clarification && turnContext.entityType && turnContext.inferredIntent === intent.name) {
+          await this._audit({ actor: user, action: "conversation_turn", resource: intent.name, outcome: "flagged", conversationId, metadata: { reason: "unresolved_reference", executionTimeMs: Date.now() - turnStartedAt } });
+          const clarificationResponse = this.responseBuilder.buildClarificationResponse({ conversationId, message: turnContext.clarification });
+          await this.conversationManager.recordAssistantMessage(conversationId, clarificationResponse.answer, { intent: intent.name, mode: "clarification" });
+          return clarificationResponse;
+        }
+      }
+
       const agent = this.agentRouter.select(intent, user);
 
       let outcome;
       if (agent) {
-        const agentResult = await agent.execute({ intent, message: detectionMessage, user, conversationId });
+        // `context` n'est transmis que si la Phase 1 est active : sans
+        // ContextManager, l'appel reste strictement identique à l'existant.
+        const executeArgs = { intent, message: detectionMessage, user, conversationId };
+        if (this.contextManager) executeArgs.context = turnContext;
+        const agentResult = await agent.execute(executeArgs);
         outcome = {
           mode: "agent",
           agentName: agent.name,
@@ -462,6 +729,10 @@ class AIManager {
           suggestions: (agentResult && agentResult.suggestions) || [],
           dataQuality: (agentResult && agentResult.dataQuality) || [],
           pendingAction: (agentResult && agentResult.pendingAction) || null,
+          resultSet: (agentResult && agentResult.resultSet) || null,
+          selectedRecord: (agentResult && agentResult.selectedRecord) || null,
+          focusEntity: (agentResult && agentResult.focusEntity) || null,
+          listCursor: (agentResult && agentResult.listCursor) || null,
         };
       } else {
         const tools = this.toolRouter.select(intent, detectionMessage);
@@ -516,6 +787,27 @@ class AIManager {
       if (conversationalTopicClosed) {
         this.conversationManager.clearCurrentTopic(conversationId);
       }
+      // Sujet de la conversation (« Et ses projets ? ») : mis à jour seulement
+      // quand une entité a été identifiée sans ambiguïté.
+      // Liste paginée : la position est mémorisée tant qu'il reste des pages,
+      // et oubliée dès que la conversation passe à autre chose.
+      if (this.contextManager && !viaPendingActionBypass) {
+        this.contextManager.setListCursor(conversationId, user && user.id, outcome.listCursor || null);
+      }
+      if (this.contextManager && outcome.focusEntity) {
+        this.contextManager.setFocusEntity(conversationId, user && user.id, outcome.focusEntity);
+      }
+      if (this.contextManager && !viaPendingActionBypass) {
+        this.contextManager.recordTurn({
+          conversationId,
+          userId: user && user.id,
+          intentName: intent.name,
+          turnContext,
+          resultSet: outcome.resultSet || null,
+          selectedRecord: outcome.selectedRecord || null,
+          toolSteps: outcome.toolSteps || [],
+        });
+      }
       await this._audit({
         actor: user,
         action: "conversation_turn",
@@ -527,10 +819,41 @@ class AIManager {
           agent: outcome.agentName || null,
           entities: intent.entities || [],
           confidence: intent.confidence,
+          // Phase 1 — comment l'intention a été comprise (clés seulement, jamais
+          // les valeurs extraites) ; absent sans les collaborateurs Phase 1.
+          ...(this.semanticResolver || this.contextManager
+            ? {
+                resolvedBy: intent.resolvedBy || "lexical",
+                filters: turnContext ? Object.keys(turnContext.filters) : [],
+                reference: turnContext && turnContext.reference ? turnContext.reference.kind : null,
+              }
+            : {}),
           tools: [...new Set((outcome.toolSteps || []).map((s) => s.tool).filter(Boolean))],
           executionTimeMs: Date.now() - turnStartedAt,
         },
       });
+      if (process.env.AI_DEBUG_TRACE === "true") {
+        const steps = outcome.toolSteps || [];
+        const out = steps.length ? steps[steps.length - 1].output : null;
+        const parsed = typeof out === "string" ? (() => { try { return JSON.parse(out); } catch { return null; } })() : out;
+        const rows = parsed && (parsed.items || parsed.groups || parsed.matches || parsed.data || parsed.contacts);
+        // Tool réellement appelé et volume renvoyé — journal du serveur uniquement.
+        this.logger.info(`[PROBAR_TOOL] tool=${steps.map((x) => x.tool).filter(Boolean).join(",") || "none"}`);
+        this.logger.info(`[PROBAR_RESULT] count=${parsed && Number.isInteger(parsed.total) ? parsed.total : Array.isArray(rows) ? rows.length : "n/a"}`);
+        this._debugTrace({
+          stage: "response",
+          entity: entities ? entities.entityType : null,
+          operation: this.analyticsParser && (intent.name === "engineers" || intent.name === "crm_analytics") ? (this.analyticsParser.parse(effectiveMessage) || {}).operation : undefined,
+          intent: intent.name,
+          resolvedBy: intent.resolvedBy || "lexical",
+          agent: outcome.agentName || null,
+          tool: steps.map((s) => s.tool).filter(Boolean).join(",") || null,
+          toolSuccess: steps.length ? steps.every((s) => s.output !== null && s.output !== undefined && !/^Error:/.test(String(s.output))) : null,
+          resultCount: Array.isArray(rows) ? rows.length : parsed && Number.isInteger(parsed.total) ? parsed.total : null,
+          mode: outcome.mode,
+          ms: Date.now() - turnStartedAt,
+        });
+      }
       return response;
     } catch (err) {
       this.logger.warn(`handleMessage failed: ${err.message}`);
@@ -557,6 +880,30 @@ class AIManager {
   // McpServer._audit()/mcpServer.js : un échec d'écriture de l'audit
   // n'interrompt jamais le tour de conversation réel, et ne fait rien du
   // tout si aucun auditLog n'a été fourni (rétrocompatible par défaut).
+  // Trace de diagnostic `[PROBAR_DEBUG]` — UNIQUEMENT si AI_DEBUG_TRACE=true
+  // (désactivée par défaut). Message tronqué à 200 caractères ; jamais de
+  // JWT, mot de passe, secret ni jeton (aucun de ces champs n'est transmis ici).
+  // Trace `[PROBAR_ROUTER]` — même garde que `[PROBAR_DEBUG]`
+  // (AI_DEBUG_TRACE=true) : pourquoi une question a (ou n'a pas) été traitée
+  // comme la recherche d'une entité précise. Le nom recherché est celui que
+  // l'utilisateur a saisi, tronqué ; jamais de donnée du CRM.
+  _routerTrace(route, { lexicalIntent, accepted }) {
+    if (process.env.AI_DEBUG_TRACE !== "true") return;
+    this.logger.info(`[PROBAR_INTENT] language=${route.language} entity=${route.entity} operation=${route.operation} target=${route.target ? JSON.stringify(String(route.target).slice(0, 80)) : "null"} source=${route.source}`);
+    this.logger.info(
+      `[PROBAR_ROUTER] language=${route.language} entity=${route.entity} operation=${route.operation} target=${route.target ? JSON.stringify(String(route.target).slice(0, 80)) : "null"} ` +
+        `source=${route.source} crmSearch=${route.crmSearch} webSearch=${route.webSearch} fromContext=${route.fromContext} lexicalIntent=${lexicalIntent} accepted=${accepted}`
+    );
+  }
+
+  _debugTrace(fields) {
+    if (process.env.AI_DEBUG_TRACE !== "true") return;
+    const parts = Object.entries(fields)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => `${k}=${k === "message" ? JSON.stringify(String(v).slice(0, 200)) : typeof v === "object" && v !== null ? JSON.stringify(v) : v}`);
+    this.logger.info(`[PROBAR_DEBUG] ${parts.join(" ")}`);
+  }
+
   async _audit(event) {
     if (!this.auditLog) return;
     try {

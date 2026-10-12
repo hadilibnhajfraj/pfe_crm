@@ -29,7 +29,7 @@ const CalendarEventSync = require("../src/models/CalendarEventSync");
 const Task = require("../src/models/Task");
 const googleCalendarService = require("../src/services/googleCalendar.service");
 
-const REAL_COMMERCIAL = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial", email: "info@probardistribution.com" };
+const REAL_COMMERCIAL = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial_sedentaire", email: "info@probardistribution.com" };
 const AWLED_CONTACT_ID = "008aea48-50ed-4aa4-86bf-6d51a3411c4e"; // Pépinière awled el HAJ (vérifié en base — voir audit)
 const HADIL_ID = "516f6dca-7a6f-43cb-b527-5c5652e3e03f"; // hadil.ibnhajfraj@gmail.com (role "user", éligible — vérifié en base)
 

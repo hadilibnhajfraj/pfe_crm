@@ -11,9 +11,9 @@ const { LlmProviderChatModel } = require("../src/ai/langchain/model");
 const { LangChainWorkflowEngine } = require("../src/ai/langchain/workflow");
 const { PendingActionStore } = require("../src/ai/orchestrator/pendingActionStore");
 
-const COMMERCIAL = { id: "u-commercial", role: "commercial" };
+const COMMERCIAL = { id: "u-commercial", role: "commercial_sedentaire" };
 const ADMIN = { id: "u-admin", role: "admin" };
-const USER = { id: "u-user", role: "user" };
+const USER = { id: "u-user", role: "commercial" };
 
 // "21/08" (mission P1.4) résout toujours vers sa PROCHAINE occurrence future
 // (voir meetingSlotExtractor.js::resolveYearForDayMonth, réutilisée par
@@ -109,7 +109,7 @@ function scheduleTool(result) {
 }
 
 const AWLED_CONTACT = { id: "contact-1", nom: "awled el HAJ", prenom: "Pépinière", nomSociete: null, telephone: "97 636 961", statut: "rappeler_plus_tard" };
-const HADIL_CANDIDATE = { id: "user-hadil", fullName: "Hadil Ibn Haj Fraj", email: "hadil.ibnhajfraj@gmail.com", role: "user" };
+const HADIL_CANDIDATE = { id: "user-hadil", fullName: "Hadil Ibn Haj Fraj", email: "hadil.ibnhajfraj@gmail.com", role: "commercial" };
 
 describe("TEST OBLIGATOIRE — 8 formulations de la mission, réponse déterministe honnête", () => {
   test.each([
@@ -189,10 +189,10 @@ describe("Admin-tier : même chemin déterministe, toujours scopé à SES PROPRE
 });
 
 describe("RBAC — un rôle non autorisé n'atteint jamais ce chemin (Agent refusé avant _run())", () => {
-  test("user (non commercial/admin-tier) est refusé au niveau Agent", async () => {
+  test.each(["accueil", "responsable_logistique_achat", "user", "Commercial", ""])("rôle « %s » (hors commerce, inconnu ou mal orthographié) refusé au niveau Agent", async (role) => {
     const tool = listTool(payload());
     const agent = buildAgent(tool);
-    await expect(agent.execute({ intent: { name: "commercial_contacts" }, message: "Quels clients dois-je relancer ?", user: USER, conversationId: null })).rejects.toBeDefined();
+    await expect(agent.execute({ intent: { name: "commercial_contacts" }, message: "Quels clients dois-je relancer ?", user: { id: "u-x", role }, conversationId: null })).rejects.toBeDefined();
     expect(tool.invoke).not.toHaveBeenCalled();
   });
 });

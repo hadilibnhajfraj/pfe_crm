@@ -22,7 +22,7 @@ const { createServer } = require("../src/ai/mcp/server/start");
 const { createMcpToolAdapters } = require("../src/ai/langchain/tools/mcpToolAdapter");
 
 const REAL_SUPERADMIN = { id: "6242fb88-a0bc-4535-bddd-5285b91ca0ed", role: "superadmin", email: "cbitunisia@cbi-tunisia.com" };
-const REAL_OTHER_NON_ADMIN = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial", email: "info@probardistribution.com" };
+const REAL_OTHER_NON_ADMIN = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial_sedentaire", email: "info@probardistribution.com" };
 const REAL_PROJECT_ID = "111d9f7b-fd06-4716-b07a-5361feba97d9"; // "Résidence HOLYA"
 const REAL_PROJECT_OWNER_ID = "a43225c5-4e01-411d-aa9b-afe2c25f38a6"; // Mohamed Wethak Khochtali
 

@@ -230,4 +230,9 @@ router.put("/:id/profile", authRequired, requireAdmin, async (req, res) => {
   }
 });
 
+// GET /users/me/dashboard — même réponse que GET /dashboard/me. Alias sous
+// /users/me, seul préfixe « profil » que moduleAccessGuard laisse au rôle
+// responsable_logistique_achat (le préfixe /dashboard lui est fermé).
+router.get("/me/dashboard", authRequired, require("../modules/dashboard/controllers/dashboard.controller").getMyDashboard);
+
 module.exports = router;

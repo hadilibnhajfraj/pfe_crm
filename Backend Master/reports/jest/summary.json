@@ -1,0 +1,220 @@
+{
+  "executedAt": "2026-10-03T21:45:11.552Z",
+  "command": "npm run test:coverage",
+  "total": 7247,
+  "passed": 7213,
+  "failed": 34,
+  "skipped": 0,
+  "suites": 251,
+  "failedSuites": 7,
+  "successRatePct": 99.53,
+  "suitesFailedWithoutFailedTest": [
+    {
+      "file": "auth.resetPassword.test.js",
+      "reason": "  ● Test suite failed to run |     thrown: \"Exceeded timeout of 5000 ms for a hook. |     Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.\""
+    }
+  ],
+  "auditSuites": {
+    "nfr.dataIntegrity.test.js": {
+      "suites": 1,
+      "tests": 64,
+      "passed": 57,
+      "failed": 7,
+      "ratePct": 89.06
+    },
+    "nfr.rbac.test.js": {
+      "suites": 1,
+      "tests": 155,
+      "passed": 155,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "nfr.auth.test.js": {
+      "suites": 1,
+      "tests": 29,
+      "passed": 29,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "nfr.workflows.test.js": {
+      "suites": 1,
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "nfr.crm.test.js": {
+      "suites": 1,
+      "tests": 22,
+      "passed": 22,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "nfr.production.test.js": {
+      "suites": 1,
+      "tests": 28,
+      "passed": 28,
+      "failed": 0,
+      "ratePct": 100
+    }
+  },
+  "auditTotal": {
+    "suites": 6,
+    "tests": 324,
+    "passed": 317,
+    "failed": 7,
+    "ratePct": 97.84
+  },
+  "existingSuite": {
+    "suites": 245,
+    "tests": 6923,
+    "passed": 6896,
+    "failed": 27,
+    "ratePct": 99.61
+  },
+  "byDomain": {
+    "copilotIA": {
+      "suites": 212,
+      "tests": 6646,
+      "passed": 6643,
+      "failed": 3,
+      "ratePct": 99.95
+    },
+    "googleCalendar": {
+      "suites": 4,
+      "tests": 37,
+      "passed": 37,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "email": {
+      "suites": 2,
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "llmProviders": {
+      "suites": 5,
+      "tests": 99,
+      "passed": 99,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "redis": {
+      "suites": 2,
+      "tests": 25,
+      "passed": 25,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "rag": {
+      "suites": 14,
+      "tests": 209,
+      "passed": 209,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "importCsvExcel": {
+      "suites": 2,
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "socket": {
+      "suites": 2,
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "ratePct": 100
+    },
+    "mfa": {
+      "suites": 3,
+      "tests": 27,
+      "passed": 6,
+      "failed": 21,
+      "ratePct": 22.22
+    }
+  },
+  "failedTestsByFile": {
+    "mfa.test.js": [
+      "MFA (multi-factor authentication) POST /auth/signin — décision MFA jamais vérifié → MFA requis, aucune session ouverte, code envoyé par email",
+      "MFA (multi-factor authentication) POST /auth/signin — décision MFA connexion récente, aucun changement de contexte → pas de MFA",
+      "MFA (multi-factor authentication) POST /auth/signin — décision MFA changement d'appareil force un MFA même si récemment vérifié",
+      "MFA (multi-factor authentication) POST /auth/signin — décision MFA changement d'IP force un MFA même si récemment vérifié",
+      "MFA (multi-factor authentication) POST /auth/signin — décision MFA rôle admin : fenêtre de 24h (30h d'ancienneté = MFA requis, contrairement à un utilisateur standard)",
+      "MFA (multi-factor authentication) POST /auth/signin — décision MFA 30h d'ancienneté pour un utilisateur standard → pas encore de MFA (fenêtre 3 jours)",
+      "MFA (multi-factor authentication) POST /auth/mfa/verify code correct → session ouverte, mfaLastVerifiedAt et contexte mis à jour",
+      "MFA (multi-factor authentication) POST /auth/mfa/verify code incorrect → 400, compteur de tentatives décrémenté",
+      "MFA (multi-factor authentication) POST /auth/mfa/verify 5 tentatives incorrectes → max_attempts, puis même le bon code est refusé",
+      "MFA (multi-factor authentication) POST /auth/mfa/verify code expiré → rejeté avec reason=expired",
+      "MFA (multi-factor authentication) POST /auth/mfa/resend renvoie un nouveau challengeToken et un nouveau code — l'ancien code cesse de fonctionner",
+      "MFA (multi-factor authentication) Faire confiance à cet appareil pendant 30 jours un appareil de confiance saute le MFA même si mfaLastVerifiedAt est périmé",
+      "MFA (multi-factor authentication) Faire confiance à cet appareil pendant 30 jours un device token présenté pour un AUTRE deviceId est ignoré (MFA toujours requis)",
+      "MFA (multi-factor authentication) Compatibilité avec le flux Forgot Password / EmailQueue un reset password réussi révoque la confiance MFA (mfaLastVerifiedAt + appareils de confiance)"
+    ],
+    "mfa.dedup.test.js": [
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) double-clic sur 'Se connecter' → un seul email envoyé, un seul OTP créé",
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) 5 requêtes simultanées → un seul OTP créé, un seul email envoyé",
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) OTP encore actif (>30s restantes) → signin répété ne renvoie pas d'email",
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) un job EmailQueue déjà actif pour cet utilisateur → aucun nouveau job ni OTP créé",
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) POST /auth/mfa/resend avant 60s depuis le dernier envoi → HTTP 429",
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) POST /auth/mfa/resend après 60s depuis le dernier envoi → nouvel email envoyé",
+      "MFA — anti-doublon (double-clic, concurrence, cooldown) validation MFA réussie → otpHash/expiresAt effacés, job EmailQueue résiduel annulé"
+    ],
+    "ai.orchestrator.porPromeshAgent.integration.test.js": [
+      "PARTIE B — exécution réelle contre la VRAIE base get_por_promesh(RLA, SA PROPRE fiche réelle) : succès",
+      "PARTIE B — exécution réelle contre la VRAIE base TEST FUITE — RLA (owner-scoped) ne peut PAS lire la fiche réelle d'un AUTRE utilisateur réel (superadmin)",
+      "PARTIE B — exécution réelle contre la VRAIE base un admin-tier (jamais owner-scoped) PEUT lire la fiche réelle de N'IMPORTE QUEL utilisateur — visibilité transverse attendue, pas une fuite"
+    ],
+    "nfr.dataIntegrity.test.js": [
+      "Clés étrangères : une référence vers un enregistrement inexistant est refusée project_actions.createdBy → violation de clé étrangère",
+      "Clés étrangères : une référence vers un enregistrement inexistant est refusée projects.engineerId → violation de clé étrangère",
+      "Clés étrangères : une référence vers un enregistrement inexistant est refusée projects.architectId → violation de clé étrangère",
+      "Clés étrangères : une référence vers un enregistrement inexistant est refusée commercial_contact_actions.createdBy → violation de clé étrangère",
+      "Cohérence des données existantes tout contact affecté l'est à un utilisateur de rôle commercial",
+      "Cohérence des données existantes tout contact affecté porte l'auteur et la date de l'affectation",
+      "Cohérence des données existantes la contrainte d'unicité users.email n'est déclarée qu'une seule fois"
+    ],
+    "notification.service.dbRegression.test.js": [
+      "TEST 2/3 — les Tools ne plantent plus sur 'Notification undefined', lecture réelle possible listMyNotifications() sur un VRAI utilisateur retourne de vraies données, aucune exception",
+      "TEST 5 — un utilisateur A ne peut pas récupérer les notifications de B listMyNotifications(A) ne contient jamais une notification de B, et vice versa"
+    ],
+    "dashboard.service.getUserKPIs.test.js": [
+      "dashboard.service.js::getKPIByRole (role=\"user\") — real database regression resolves for a real non-admin user without throwing (the exact bug: 'object is not iterable')"
+    ]
+  },
+  "coverage": {
+    "lines": {
+      "total": 17092,
+      "covered": 11495,
+      "skipped": 0,
+      "pct": 67.25
+    },
+    "statements": {
+      "total": 18804,
+      "covered": 12476,
+      "skipped": 0,
+      "pct": 66.34
+    },
+    "functions": {
+      "total": 3174,
+      "covered": 2180,
+      "skipped": 0,
+      "pct": 68.68
+    },
+    "branches": {
+      "total": 12572,
+      "covered": 6569,
+      "skipped": 0,
+      "pct": 52.25
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  }
+}

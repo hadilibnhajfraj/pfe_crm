@@ -98,6 +98,7 @@ function toPorPromeshResponse(report) {
     heureFin: r.heureFin,
     operateur: r.operateur,
     machine: r.machine,
+    machineId: r.machineId ?? null,
     poste: r.poste,
 
     diametreMaille1: r.diametreMaille1,

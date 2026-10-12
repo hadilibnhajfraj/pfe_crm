@@ -76,11 +76,24 @@ describe("POST /api/clients/import-factures — auth + role required (audit séc
   });
 });
 
-describe("GET /api/clients/all — unaffected by the fix (still authRequired-only, no role restriction)", () => {
-  test("still works for any authenticated user", async () => {
+// Règle modifiée le 10/10/2026 (audit de contrôle d'accès) : cette liste
+// complète des clients n'est plus ouverte à tout utilisateur authentifié.
+// La table clients n'a ni propriétaire ni lien vers un commercial : il
+// n'existe pas de périmètre individuel, donc seule l'administration la lit.
+// Matrice complète par rôle : test/access.listScopeAndAuthor.test.js.
+describe("GET /api/clients/all — admin-tier only (was open to any authenticated user)", () => {
+  test("403s for an authenticated but non-admin-tier user, without reading the table", async () => {
     const Client = require("../src/models/client.model");
     Client.findAll.mockResolvedValue([]);
     const res = await request(buildApp()).get("/api/clients/all").set("x-test-user", JSON.stringify(REGULAR_USER));
+    expect(res.status).toBe(403);
+    expect(Client.findAll).not.toHaveBeenCalled();
+  });
+
+  test("still works for an admin-tier user", async () => {
+    const Client = require("../src/models/client.model");
+    Client.findAll.mockResolvedValue([]);
+    const res = await request(buildApp()).get("/api/clients/all").set("x-test-user", JSON.stringify(ADMIN));
     expect(res.status).toBe(200);
   });
 });

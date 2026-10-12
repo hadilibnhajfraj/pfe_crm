@@ -171,7 +171,7 @@ router.post("/import-csv", authRequired, requireRole("admin", "superadmin", "sup
     });
   }
 });
-router.get("/all", authRequired, async (req, res) => {
+router.get("/all", authRequired, requireRole("admin", "superadmin", "superadmin2"), async (req, res) => {
   try {
     const clients = await Client.findAll({
       attributes: [

@@ -40,7 +40,7 @@ async function createTestUser(email) {
     email,
     passwordHash: await bcrypt.hash(PASSWORD, 12),
     isActive: true,
-    role: "user",
+    role: "commercial",
   });
   createdUserIds.push(user.id);
   return user;

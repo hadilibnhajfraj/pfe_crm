@@ -24,6 +24,7 @@ const compression = require("compression");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { sequelize } = require("./db");
+const observability = require("./observability/metrics");
 const socket = require("./socket");
 require("./services/scheduler");
 
@@ -79,6 +80,9 @@ const porPromeshRoutes = require("./modules/por-promesh/routes/porPromesh.routes
 const industrialRecordRoutes = require("./modules/industrial-records/routes/industrialRecord.routes");
 const hrRequestRoutes = require("./modules/hr-requests/routes/hrRequest.routes");
 const recuperableRoutes = require("./modules/recuperables/routes/recuperable.routes");
+const machineRoutes = require("./modules/machines/routes/machine.routes");
+const productionRoutes = require("./modules/production/routes/production.routes");
+const reportRoutes = require("./modules/reports/routes/report.routes");
 const adminDashboardRoutes = require("./modules/admin-dashboard/routes/adminDashboard.routes");
 const aiDashboardRoutes = require("./modules/ai-dashboard/routes/aiDashboard.routes");
 const aiCopilotRoutes = require("./modules/ai-copilot/routes/aiCopilot.routes");
@@ -123,6 +127,13 @@ app.use(
 );
 
 
+// Observabilité — /health (sonde applicative + PostgreSQL) et /metrics
+// (Prometheus). Montés avant moduleAccessGuard : ce sont des sondes
+// techniques, pas des modules métier (voir src/observability/metrics.js).
+app.use(observability.metricsMiddleware);
+app.get("/health", observability.healthHandler(sequelize));
+app.get("/metrics", observability.metricsAuth, observability.metricsHandler);
+
 app.use(moduleAccessGuard);
 
 app.get("/", (req, res) => res.json({ ok: true }));
@@ -140,6 +151,12 @@ app.use("/por-promesh", porPromeshRoutes);
 app.use("/industrial-records", industrialRecordRoutes);
 app.use("/hr-requests", hrRequestRoutes);
 app.use("/recuperables", recuperableRoutes);
+app.use("/machines", machineRoutes);
+// Module Rapports (exports PDF / Excel). Monté aussi sous /production, seul
+// préfixe ouvert au rôle responsable_logistique_achat par moduleAccessGuard.
+app.use("/production/reports", reportRoutes);
+app.use("/production", productionRoutes);
+app.use("/reports", reportRoutes);
 app.use("/admin-dashboard", adminDashboardRoutes);
 app.use("/ai-dashboard", aiDashboardRoutes);
 app.use("/ai-copilot", aiCopilotRoutes);

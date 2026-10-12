@@ -1,0 +1,689 @@
+{
+  "batchId": "DEMO-demo-powerbi-v1-s20261010",
+  "startedAt": "2026-10-10T18:22:26.967Z",
+  "steps": [
+    {
+      "step": "utilisateurs",
+      "planned": 20,
+      "created": 20,
+      "alreadyPresent": 0,
+      "byTable": {
+        "users": {
+          "created": 10,
+          "alreadyPresent": 0
+        },
+        "user_profiles": {
+          "created": 10,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "users : lignes présentes",
+          "ok": true,
+          "detail": "10 sur 10"
+        },
+        {
+          "label": "users : registre",
+          "ok": true,
+          "detail": "10 inscrites, 10 retrouvées, 10 prévues"
+        },
+        {
+          "label": "user_profiles : lignes présentes",
+          "ok": true,
+          "detail": "10 sur 10"
+        },
+        {
+          "label": "user_profiles : registre",
+          "ok": true,
+          "detail": "10 inscrites, 10 retrouvées, 10 prévues"
+        }
+      ]
+    },
+    {
+      "step": "référentiels commerciaux",
+      "planned": 135,
+      "created": 135,
+      "alreadyPresent": 0,
+      "byTable": {
+        "companies": {
+          "created": 40,
+          "alreadyPresent": 0
+        },
+        "engineers": {
+          "created": 25,
+          "alreadyPresent": 0
+        },
+        "architects": {
+          "created": 10,
+          "alreadyPresent": 0
+        },
+        "clients": {
+          "created": 60,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "companies : lignes présentes",
+          "ok": true,
+          "detail": "40 sur 40"
+        },
+        {
+          "label": "companies : registre",
+          "ok": true,
+          "detail": "40 inscrites, 40 retrouvées, 40 prévues"
+        },
+        {
+          "label": "engineers : lignes présentes",
+          "ok": true,
+          "detail": "25 sur 25"
+        },
+        {
+          "label": "engineers : registre",
+          "ok": true,
+          "detail": "25 inscrites, 25 retrouvées, 25 prévues"
+        },
+        {
+          "label": "architects : lignes présentes",
+          "ok": true,
+          "detail": "10 sur 10"
+        },
+        {
+          "label": "architects : registre",
+          "ok": true,
+          "detail": "10 inscrites, 10 retrouvées, 10 prévues"
+        },
+        {
+          "label": "clients : lignes présentes",
+          "ok": true,
+          "detail": "60 sur 60"
+        },
+        {
+          "label": "clients : registre",
+          "ok": true,
+          "detail": "60 inscrites, 60 retrouvées, 60 prévues"
+        }
+      ]
+    },
+    {
+      "step": "projets",
+      "planned": 160,
+      "created": 160,
+      "alreadyPresent": 0,
+      "byTable": {
+        "projects": {
+          "created": 80,
+          "alreadyPresent": 0
+        },
+        "user_projects": {
+          "created": 80,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "projects : lignes présentes",
+          "ok": true,
+          "detail": "80 sur 80"
+        },
+        {
+          "label": "projects : registre",
+          "ok": true,
+          "detail": "80 inscrites, 80 retrouvées, 80 prévues"
+        },
+        {
+          "label": "user_projects : lignes présentes",
+          "ok": true,
+          "detail": "80 sur 80"
+        },
+        {
+          "label": "user_projects : registre",
+          "ok": true,
+          "detail": "80 inscrites, 80 retrouvées, 80 prévues"
+        }
+      ]
+    },
+    {
+      "step": "actions de projet",
+      "planned": 300,
+      "created": 300,
+      "alreadyPresent": 0,
+      "byTable": {
+        "project_actions": {
+          "created": 300,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "project_actions : lignes présentes",
+          "ok": true,
+          "detail": "300 sur 300"
+        },
+        {
+          "label": "project_actions : registre",
+          "ok": true,
+          "detail": "300 inscrites, 300 retrouvées, 300 prévues"
+        }
+      ]
+    },
+    {
+      "step": "contacts",
+      "planned": 693,
+      "created": 693,
+      "alreadyPresent": 0,
+      "byTable": {
+        "commercial_contacts": {
+          "created": 150,
+          "alreadyPresent": 0
+        },
+        "commercial_contact_status_histories": {
+          "created": 150,
+          "alreadyPresent": 0
+        },
+        "commercial_contact_products": {
+          "created": 150,
+          "alreadyPresent": 0
+        },
+        "commercial_contact_actions": {
+          "created": 150,
+          "alreadyPresent": 0
+        },
+        "commercial_projects": {
+          "created": 93,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "commercial_contacts : lignes présentes",
+          "ok": true,
+          "detail": "150 sur 150"
+        },
+        {
+          "label": "commercial_contacts : registre",
+          "ok": true,
+          "detail": "150 inscrites, 150 retrouvées, 150 prévues"
+        },
+        {
+          "label": "commercial_contact_status_histories : lignes présentes",
+          "ok": true,
+          "detail": "150 sur 150"
+        },
+        {
+          "label": "commercial_contact_status_histories : registre",
+          "ok": true,
+          "detail": "150 inscrites, 150 retrouvées, 150 prévues"
+        },
+        {
+          "label": "commercial_contact_products : lignes présentes",
+          "ok": true,
+          "detail": "150 sur 150"
+        },
+        {
+          "label": "commercial_contact_products : registre",
+          "ok": true,
+          "detail": "150 inscrites, 150 retrouvées, 150 prévues"
+        },
+        {
+          "label": "commercial_projects : lignes présentes",
+          "ok": true,
+          "detail": "93 sur 93"
+        },
+        {
+          "label": "commercial_projects : registre",
+          "ok": true,
+          "detail": "93 inscrites, 93 retrouvées, 93 prévues"
+        },
+        {
+          "label": "commercial_contact_actions : lignes présentes",
+          "ok": true,
+          "detail": "150 sur 150"
+        },
+        {
+          "label": "commercial_contact_actions : registre",
+          "ok": true,
+          "detail": "150 inscrites, 150 retrouvées, 150 prévues"
+        }
+      ]
+    },
+    {
+      "step": "relances",
+      "planned": 100,
+      "created": 100,
+      "alreadyPresent": 0,
+      "byTable": {
+        "commercial_contact_relances": {
+          "created": 100,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "commercial_contact_relances : lignes présentes",
+          "ok": true,
+          "detail": "100 sur 100"
+        },
+        {
+          "label": "commercial_contact_relances : registre",
+          "ok": true,
+          "detail": "100 inscrites, 100 retrouvées, 100 prévues"
+        }
+      ]
+    },
+    {
+      "step": "fiches PROMESH",
+      "planned": 90,
+      "created": 90,
+      "alreadyPresent": 0,
+      "byTable": {
+        "por_promesh_controles_qualite": {
+          "created": 180,
+          "alreadyPresent": 0
+        },
+        "por_promesh_process_control": {
+          "created": 360,
+          "alreadyPresent": 0
+        },
+        "por_promesh": {
+          "created": 90,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "por_promesh : lignes présentes",
+          "ok": true,
+          "detail": "90 sur 90"
+        },
+        {
+          "label": "por_promesh : registre",
+          "ok": true,
+          "detail": "90 inscrites, 90 retrouvées, 90 prévues"
+        },
+        {
+          "label": "por_promesh : dataStatus = TEST",
+          "ok": true,
+          "detail": "0 fiche(s) non TEST"
+        },
+        {
+          "label": "por_promesh_controles_qualite : lignes filles",
+          "ok": true,
+          "detail": "180 inscrites, 180 prévues"
+        },
+        {
+          "label": "por_promesh_process_control : lignes filles",
+          "ok": true,
+          "detail": "360 inscrites, 360 prévues"
+        }
+      ]
+    },
+    {
+      "step": "fiches PROBAR",
+      "planned": 70,
+      "created": 70,
+      "alreadyPresent": 0,
+      "byTable": {
+        "industrial_records": {
+          "created": 70,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "industrial_records : lignes présentes",
+          "ok": true,
+          "detail": "70 sur 70"
+        },
+        {
+          "label": "industrial_records : registre",
+          "ok": true,
+          "detail": "70 inscrites, 70 retrouvées, 70 prévues"
+        },
+        {
+          "label": "industrial_records : dataStatus = TEST",
+          "ok": true,
+          "detail": "0 fiche(s) non TEST"
+        }
+      ]
+    },
+    {
+      "step": "fiches de déchets",
+      "planned": 20,
+      "created": 20,
+      "alreadyPresent": 0,
+      "byTable": {
+        "recuperable_lignes": {
+          "created": 54,
+          "alreadyPresent": 0
+        },
+        "recuperable_fiches": {
+          "created": 20,
+          "alreadyPresent": 0
+        }
+      },
+      "controls": [
+        {
+          "label": "recuperable_fiches : registre",
+          "ok": true,
+          "detail": "20 inscrites, 20 retrouvées, 20 prévues"
+        },
+        {
+          "label": "recuperable_fiches : dataStatus = TEST",
+          "ok": true,
+          "detail": "0 fiche(s) non TEST"
+        },
+        {
+          "label": "recuperable_lignes : lignes filles",
+          "ok": true,
+          "detail": "54 inscrites, 54 prévues"
+        }
+      ]
+    }
+  ],
+  "created": 1588,
+  "skippedExisting": 0,
+  "stoppedAt": null,
+  "error": null,
+  "database": "cbigestionnairepfe_demo",
+  "finishedAt": "2026-10-10T18:22:33.791Z",
+  "completed": true,
+  "verification": {
+    "batchId": "DEMO-demo-powerbi-v1-s20261010",
+    "database": "cbigestionnairepfe_demo",
+    "ok": true,
+    "results": [
+      {
+        "label": "volume users",
+        "ok": true,
+        "detail": "10 en base, 10 au registre, 10 prévues"
+      },
+      {
+        "label": "volume user_profiles",
+        "ok": true,
+        "detail": "10 en base, 10 au registre, 10 prévues"
+      },
+      {
+        "label": "volume companies",
+        "ok": true,
+        "detail": "40 en base, 40 au registre, 40 prévues"
+      },
+      {
+        "label": "volume engineers",
+        "ok": true,
+        "detail": "25 en base, 25 au registre, 25 prévues"
+      },
+      {
+        "label": "volume architects",
+        "ok": true,
+        "detail": "10 en base, 10 au registre, 10 prévues"
+      },
+      {
+        "label": "volume clients",
+        "ok": true,
+        "detail": "60 en base, 60 au registre, 60 prévues"
+      },
+      {
+        "label": "volume projects",
+        "ok": true,
+        "detail": "80 en base, 80 au registre, 80 prévues"
+      },
+      {
+        "label": "volume user_projects",
+        "ok": true,
+        "detail": "80 en base, 80 au registre, 80 prévues"
+      },
+      {
+        "label": "volume project_actions",
+        "ok": true,
+        "detail": "300 en base, 300 au registre, 300 prévues"
+      },
+      {
+        "label": "volume commercial_contacts",
+        "ok": true,
+        "detail": "150 en base, 150 au registre, 150 prévues"
+      },
+      {
+        "label": "volume commercial_contact_status_histories",
+        "ok": true,
+        "detail": "150 en base, 150 au registre, 150 prévues"
+      },
+      {
+        "label": "volume commercial_contact_products",
+        "ok": true,
+        "detail": "150 en base, 150 au registre, 150 prévues"
+      },
+      {
+        "label": "volume commercial_contact_actions",
+        "ok": true,
+        "detail": "150 en base, 150 au registre, 150 prévues"
+      },
+      {
+        "label": "volume commercial_projects",
+        "ok": true,
+        "detail": "93 en base, 93 au registre, 93 prévues"
+      },
+      {
+        "label": "volume commercial_contact_relances",
+        "ok": true,
+        "detail": "100 en base, 100 au registre, 100 prévues"
+      },
+      {
+        "label": "volume por_promesh",
+        "ok": true,
+        "detail": "90 en base, 90 au registre, 90 prévues"
+      },
+      {
+        "label": "volume industrial_records",
+        "ok": true,
+        "detail": "70 en base, 70 au registre, 70 prévues"
+      },
+      {
+        "label": "volume recuperable_fiches",
+        "ok": true,
+        "detail": "20 en base, 20 au registre, 20 prévues"
+      },
+      {
+        "label": "registre users : lignes retrouvées",
+        "ok": true,
+        "detail": "10 sur 10"
+      },
+      {
+        "label": "registre user_profiles : lignes retrouvées",
+        "ok": true,
+        "detail": "10 sur 10"
+      },
+      {
+        "label": "registre companies : lignes retrouvées",
+        "ok": true,
+        "detail": "40 sur 40"
+      },
+      {
+        "label": "registre engineers : lignes retrouvées",
+        "ok": true,
+        "detail": "25 sur 25"
+      },
+      {
+        "label": "registre architects : lignes retrouvées",
+        "ok": true,
+        "detail": "10 sur 10"
+      },
+      {
+        "label": "registre clients : lignes retrouvées",
+        "ok": true,
+        "detail": "60 sur 60"
+      },
+      {
+        "label": "registre projects : lignes retrouvées",
+        "ok": true,
+        "detail": "80 sur 80"
+      },
+      {
+        "label": "registre user_projects : lignes retrouvées",
+        "ok": true,
+        "detail": "80 sur 80"
+      },
+      {
+        "label": "registre project_actions : lignes retrouvées",
+        "ok": true,
+        "detail": "300 sur 300"
+      },
+      {
+        "label": "registre commercial_contacts : lignes retrouvées",
+        "ok": true,
+        "detail": "150 sur 150"
+      },
+      {
+        "label": "registre commercial_contact_status_histories : lignes retrouvées",
+        "ok": true,
+        "detail": "150 sur 150"
+      },
+      {
+        "label": "registre commercial_contact_products : lignes retrouvées",
+        "ok": true,
+        "detail": "150 sur 150"
+      },
+      {
+        "label": "registre commercial_contact_actions : lignes retrouvées",
+        "ok": true,
+        "detail": "150 sur 150"
+      },
+      {
+        "label": "registre commercial_projects : lignes retrouvées",
+        "ok": true,
+        "detail": "93 sur 93"
+      },
+      {
+        "label": "registre commercial_contact_relances : lignes retrouvées",
+        "ok": true,
+        "detail": "100 sur 100"
+      },
+      {
+        "label": "registre por_promesh : lignes retrouvées",
+        "ok": true,
+        "detail": "90 sur 90"
+      },
+      {
+        "label": "registre por_promesh_controles_qualite : lignes retrouvées",
+        "ok": true,
+        "detail": "180 sur 180"
+      },
+      {
+        "label": "registre por_promesh_process_control : lignes retrouvées",
+        "ok": true,
+        "detail": "360 sur 360"
+      },
+      {
+        "label": "registre industrial_records : lignes retrouvées",
+        "ok": true,
+        "detail": "70 sur 70"
+      },
+      {
+        "label": "registre recuperable_fiches : lignes retrouvées",
+        "ok": true,
+        "detail": "20 sur 20"
+      },
+      {
+        "label": "registre recuperable_lignes : lignes retrouvées",
+        "ok": true,
+        "detail": "54 sur 54"
+      },
+      {
+        "label": "por_promesh : dataStatus = TEST partout",
+        "ok": true,
+        "detail": "0 fiche(s) non TEST"
+      },
+      {
+        "label": "industrial_records : dataStatus = TEST partout",
+        "ok": true,
+        "detail": "0 fiche(s) non TEST"
+      },
+      {
+        "label": "recuperable_fiches : dataStatus = TEST partout",
+        "ok": true,
+        "detail": "0 fiche(s) non TEST"
+      },
+      {
+        "label": "projets sans propriétaire ou sans étape",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "projets : société, ingénieur ou architecte inconnu",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "actions sans projet ou sans type",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "contacts sans créateur, ou affectés à un non-commercial",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "relances sans contact",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "fiches sans machine du bon type",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "doublons : e-mail d'utilisateur",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "doublons : nom de projet pour un même propriétaire",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "doublons : nom de société, d'ingénieur ou d'architecte",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "doublons au registre",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "fiches validées incohérentes (statut, verrou, heures)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "adresses hors du domaine de démonstration",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "comptes sans mot de passe chiffré",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "e-mails, notifications ou événements d'agenda créés",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "lignes hors registre dans les tables du lot",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "label": "référentiels intacts",
+        "ok": true,
+        "detail": "machines / étapes / types d'action / familles"
+      }
+    ]
+  }
+}

@@ -95,7 +95,7 @@ describe("P13 — aucun résultat -> réponse honnête, Tool quand même appelé
 
 describe("Non-régression — écriture (créer/modifier/supprimer) jamais interceptée par le chemin liste déterministe", () => {
   test.each([
-    "Crée une fiche de production industrielle pour le mélange PROBAR.",
+    // La CRÉATION est désormais guidée sans modèle — voir test/ai.industrial.fiches.test.js.
     "Met à jour la fiche industrielle du mélange en cours.",
     "Supprime la fiche industrielle erronée.",
   ])('"%s" -> chemin générique (LLM), jamais _runModuleListQuery', async (message) => {

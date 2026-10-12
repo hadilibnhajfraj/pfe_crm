@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit");
 const User = require("../models/User");
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require("../utils/tokens");
 const UserProfile = require("../models/UserProfile");
+const { ROLES, DEFAULT_SIGNUP_ROLE } = require("../constants/roles");
 // routes/auth.routes.js (ajoute en haut si pas déjà)
 const crypto = require("crypto");
 const { generateResetToken } = require("../utils/passwordReset");
@@ -430,13 +431,15 @@ router.post("/signup", async (req, res) => {
 
     const passwordHash = await bcrypt.hash(String(password), 12);
 
-    // ✅ rôle auto selon email
-    let role = "user";
+    // Rôle à l'inscription (vocabulaire v2, constants/roles.js) : "commercial"
+    // par défaut. Le domaine @probardistribution.com ne détermine plus le
+    // rôle (1 des 3 comptes de ce domaine était un commercial terrain) :
+    // commercial_sedentaire est attribué par un administrateur lors de
+    // l'activation du compte (le compte est créé inactif ci-dessous).
+    let role = DEFAULT_SIGNUP_ROLE;
 
     if (cleanEmail === "accueilcbif@gmail.com") {
-      role = "accueil";
-    } else if (cleanEmail.endsWith("@probardistribution.com")) {
-      role = "commercial";
+      role = ROLES.ACCUEIL;
     }
 
     // ✅ Nouveau user: disabled par défaut
@@ -605,6 +608,10 @@ router.post("/refresh", async (req, res) => {
     const decoded = verifyRefreshToken(refreshToken);
     const user = await User.findByPk(decoded.sub);
     if (!user || !user.refreshTokenHash) return res.status(401).json({ message: "Invalid refresh token" });
+    // Un compte désactivé ne peut plus obtenir de nouvel access token (même
+    // règle que POST /auth/signin) — sans ce contrôle, un refresh token
+    // encore valide prolongeait indéfiniment la session d'un compte désactivé.
+    if (!user.isActive) return res.status(401).json({ message: "Account disabled" });
 
     const match = await bcrypt.compare(refreshToken, user.refreshTokenHash);
     if (!match) return res.status(401).json({ message: "Invalid refresh token" });

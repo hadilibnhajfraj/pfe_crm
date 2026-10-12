@@ -1,0 +1,2 @@
+time="2026-10-05T17:25:31+01:00" level=error msg="thresholds on metrics 'http_req_duration' have been crossed"
+k6 exit=99

@@ -1,0 +1,640 @@
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+npm warn deprecated uuid@3.4.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated @faker-js/faker@5.5.3: Please update to a newer version.
+newman
+
+CRM PROBAR — API (audit non fonctionnel)
+
+□ Authentication
+└ Sonde de santé
+  GET http://127.0.0.1:4100/health [200 OK, 1.06kB, 82ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  status = ok
+  √  base de données joignable
+
+└ Connexion commercial
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.27kB, 691ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = commercial
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion commercial_sedentaire
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.38kB, 495ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = commercial_sedentaire
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion accueil
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.24kB, 480ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = accueil
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion responsable_logistique_achat
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.45kB, 474ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = responsable_logistique_achat
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion admin
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.22kB, 481ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = admin
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion superadmin
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.27kB, 522ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = superadmin
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion superadmin2
+  POST http://127.0.0.1:4100/auth/signin [200 OK, 2.28kB, 498ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  accessToken présent
+  √  rôle = superadmin2
+  √  Le hash du mot de passe n'est pas exposé
+
+└ Connexion — mot de passe incorrect
+  POST http://127.0.0.1:4100/auth/signin [401 Unauthorized, 1.09kB, 247ms]
+  √  Code HTTP 401
+  √  Aucun jeton émis
+
+└ Connexion — e-mail inconnu
+  POST http://127.0.0.1:4100/auth/signin [401 Unauthorized, 1.09kB, 8ms]
+  √  Code HTTP 401
+  √  Aucun jeton émis
+
+└ Connexion — e-mail mal formé
+  POST http://127.0.0.1:4100/auth/signin [400 Bad Request, 1.08kB, 2ms]
+  √  Code HTTP 400
+
+└ Connexion — mot de passe trop court
+  POST http://127.0.0.1:4100/auth/signin [400 Bad Request, 1.08kB, 6ms]
+  √  Code HTTP 400
+
+└ Connexion — compte désactivé
+  POST http://127.0.0.1:4100/auth/signin [403 Forbidden, 1.11kB, 13ms]
+  √  Code HTTP 403
+  √  Aucun jeton émis
+
+└ Profil courant — JWT valide
+  GET http://127.0.0.1:4100/me [200 OK, 1.13kB, 7ms]
+  √  Code HTTP 200
+  √  rôle commercial
+
+└ Profil courant — JWT absent
+  GET http://127.0.0.1:4100/me [401 Unauthorized, 983B, 2ms]
+  √  Code HTTP 401
+
+└ Profil courant — JWT invalide
+  GET http://127.0.0.1:4100/me [401 Unauthorized, 994B, 4ms]
+  √  Code HTTP 401
+
+└ Rafraîchissement — jeton absent
+  POST http://127.0.0.1:4100/auth/refresh [200 OK, 1.29kB, 237ms]
+  1. Code HTTP 401
+
+└ Rafraîchissement — jeton valide
+  POST http://127.0.0.1:4100/auth/refresh [200 OK, 1.29kB, 244ms]
+  √  Code HTTP 200
+  √  nouvel accessToken
+
+└ Métriques — sans jeton
+  GET http://127.0.0.1:4100/metrics [401 Unauthorized, 982B, 3ms]
+  √  Code HTTP 401
+
+□ Users
+└ Liste des utilisateurs — superadmin
+  GET http://127.0.0.1:4100/admin/users [200 OK, 19.96kB, 16ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  tableau non vide
+  √  Aucun hash de mot de passe exposé
+
+└ Liste des utilisateurs — admin
+  GET http://127.0.0.1:4100/admin/users [200 OK, 19.96kB, 25ms]
+  √  Code HTTP 200
+
+└ Liste des utilisateurs — commercial refusé
+  GET http://127.0.0.1:4100/admin/users [403 Forbidden, 976B, 8ms]
+  √  Code HTTP 403
+
+└ Liste des utilisateurs — accueil refusé
+  GET http://127.0.0.1:4100/users [403 Forbidden, 980B, 9ms]
+  √  Code HTTP 403
+
+└ Liste des utilisateurs — sans jeton
+  GET http://127.0.0.1:4100/admin/users [401 Unauthorized, 983B, 4ms]
+  √  Code HTTP 401
+
+└ Mon profil
+  GET http://127.0.0.1:4100/users/me/profile [200 OK, 1.45kB, 9ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Changer un rôle — rôle inexistant
+  PUT http://127.0.0.1:4100/admin/users/5afbd623-651d-45bf-a64a-ba7f72dc629f/role [400 Bad Request, 981B, 8ms]
+  √  Code HTTP 400
+
+└ Changer un rôle — admin simple refusé
+  PUT http://127.0.0.1:4100/admin/users/5afbd623-651d-45bf-a64a-ba7f72dc629f/role [403 Forbidden, 976B, 5ms]
+  √  Code HTTP 403
+
+└ Changer un rôle — commercial refusé
+  PUT http://127.0.0.1:4100/admin/users/5afbd623-651d-45bf-a64a-ba7f72dc629f/role [403 Forbidden, 976B, 8ms]
+  √  Code HTTP 403
+
+└ Désactiver un compte — RLA refusé
+  PUT http://127.0.0.1:4100/admin/users/5afbd623-651d-45bf-a64a-ba7f72dc629f/active [403 Forbidden, 1.04kB, 5ms]
+  √  Code HTTP 403
+
+□ Contacts
+└ Créer un contact — nom manquant
+  POST http://127.0.0.1:4100/commercial-contacts [400 Bad Request, 984B, 9ms]
+  √  Code HTTP 400
+
+└ Créer un contact — RLA refusé
+  POST http://127.0.0.1:4100/commercial-contacts [403 Forbidden, 1.04kB, 3ms]
+  √  Code HTTP 403
+
+└ Créer un contact
+  POST http://127.0.0.1:4100/commercial-contacts [201 Created, 1.77kB, 36ms]
+  √  Code HTTP 201
+  √  Réponse JSON
+  √  identifiant présent
+  √  créateur = commercial sédentaire
+  √  étape Prospect par défaut
+
+└ Lire le contact
+  GET http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6 [200 OK, 2.2kB, 19ms]
+  √  Code HTTP 200
+  √  bon contact
+
+└ Lister les contacts
+  GET http://127.0.0.1:4100/commercial-contacts [200 OK, 735.25kB, 96ms]
+  √  Code HTTP 200
+  √  tableau
+
+└ Lister les contacts — RLA refusé
+  GET http://127.0.0.1:4100/commercial-contacts [403 Forbidden, 1.04kB, 5ms]
+  √  Code HTTP 403
+
+└ Lire un contact inexistant
+  GET http://127.0.0.1:4100/commercial-contacts/00000000-0000-0000-0000-000000000000 [404 Not Found, 986B, 8ms]
+  √  Code HTTP 404
+
+└ Modifier — accueil non créateur refusé
+  PUT http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6 [403 Forbidden, 995B, 10ms]
+  √  Code HTTP 403
+
+└ Affecter — commercial refusé
+  POST http://127.0.0.1:4100/commercial-contacts/assign [403 Forbidden, 1.03kB, 8ms]
+  √  Code HTTP 403
+
+└ Affecter — liste vide
+  POST http://127.0.0.1:4100/commercial-contacts/assign [400 Bad Request, 1kB, 3ms]
+  √  Code HTTP 400
+
+└ Affecter — destinataire non commercial
+  POST http://127.0.0.1:4100/commercial-contacts/assign [400 Bad Request, 1.04kB, 11ms]
+  √  Code HTTP 400
+
+└ Affecter à un commercial
+  POST http://127.0.0.1:4100/commercial-contacts/assign [200 OK, 988B, 16ms]
+  √  Code HTTP 200
+  √  1 contact mis à jour
+
+└ Le commercial affecté lit le contact
+  GET http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6 [200 OK, 2.51kB, 15ms]
+  √  Code HTTP 200
+  √  commercialId = commercial
+  √  assignedBy = commercial sédentaire
+
+└ Supprimer — commercial refusé
+  DELETE http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6 [403 Forbidden, 995B, 8ms]
+  √  Code HTTP 403
+
+□ Projects
+└ Lister les projets
+  GET http://127.0.0.1:4100/projects?limit=5 [200 OK, 10.4kB, 52ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+  √  items est un tableau
+  √  au plus 5 éléments
+  √  total numérique
+
+└ Lister les projets — sans jeton
+  GET http://127.0.0.1:4100/projects [401 Unauthorized, 983B, 3ms]
+  √  Code HTTP 401
+
+└ Lister les projets — RLA refusé
+  GET http://127.0.0.1:4100/projects [403 Forbidden, 1.04kB, 4ms]
+  √  Code HTTP 403
+
+└ Lire un projet
+  GET http://127.0.0.1:4100/projects/52b2c205-f434-443e-ab6a-88f9c3668986 [200 OK, 7.82kB, 178ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Lire un projet inexistant
+  GET http://127.0.0.1:4100/projects/00000000-0000-0000-0000-000000000000 [404 Not Found, 984B, 11ms]
+  √  Code HTTP 404
+
+└ Créer un projet — données invalides
+  POST http://127.0.0.1:4100/projects [400 Bad Request, 1.21kB, 8ms]
+  √  Code HTTP 400
+  √  liste d'erreurs
+
+└ Créer un projet — RLA refusé
+  POST http://127.0.0.1:4100/projects [403 Forbidden, 1.04kB, 7ms]
+  √  Code HTTP 403
+
+└ Étapes du pipeline
+  GET http://127.0.0.1:4100/pipeline-stages [200 OK, 5.84kB, 18ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Indicateurs projets
+  GET http://127.0.0.1:4100/projects/kpi/dashboard [200 OK, 1.34kB, 24ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+□ Actions
+└ Actions du contact
+  GET http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6/actions [200 OK, 1.35kB, 21ms]
+  √  Code HTTP 200
+  √  au moins une action
+
+└ Relance — date manquante
+  POST http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6/relances [400 Bad Request, 992B, 10ms]
+  √  Code HTTP 400
+
+└ Créer une relance
+  POST http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6/relances [201 Created, 1.61kB, 22ms]
+  √  Code HTTP 201
+  √  statut planifiee
+  √  rattachée au contact
+
+└ Relance — contact inexistant
+  POST http://127.0.0.1:4100/commercial-contacts/00000000-0000-0000-0000-000000000000/relances [404 Not Found, 986B, 10ms]
+  √  Code HTTP 404
+
+└ Relance — sans jeton
+  POST http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6/relances [401 Unauthorized, 983B, 6ms]
+  √  Code HTTP 401
+
+└ Nettoyage — supprimer le contact (superadmin)
+  DELETE http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6 [200 OK, 956B, 17ms]
+  √  Code HTTP 200
+
+└ Le contact supprimé n'existe plus
+  GET http://127.0.0.1:4100/commercial-contacts/e9d6c547-3543-4d8c-a1b7-aecb38e4b5d6 [404 Not Found, 986B, 10ms]
+  √  Code HTTP 404
+
+□ Production
+└ Machines — liste
+  GET http://127.0.0.1:4100/machines [200 OK, 3.18kB, 8ms]
+  √  Code HTTP 200
+  √  liste non vide
+  √  types PROBAR / PROMESH uniquement
+
+└ Machines — numéro manquant
+  POST http://127.0.0.1:4100/machines [400 Bad Request, 1.04kB, 6ms]
+  √  Code HTTP 400
+
+└ Machines — type inconnu
+  POST http://127.0.0.1:4100/machines [400 Bad Request, 1.07kB, 6ms]
+  √  Code HTTP 400
+
+└ Machines — doublon
+  POST http://127.0.0.1:4100/machines [409 Conflict, 1.02kB, 11ms]
+  √  Code HTTP 409
+
+└ Machines — commercial refusé en écriture
+  POST http://127.0.0.1:4100/machines [403 Forbidden, 976B, 8ms]
+  √  Code HTTP 403
+
+└ POR — poste manquant
+  POST http://127.0.0.1:4100/por-promesh/new [400 Bad Request, 1.04kB, 10ms]
+  √  Code HTTP 400
+
+└ POR — commercial refusé
+  POST http://127.0.0.1:4100/por-promesh/new [403 Forbidden, 976B, 6ms]
+  √  Code HTTP 403
+
+└ POR — nouvelle fiche
+  POST http://127.0.0.1:4100/por-promesh/new [201 Created, 1.07kB, 34ms]
+  √  Code HTTP 200 ou 201
+  √  statut BROUILLON
+
+└ POR — modifier le brouillon
+  PUT http://127.0.0.1:4100/por-promesh/95891eea-b01a-4865-8271-e657e1d98070 [200 OK, 3.64kB, 22ms]
+  √  Code HTTP 200
+  √  non verrouillée
+
+└ POR — valider
+  POST http://127.0.0.1:4100/por-promesh/95891eea-b01a-4865-8271-e657e1d98070/validate [200 OK, 3.66kB, 21ms]
+  √  Code HTTP 200
+  √  statut VALIDE
+  √  verrouillée
+  √  date de validation
+
+└ POR — modification après validation refusée
+  PUT http://127.0.0.1:4100/por-promesh/95891eea-b01a-4865-8271-e657e1d98070 [403 Forbidden, 1.04kB, 6ms]
+  √  Code HTTP 403
+
+└ POR — modification par superadmin refusée
+  PUT http://127.0.0.1:4100/por-promesh/95891eea-b01a-4865-8271-e657e1d98070 [403 Forbidden, 1.04kB, 6ms]
+  √  Code HTTP 403
+
+└ POR — seconde validation refusée
+  POST http://127.0.0.1:4100/por-promesh/95891eea-b01a-4865-8271-e657e1d98070/validate [403 Forbidden, 1.04kB, 8ms]
+  √  Code HTTP 403
+
+└ POR — la fiche validée reste inchangée
+  GET http://127.0.0.1:4100/por-promesh/95891eea-b01a-4865-8271-e657e1d98070 [200 OK, 3.66kB, 17ms]
+  √  Code HTTP 200
+  √  opérateur inchangé
+  √  toujours verrouillée
+
+└ POR — liste refusée au commercial
+  GET http://127.0.0.1:4100/por-promesh [403 Forbidden, 976B, 6ms]
+  √  Code HTTP 403
+
+└ POR — fiche inexistante
+  GET http://127.0.0.1:4100/por-promesh/00000000-0000-0000-0000-000000000000 [404 Not Found, 1kB, 10ms]
+  √  Code HTTP 404
+
+└ Fiche de production — module inconnu
+  POST http://127.0.0.1:4100/industrial-records [400 Bad Request, 1.07kB, 4ms]
+  √  Code HTTP 400
+
+└ Fiche de production — Mélange sans machine
+  POST http://127.0.0.1:4100/industrial-records [201 Created, 1.59kB, 23ms]
+  √  Code HTTP 201
+  √  machine facultative (machineId nul)
+
+└ Fiche de production — lecture
+  GET http://127.0.0.1:4100/industrial-records/dc19840a-889b-42fd-9699-17fe36aa6ba0 [200 OK, 1.58kB, 8ms]
+  √  Code HTTP 200
+
+└ Fiche de production — accueil refusé
+  GET http://127.0.0.1:4100/industrial-records [403 Forbidden, 976B, 6ms]
+  √  Code HTTP 403
+
+└ Nettoyage — supprimer la fiche de production
+  DELETE http://127.0.0.1:4100/industrial-records/dc19840a-889b-42fd-9699-17fe36aa6ba0 [200 OK, 962B, 7ms]
+  √  Code HTTP 200
+
+└ Récupérables — liste
+  GET http://127.0.0.1:4100/recuperables [200 OK, 982B, 11ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Récupérables — ligne invalide
+  POST http://127.0.0.1:4100/recuperables [400 Bad Request, 1.05kB, 3ms]
+  √  Code HTTP 400
+
+□ Maintenance
+└ Créer — champs manquants
+  POST http://127.0.0.1:4100/maintenance-requests [400 Bad Request, 1.02kB, 5ms]
+  √  Code HTTP 400
+
+└ Créer une demande
+  POST http://127.0.0.1:4100/maintenance-requests [201 Created, 1.53kB, 124ms]
+  √  Code HTTP 201
+  √  statut en_attente
+
+└ Mes demandes
+  GET http://127.0.0.1:4100/maintenance-requests/my [200 OK, 1.54kB, 12ms]
+  √  Code HTTP 200
+  √  contient la demande créée
+
+└ Toutes les demandes — commercial refusé
+  GET http://127.0.0.1:4100/maintenance-requests [403 Forbidden, 1.03kB, 3ms]
+  √  Code HTTP 403
+
+└ Toutes les demandes — RLA
+  GET http://127.0.0.1:4100/maintenance-requests [200 OK, 2.73kB, 13ms]
+  √  Code HTTP 200
+
+└ Accepter — demandeur refusé
+  PUT http://127.0.0.1:4100/maintenance-requests/64f230fc-3f31-41cd-a44f-7013cd122c91/accept [403 Forbidden, 1.03kB, 3ms]
+  √  Code HTTP 403
+
+└ Accepter — RLA
+  PUT http://127.0.0.1:4100/maintenance-requests/64f230fc-3f31-41cd-a44f-7013cd122c91/accept [200 OK, 982B, 23ms]
+  √  Code HTTP 200
+  √  statut acceptee
+
+└ Démarrer sans technicien
+  PUT http://127.0.0.1:4100/maintenance-requests/64f230fc-3f31-41cd-a44f-7013cd122c91/start [400 Bad Request, 1.04kB, 15ms]
+  √  Code HTTP 400
+
+└ Historique
+  GET http://127.0.0.1:4100/maintenance-requests/64f230fc-3f31-41cd-a44f-7013cd122c91/history [200 OK, 1.9kB, 12ms]
+  √  Code HTTP 200
+  √  au moins 2 événements
+
+└ Nettoyage — supprimer la demande
+  DELETE http://127.0.0.1:4100/maintenance-requests/64f230fc-3f31-41cd-a44f-7013cd122c91 [200 OK, 962B, 8ms]
+  √  Code HTTP 200
+
+□ RH
+└ Créer — type inconnu
+  POST http://127.0.0.1:4100/hr-requests [400 Bad Request, 1.07kB, 9ms]
+  √  Code HTTP 400
+
+└ Créer — dates incohérentes
+  POST http://127.0.0.1:4100/hr-requests [400 Bad Request, 1.09kB, 7ms]
+  √  Code HTTP 400
+
+└ Créer — profil employé incomplet
+  POST http://127.0.0.1:4100/hr-requests [422 Unprocessable Entity, 1.09kB, 10ms]
+  √  Code HTTP 422
+
+└ Créer une autorisation de sortie
+  POST http://127.0.0.1:4100/hr-requests [201 Created, 1.96kB, 82ms]
+  √  Code HTTP 201
+  √  statut en_attente
+
+└ Mes demandes RH
+  GET http://127.0.0.1:4100/hr-requests [200 OK, 1.97kB, 21ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Accepter — demandeur refusé
+  PUT http://127.0.0.1:4100/hr-requests/7d4364d9-a83f-4174-929e-7d28fdd1330a/accept [403 Forbidden, 1.02kB, 11ms]
+  √  Code HTTP 403
+
+└ Lire — autre collaborateur refusé
+  GET http://127.0.0.1:4100/hr-requests/7d4364d9-a83f-4174-929e-7d28fdd1330a [403 Forbidden, 1.03kB, 17ms]
+  √  Code HTTP 403 ou 404
+
+└ Lire une demande inexistante
+  GET http://127.0.0.1:4100/hr-requests/00000000-0000-0000-0000-000000000000 [404 Not Found, 1kB, 18ms]
+  √  Code HTTP 404
+
+└ Nettoyage — supprimer la demande RH
+  DELETE http://127.0.0.1:4100/hr-requests/7d4364d9-a83f-4174-929e-7d28fdd1330a [200 OK, 962B, 12ms]
+  √  Code HTTP 200
+
+□ Archive
+└ Créer — champs manquants
+  POST http://127.0.0.1:4100/archive-requests [400 Bad Request, 1.03kB, 9ms]
+  √  Code HTTP 400
+
+└ Créer — projet d'un autre utilisateur
+  POST http://127.0.0.1:4100/archive-requests [403 Forbidden, 1.03kB, 10ms]
+  √  Code HTTP 403
+
+└ Créer — projet inexistant
+  POST http://127.0.0.1:4100/archive-requests [404 Not Found, 1kB, 9ms]
+  √  Code HTTP 404
+
+└ Mes demandes d'archivage
+  GET http://127.0.0.1:4100/archive-requests/my [200 OK, 946B, 9ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Toutes les demandes — commercial refusé
+  GET http://127.0.0.1:4100/archive-requests [403 Forbidden, 1.02kB, 4ms]
+  √  Code HTTP 403
+
+└ Approuver — commercial refusé
+  PUT http://127.0.0.1:4100/archive-requests/00000000-0000-0000-0000-000000000000/approve [403 Forbidden, 1.02kB, 6ms]
+  √  Code HTTP 403
+
+└ Sans jeton
+  GET http://127.0.0.1:4100/archive-requests/my [401 Unauthorized, 983B, 3ms]
+  √  Code HTTP 401
+
+□ Notifications
+└ Mes notifications
+  GET http://127.0.0.1:4100/notifications [200 OK, 1.53kB, 18ms]
+  √  Code HTTP 200
+  √  items est un tableau
+  √  compteur non lu numérique
+
+└ Sans jeton
+  GET http://127.0.0.1:4100/notifications [401 Unauthorized, 983B, 5ms]
+  √  Code HTTP 401
+
+└ Tout marquer comme lu
+  PUT http://127.0.0.1:4100/notifications/read-all [200 OK, 962B, 14ms]
+  √  Code HTTP 200
+
+└ Marquer une notification inexistante
+  PUT http://127.0.0.1:4100/notifications/00000000-0000-0000-0000-000000000000/read [404 Not Found, 989B, 7ms]
+  √  Code HTTP 404
+
+□ Dashboard
+└ Tableau de bord utilisateur
+  GET http://127.0.0.1:4100/dashboard/user [200 OK, 1.08kB, 16ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ KPI globaux — commercial refusé
+  GET http://127.0.0.1:4100/dashboard/kpis [403 Forbidden, 1.22kB, 6ms]
+  √  Code HTTP 403
+
+└ KPI globaux — superadmin
+  GET http://127.0.0.1:4100/dashboard/kpis [200 OK, 2.89kB, 28ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Statistiques d'administration — admin
+  GET http://127.0.0.1:4100/admin-dashboard/stats [200 OK, 4.69kB, 16ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Statistiques d'administration — accueil refusé
+  GET http://127.0.0.1:4100/admin-dashboard/stats [403 Forbidden, 1.21kB, 3ms]
+  √  Code HTTP 403
+
+└ Statistiques POR — RLA
+  GET http://127.0.0.1:4100/por-promesh/stats [200 OK, 1.94kB, 10ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Sans jeton
+  GET http://127.0.0.1:4100/dashboard/user [401 Unauthorized, 983B, 2ms]
+  √  Code HTTP 401
+
+□ Copilot
+└ Chat — sans jeton
+  POST http://127.0.0.1:4100/ai-copilot/chat [401 Unauthorized, 983B, 5ms]
+  √  Code HTTP 401
+
+└ Chat — rôle non autorisé (accueil)
+  POST http://127.0.0.1:4100/ai-copilot/chat [403 Forbidden, 1.07kB, 13ms]
+  √  Code HTTP 403
+
+└ Chat — message vide
+  POST http://127.0.0.1:4100/ai-copilot/chat [400 Bad Request, 1.04kB, 6ms]
+  √  Code HTTP 400
+
+└ Conversations
+  GET http://127.0.0.1:4100/ai-copilot/conversations [200 OK, 972B, 8ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Conversation inexistante
+  GET http://127.0.0.1:4100/ai-copilot/conversations/00000000-0000-0000-0000-000000000000 [404 Not Found, 1.01kB, 9ms]
+  √  Code HTTP 404
+
+└ Documents RAG
+  GET http://127.0.0.1:4100/ai-copilot/documents [200 OK, 972B, 4ms]
+  √  Code HTTP 200
+  √  Réponse JSON
+
+└ Chat réel — « Quels sont mes projets ? »
+  POST http://127.0.0.1:4100/ai-copilot/chat [200 OK, 1.91kB, 50s]
+  √  Code HTTP 200
+  √  réponse non vide
+  √  un outil a réellement été appelé
+  √  outil list_projects
+  √  aucune action en attente pour une lecture
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │              126 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │              126 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │                0 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │              216 │                1 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 1m 6.6s                                   │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 836.33kB (approx)                        │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 445ms [min: 2ms, max: 50s, s.d.: 4.4s] │
+└───────────────────────────────────────────────────────────────┘
+
+[31m  # [39m[31m failure        [39m[31m detail                                                    [39m
+[90m    [39m[90m                [39m[90m                                                           [39m
+ 1.  AssertionError  Code HTTP 401                                             
+                     expected response to have status code 401 but got 200     
+                     at assertion:0 in test-script                             
+                     inside "Authentication / Rafraîchissement — jeton absent" 

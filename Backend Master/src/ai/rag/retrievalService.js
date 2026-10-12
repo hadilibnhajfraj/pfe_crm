@@ -46,6 +46,9 @@ class RagRetrievalService extends IRetriever {
     let candidates = await this.vectorStore.query(this.collection, queryVector, {
       topK: options.candidateK || this.candidateK,
       minScore: options.minScore ?? this.minScore,
+      // Phase 2 — restriction par métadonnées (propriétaire/document), voir
+      // InMemoryVectorStore.query. Absent : comportement inchangé.
+      filter: options.filter || null,
     });
 
     if (this.reranker && candidates.length > 0) {
@@ -54,7 +57,10 @@ class RagRetrievalService extends IRetriever {
 
     const topK = options.topK || this.topK;
     const top = candidates.slice(0, topK);
-    logger.info(`retrieve("${query}"): ${candidates.length} candidate(s), returning ${top.length}`);
+    // `logQuery: false` (documents utilisateur) : la question peut révéler le
+    // contenu d'un document personnel — seuls les compteurs sont journalisés.
+    const shownQuery = options.logQuery === false ? "[masquée]" : query;
+    logger.info(`retrieve("${shownQuery}"): ${candidates.length} candidate(s), returning ${top.length}`);
 
     return {
       query,
@@ -64,6 +70,12 @@ class RagRetrievalService extends IRetriever {
         text: c.metadata.text,
         sourceId: c.metadata.sourceId,
         title: c.metadata.title,
+        // Métadonnées des documents utilisateur (Phase 2) — ajoutées
+        // UNIQUEMENT pour ces chunks : le corpus de documentation renvoie
+        // exactement le même objet qu'avant.
+        ...(c.metadata.documentId
+          ? { documentId: c.metadata.documentId, filename: c.metadata.filename, page: c.metadata.page ?? null, chunkIndex: c.metadata.chunkIndex ?? null }
+          : {}),
       })),
       citations: this.citationBuilder.build(top),
     };

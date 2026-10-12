@@ -62,4 +62,21 @@ async function getUserDashboard(req, res) {
   }
 }
 
-module.exports = { getKPIs, getKPIByRole, getProfessionalDashboard, getUserDashboard };
+// GET /dashboard/me — tableau de bord personnalisé. Le profil est relu en base
+// à partir de req.user.sub ; aucun identifiant ni rôle venant du client n'est utilisé.
+async function getMyDashboard(req, res) {
+  try {
+    const meSvc = require("../services/meDashboard.service");
+    const data = await meSvc.getMyDashboard(req.user, { period: req.query.period });
+    res.set("Cache-Control", "no-store");
+    res.json({ success: true, data });
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) {
+      return res.status(err.status).json({ success: false, message: err.message });
+    }
+    console.error("Dashboard getMyDashboard error:", err);
+    res.status(500).json({ success: false, message: "Failed to load dashboard" });
+  }
+}
+
+module.exports = { getKPIs, getKPIByRole, getProfessionalDashboard, getUserDashboard, getMyDashboard };

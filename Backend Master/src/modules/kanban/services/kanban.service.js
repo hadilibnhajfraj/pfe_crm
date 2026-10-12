@@ -212,6 +212,8 @@ function toProjectCard(project) {
     // consommateur (Flutter ou IA) ne peut savoir SI un email/téléphone
     // renseigné est valide, seulement s'il est absent (voir missingFields).
     // Champ additif, même précédent que dateLimiteIngenieur ci-dessus.
+    ingenieurResponsable: p.ingenieurResponsable || null,
+    architecte: p.architecte || null,
     emailIngenieur: p.emailIngenieur || null,
     emailArchitecte: p.emailArchitecte || null,
     telephoneIngenieur: p.telephoneIngenieur || null,

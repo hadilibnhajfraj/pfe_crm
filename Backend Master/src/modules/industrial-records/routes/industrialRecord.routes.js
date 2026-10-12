@@ -15,6 +15,9 @@ router.use(authRequired);
 
 router.post("/", requireRole(...READ_WRITE_ROLES), validateCreate, ctrl.createRecord);
 router.get("/", requireRole(...READ_WRITE_ROLES), ctrl.listRecords);
+// Avertissement avant création d'une fiche PROBAR : fiches existantes pour la
+// même machine, la même date et le même poste. Lecture seule ; avant "/:id".
+router.get("/existing", requireRole(...READ_WRITE_ROLES), ctrl.findExistingFiches);
 router.get("/:id", requireRole(...READ_WRITE_ROLES), ctrl.getRecord);
 router.put("/:id", requireRole(...READ_WRITE_ROLES), validateUpdate, ctrl.updateRecord);
 router.delete("/:id", requireRole(...DELETE_ROLES), ctrl.deleteRecord);

@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit");
 const ctrl = require("../controllers/aiCopilot.controller");
 const bridge = require("../services/aiCopilotBridge.service");
 const { authRequired } = require("../../../middleware/auth.middleware");
+const { copilotDocumentUpload } = require("../../../middleware/copilotDocumentUpload.middleware");
 
 // Every route requires an authenticated caller (coarse gate), then the
 // AI_COPILOT_ENABLED/AI_COPILOT_ROLES_ALLOWED gate (fine gate, per-role) —
@@ -77,5 +78,19 @@ router.post("/proactive/:workflowId/reject", chatLimiter, ctrl.rejectProactiveWo
 // en page uniquement, aucun appel LLM : le budget large de lecture, pas
 // celui, resserré, réservé aux tours de conversation.
 router.post("/reports/pdf", readLimiter, ctrl.reportPdf);
+
+// Phase 2 — documents du Copilot (assistant documentaire). Mêmes gardes que
+// tout /ai-copilot (authRequired + requireCopilotEnabled, voir plus haut) ;
+// envoi limité à 10 fichiers/minute/utilisateur.
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: isTestEnv,
+});
+router.post("/documents", uploadLimiter, copilotDocumentUpload, ctrl.uploadDocument);
+router.get("/documents", readLimiter, ctrl.listDocuments);
+router.delete("/documents/:id", readLimiter, ctrl.deleteDocument);
 
 module.exports = router;

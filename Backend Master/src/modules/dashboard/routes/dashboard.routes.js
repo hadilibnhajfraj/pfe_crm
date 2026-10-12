@@ -7,6 +7,11 @@ const { kpiRoleGuard }  = require("../../../middleware/kpiRoleGuard");
 
 router.use(authRequired);
 
+// GET /dashboard/me — tableau de bord personnalisé (profil, modules, KPI,
+// filtres, fraîcheur, limites). Ouvert à tout utilisateur authentifié : le
+// contenu est déterminé par le rôle relu en base, pas par kpiRoleGuard.
+router.get("/me", ctrl.getMyDashboard);
+
 // GET /dashboard/kpis — legacy pipeline funnel + revenue — admin/superadmin only
 router.get("/kpis", kpiRoleGuard, ctrl.getKPIs);
 

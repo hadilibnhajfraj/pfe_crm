@@ -15,6 +15,12 @@ const uploads = require("../middleware/uploads");
 const { runFollowupAutomation } = require("../services/followupAutomation.service");
 const { recordStatusChange } = require("../services/commercialContactHistory.service");
 const { isCommercialEligibleRole } = require("../constants/commercialRoles");
+const { ROLES } = require("../constants/roles");
+const {
+  LEVELS,
+  contactListScope,
+  requireContactAccess,
+} = require("../modules/commercial-contacts/policies/contactAccess.policy");
 const { resolveFullName } = require("../utils/userDisplay");
 function mapStageToAction(stage) {
   switch (stage) {
@@ -73,10 +79,11 @@ async function _resolveCommercial(commercialId) {
   if (!commercialId) return null;
   const user = await User.findOne({
     where: { id: commercialId },
-    attributes: ["id", "email", "role"],
+    attributes: ["id", "email", "role", "isActive"],
     include: [{ model: UserProfile, as: "profile", attributes: ["name", "nom", "prenom"], required: false }],
   });
-  if (!user || !isCommercialEligibleRole(user.role)) return null;
+  // Commercial actif uniquement (un compte désactivé n'est jamais désigné).
+  if (!user || !user.isActive || !isCommercialEligibleRole(user.role)) return null;
   return { id: user.id, email: user.email || null, name: resolveFullName(user) };
 }
 
@@ -239,60 +246,25 @@ router.get("/", authRequired, async (req, res) => {
     console.log("WHERE BEFORE =", JSON.stringify(where, null, 2));
 
     // =============================
-    // 🔐 SCOPE PAR RÔLE — logique définitive
-    //
-    // - admin / superadmin / superadmin2 : vue complète, aucun filtre de
-    //   périmètre (comportement historique, jamais touché).
-    // - commercial : voit l'UNION (OR) de 3 critères, JAMAIS un seul :
-    //     1) createdBy   == utilisateur connecté (contacts qu'il a créés)
-    //     2) commercialId == utilisateur connecté (affectation directe et
-    //        persistante, colonne commercial_contacts.commercialId —
-    //        posée par le backfill historique ou par l'action admin
-    //        "Affecter des contacts")
-    //     3) id IN (assignedContactIds) (affectation via au moins une
-    //        relance CommercialContactRelance.commercialId)
-    //   Si assignedContactIds est vide, on NE court-circuite JAMAIS : les
-    //   critères 1) et 2) restent évalués normalement par la requête SQL.
-    //   where={} reste interdit pour ce rôle (toujours au moins le OR
-    //   ci-dessus), mais l'absence de résultat n'est plus jamais décidée
-    //   en dehors de la base — c'est Postgres qui tranche.
-    // - tout autre rôle (user, accueil, ...) : vue complète, comportement
-    //   historique inchangé (aucune restriction définie pour eux ici).
+    // 🔐 SCOPE PAR RÔLE — règle A, politique centralisée
+    // (modules/commercial-contacts/policies/contactAccess.policy.js : même
+    // règle que le détail, les actions, les relances, la modification et la
+    // suppression d'un contact).
+    //   - admins, commercial_sedentaire, accueil : vue complète
+    //   - commercial : contacts affectés, suivis via une relance, ou créés
+    //   - tout autre rôle : 403
     // =============================
-    let assignedContactIds = null; // null = non applicable à ce rôle
-
-    if (req.user.role === "commercial") {
-      const relanceRows = await CommercialContactRelance.findAll({
-        where: { commercialId: req.user.sub },
-        attributes: ["commercialContactId"],
-      });
-      assignedContactIds = [
-        ...new Set(relanceRows.map((r) => r.commercialContactId).filter(Boolean)),
-      ];
-
-      console.log("assignedContactIds =", assignedContactIds);
-
-      const orConditions = [
-        { createdBy: req.user.sub },
-        { commercialId: req.user.sub },
-      ];
-      if (assignedContactIds.length) {
-        orConditions.push({ id: { [Op.in]: assignedContactIds } });
-      }
-
-      where[Op.and] = [...(where[Op.and] || []), { [Op.or]: orConditions }];
-    } else if (PRIVILEGED_ROLES.includes(req.user.role)) {
-      console.log("assignedContactIds = N/A (rôle privilégié — vue complète)");
-    } else {
-      console.log(`assignedContactIds = N/A (rôle "${req.user.role}" non restreint ici — vue complète, comportement historique)`);
+    const scope = await contactListScope(req.user);
+    if (!scope) {
+      return res.status(403).json({ message: "Accès refusé aux contacts commerciaux" });
+    }
+    if (!scope.all) {
+      where[Op.and] = [...(where[Op.and] || []), scope.where];
     }
 
     console.log(
-      "WHERE AFTER =",
-      JSON.stringify(where, null, 2),
-      req.user.role === "commercial"
-        ? `+ OR[createdBy=${req.user.sub}, commercialId=${req.user.sub}${assignedContactIds.length ? `, id IN (${assignedContactIds.length} ids)` : ""}]`
-        : ""
+      "SCOPE =",
+      scope.all ? "vue complète" : `restreint (${scope.followedContactIds.length} contact(s) suivi(s) via relance)`
     );
 
     // =============================
@@ -335,17 +307,23 @@ return res.json(result);
 });
 
 // ═══════════════════════════════════════════════════════════════════════
-// ADMIN — "Affecter des contacts" : attribue en masse une liste de
-// contacts à un commercial (renseigne commercial_contacts.commercialId).
-// Réservé aux rôles privilégiés (admin/superadmin/superadmin2).
+// "Affecter des contacts" (règle B) : attribue en masse une liste de
+// contacts à un commercial.
+//   - réalisé par : commercial_sedentaire ou admin/superadmin/superadmin2
+//   - destinataire : un utilisateur ACTIF de rôle exactement "commercial"
+//     (jamais un commercial_sedentaire)
+//   - commercialId = destinataire ; assignedBy = auteur de l'affectation ;
+//     assignedAt = date — trois informations distinctes, jamais confondues.
 // ═══════════════════════════════════════════════════════════════════════
+const ASSIGN_ACTOR_ROLES = [...PRIVILEGED_ROLES, ROLES.COMMERCIAL_SEDENTAIRE];
+
 router.post("/assign", authRequired, async (req, res) => {
   try {
     console.log("ROLE =", req.user.role);
     console.log("USER =", req.user.sub);
 
-    if (!PRIVILEGED_ROLES.includes(req.user.role)) {
-      return res.status(403).json({ message: "Réservé aux administrateurs" });
+    if (!ASSIGN_ACTOR_ROLES.includes(req.user.role)) {
+      return res.status(403).json({ message: "Réservé aux commerciaux sédentaires et aux administrateurs" });
     }
 
     const { contactIds, commercialId } = req.body || {};
@@ -359,16 +337,18 @@ router.post("/assign", authRequired, async (req, res) => {
 
     const commercial = await User.findOne({
       where: { id: commercialId },
-      attributes: ["id", "role"],
+      attributes: ["id", "role", "isActive"],
     });
-    if (!commercial || !isCommercialEligibleRole(commercial.role)) {
-      return res.status(400).json({ message: "Commercial invalide ou introuvable" });
+    if (!commercial || commercial.role !== ROLES.COMMERCIAL || !commercial.isActive) {
+      return res.status(400).json({
+        message: "Le destinataire doit être un utilisateur actif ayant le rôle commercial",
+      });
     }
 
-    console.log("ASSIGN — contactIds:", contactIds.length, "→ commercialId:", commercialId);
+    console.log("ASSIGN — contactIds:", contactIds.length, "→ commercialId:", commercialId, "par", req.user.sub);
 
     const [updatedCount] = await CommercialContact.update(
-      { commercialId },
+      { commercialId, assignedBy: req.user.sub, assignedAt: new Date() },
       { where: { id: { [Op.in]: contactIds } } }
     );
 
@@ -383,13 +363,17 @@ router.post("/assign", authRequired, async (req, res) => {
 
 // GET /commercial-contacts/:id — fiche complète d'un contact, avec
 // l'historique des statuts (statusHistory), le plus récent en premier.
-router.get("/:id", authRequired, async (req, res) => {
+router.get("/:id", authRequired, requireContactAccess(LEVELS.VIEW), async (req, res) => {
   try {
     const contact = await CommercialContact.findByPk(req.params.id, {
       include: [
         { model: CommercialContactProduct, as: "products" },
         { model: CommercialContactRelance, as: "relances" },
         { model: CommercialProject, as: "projects" },
+        // Commercial affecté (commercialId) et auteur de l'affectation
+        // (assignedBy) — deux utilisateurs distincts.
+        { model: User, as: "commercial", attributes: ["id", "email", "role"], required: false },
+        { model: User, as: "assignedByUser", attributes: ["id", "email", "role"], required: false },
         {
           model: CommercialContactStatusHistory,
           as: "statusHistory",
@@ -410,7 +394,7 @@ router.get("/:id", authRequired, async (req, res) => {
   }
 });
 
-router.get("/:id/actions", authRequired, async (req, res) => {
+router.get("/:id/actions", authRequired, requireContactAccess(LEVELS.VIEW), async (req, res) => {
   try {
     console.log("📥 GET ACTIONS");
     console.log("👉 Contact ID:", req.params.id);
@@ -438,7 +422,7 @@ router.get("/:id/actions", authRequired, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
-router.post("/:id/actions", authRequired, uploads.single("file"), async (req, res) => {
+router.post("/:id/actions", authRequired, requireContactAccess(LEVELS.MANAGE), uploads.single("file"), async (req, res) => {
   try {
     console.log("📥 CREATE ACTION REQUEST");
     console.log("👉 Params ID:", req.params.id);
@@ -814,7 +798,7 @@ if (body.user_nom) {
 });
 
 // UPDATE CONTACT
-router.put("/:id", authRequired, async (req, res) => {
+router.put("/:id", authRequired, requireContactAccess(LEVELS.MANAGE), async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -824,13 +808,8 @@ router.put("/:id", authRequired, async (req, res) => {
       return res.status(404).json({ message: "Contact introuvable" });
     }
 
-    // 🔐 SECURITY
-    if (
-      !["admin", "superadmin", "superadmin2"].includes(req.user.role) &&
-      row.createdBy !== req.user.sub
-    ) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    // 🔐 SECURITY — contrôle centralisé requireContactAccess(LEVELS.MANAGE)
+    // (contactAccess.policy.js), appliqué avant ce handler.
 
     const body = req.body || {};
 
@@ -1065,7 +1044,7 @@ if (body.user_nom !== undefined) {
 });
 
 // CREATE RELANCE
-router.post("/:id/relances", authRequired, async (req, res) => {
+router.post("/:id/relances", authRequired, requireContactAccess(LEVELS.MANAGE), async (req, res) => {
   try {
     const id = req.params.id;
     const contact = await CommercialContact.findByPk(id);
@@ -1081,12 +1060,7 @@ router.post("/:id/relances", authRequired, async (req, res) => {
       });
     }
 
-    if (
-      !["admin", "superadmin", "superadmin2"].includes(req.user.role) &&
-      contact.createdBy !== req.user.sub
-    ) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    // 🔐 Accès vérifié par requireContactAccess(LEVELS.MANAGE).
 
     const body = req.body || {};
 
@@ -1127,7 +1101,7 @@ router.post("/:id/relances", authRequired, async (req, res) => {
 });
 
 // UPDATE RELANCE
-router.put("/:id/relances/:relanceId", authRequired, async (req, res) => {
+router.put("/:id/relances/:relanceId", authRequired, requireContactAccess(LEVELS.MANAGE), async (req, res) => {
   try {
     const { id, relanceId } = req.params;
 
@@ -1144,12 +1118,7 @@ router.put("/:id/relances/:relanceId", authRequired, async (req, res) => {
       return res.status(404).json({ message: "Relance introuvable" });
     }
 
-    if (
-      !["admin", "superadmin", "superadmin2"].includes(req.user.role) &&
-      contact.createdBy !== req.user.sub
-    ) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    // 🔐 Accès vérifié par requireContactAccess(LEVELS.MANAGE).
 
     const body = req.body || {};
 
@@ -1185,7 +1154,7 @@ router.put("/:id/relances/:relanceId", authRequired, async (req, res) => {
 });
 
 // DELETE CONTACT
-router.delete("/:id", authRequired, async (req, res) => {
+router.delete("/:id", authRequired, requireContactAccess(LEVELS.DELETE), async (req, res) => {
   try {
     const id = req.params.id;
     const row = await CommercialContact.findByPk(id);
@@ -1194,12 +1163,8 @@ router.delete("/:id", authRequired, async (req, res) => {
       return res.status(404).json({ message: "Contact introuvable" });
     }
 
-    if (
-      !["admin", "superadmin", "superadmin2"].includes(req.user.role) &&
-      row.createdBy !== req.user.sub
-    ) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    // 🔐 Accès vérifié par requireContactAccess(LEVELS.DELETE) : admins,
+    // commercial_sedentaire ou créateur du contact.
 
     await row.destroy();
     return res.json({ ok: true });

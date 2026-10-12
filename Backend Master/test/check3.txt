@@ -1,0 +1,42 @@
+--- page 1 (chars=449) ---
+RAPPORT TECHNIQUE — PROJET DE FIN D'ÉTUDES | Audit de Sécurité & RBAC | Copilot IA du projet PROBAR — Authentification, autorisation, ownership et sécurité des actions | Objectif : démon
+--- page 2 (chars=297) ---
+Sommaire | 1. Modèle de menace | 2. Authentification | 3. RBAC | 4. Ownership | 5. Sécurité des Tools | 6. Injection de prompt | 7. PendingAction | 8. Contrat PendingAction | 9. Sécurité RAG | 10. Séc
+--- page 3 (chars=1281) ---
+1. Modèle de menace | Le Copilot IA introduit une surface d'attaque spécifique par rapport à un CRM classique : un LLM (potentiellement local, potentiellement peu fiable dans son sui
+--- page 4 (chars=50) ---
+2. Authentification | 2.1 Traçage complet Login → DB
+--- page 5 (chars=654) ---
+Login (Flutter) | AuthService | POST /auth/login | JWT emis (sub,email,role) | GetStorage: accessToken | ApiClient.dio interceptor | Authorization: Bearer token | CopilotApiService.sendMessage()
+--- page 6 (chars=1282) ---
+PostgreSQL | 2.2 Identification des composants | Composant Fichier Rôle | AuthService Dash Master Toolkit/lib/providers/auth_service.dart accessToken / isLoggedIn  lus depuis GetStorage 
+--- page 7 (chars=3874) ---
+3. RBAC | 3.1 Les 7 rôles réels — ENUM vérifié | src/models/User.js:16 : DataTypes.ENUM("user", "commercial", "accueil", "admin", "superadmin", "superadmin2", "responsable_logistique_a
+--- page 8 (chars=3938) ---
+4. Ownership | 4.1 Principe général vérifié | Sur l'intégralité des Tools d'écriture lus pour cet audit, aucun champ d'ownership ( createdBy , userId , requestedBy , ownerId  en écritu
+--- page 9 (chars=3847) ---
+5. Sécurité des Tools | 5.1 Tableau représentatif (12 Tools, tous les niveaux de sensibilité couverts) | Tool Agent Rôles requis Joi Permission Service DB Ownership | list_projects Proje
+--- page 10 (chars=4411) ---
+6. Injection de prompt | 6.1 Les 5 règles réelles du PromptInjectionGuard | src/ai/security/promptInjectionGuard.js:13-41 — 5 patterns regex bilingues FR/EN, sans le flag g  (évite le 
+--- page 11 (chars=1580) ---
+7. PendingAction | confirm cancel ambigu | User: demande d'action | Agent (Commercial/Meeting/Automation) | Resolution serveur des identifiants | (jamais choisis par le LLM) | pendingActionSto
+--- page 12 (chars=2110) ---
+Mots de | confirmation | classifyConfirmation()  réutilisée de MeetingAgent — fort: | confirme/confirmer/confirmé(e) ; faible (≤2 tokens): oui/yes/accord/ok ; | annulation toujours priorit
+--- page 13 (chars=1751) ---
+8. Contrat PendingAction | 8.1 Structure exposée | { id: string, steps: [{ tool: string, input: object, reason: string }] } | Confirmé identique dans les 3 agents (commercialAgent.js:400
+--- page 14 (chars=755) ---
+9. Sécurité RAG | SourceGuard  (rag/sourceGuard.js, détaillé dans le rapport LLM/RAG précédent) constitue la garantie structurelle : allowlist d'extensions documentaires, blocklist d
+--- page 15 (chars=967) ---
+10. Sécurité MCP | Ordre exact et vérifié de McpServer._handleToolsCall()  : validation de forme de actingUser  → Permission (avant toute validation métier) → Rate limiting → Validat
+--- page 16 (chars=4884) ---
+11. Scénarios d'attaque et cas réels | 11.1 Cas Commercial — « Relancer Pépinière awled el HAJ pour le 27/08 et affecter le commercial [email] » | multiRecipientCalendarSync (Task+Goog
+--- page 17 (chars=515) ---
+Incident historique et correctif (déjà détaillé dans le rapport LLM/RAG) : pour « donner moi les fiches produites PROMESH », qwen3:8b  a produit un final_answer  dès | le premier tou
+--- page 18 (chars=2095) ---
+12. Résultats des tests | Catégorie Fichier(s) Exemple de test | RBAC / rôles réels ai.copilotPermissions.test.js Chaque rôle réel de l'ENUM testé individuellement ; accueil  refusé, r
+--- page 19 (chars=1499) ---
+13. Limites | Ownership non vérifié dans 2 services critiques ( assignOwner() , moveStage() ) — seule la restriction de rôle au niveau du Tool protège ; un changement futur de | requir
+--- page 20 (chars=1063) ---
+14. Recommandations | 1. Ajouter une vérification d'ownership explicite dans project.service.js::assignOwner()  et moveStage() , en défense en profondeur derrière la restriction de r
+--- page 21 (chars=2001) ---
+15. Conclusion | Cet audit démontre, par lecture directe du code et non par confiance déclarative, que le Copilot IA de PROBAR respecte un principe de sécurité central : l'identité, 

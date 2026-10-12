@@ -1,6 +1,7 @@
 // models/User.js
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../db");
+const { ALL_ROLES, DEFAULT_SIGNUP_ROLE } = require("../constants/roles");
 
 const User = sequelize.define(
   "User",
@@ -12,12 +13,13 @@ const User = sequelize.define(
 
     isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
 
-   role: {
-  type: DataTypes.ENUM("user", "commercial", "accueil", "admin", "superadmin", "superadmin2", "responsable_logistique_achat"),
-  allowNull: false,
-  
-  defaultValue: "user",
-},
+    // Vocabulaire des rôles v2 — identique à l'ENUM PostgreSQL après la
+    // migration 20260929090000-rename-user-roles.js (voir constants/roles.js).
+    role: {
+      type: DataTypes.ENUM(...ALL_ROLES),
+      allowNull: false,
+      defaultValue: DEFAULT_SIGNUP_ROLE,
+    },
 
     // models/User.js (extrait)
 resetPasswordTokenHash: { type: DataTypes.STRING, allowNull: true },

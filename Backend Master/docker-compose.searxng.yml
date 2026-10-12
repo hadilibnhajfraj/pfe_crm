@@ -1,0 +1,19 @@
+# Recherche Web de PROBAR ASSISTANT sans compte ni clé d'API : SearXNG,
+# métamoteur libre, hébergé sur cette machine.
+#
+#   docker compose -f docker-compose.searxng.yml up -d
+#
+# Puis dans .env :
+#   WEB_SEARCH_PROVIDER=searxng
+#   WEB_SEARCH_BASE_URL=http://localhost:8080
+# et vérifier : npm run web-search:check
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: probar-searxng
+    restart: unless-stopped
+    ports:
+      # Accessible uniquement depuis cette machine.
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./docker/searxng/settings.yml:/etc/searxng/settings.yml:ro

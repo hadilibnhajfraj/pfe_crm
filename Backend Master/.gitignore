@@ -2,3 +2,9 @@ node_modules/
 .env
 .env.*
 !.env.example
+# Audit NFR — jetons locaux
+nfr/monitoring/.secrets/
+
+# Audit de données : contient des noms de contacts (données personnelles)
+reports/data-quality/
+backups/

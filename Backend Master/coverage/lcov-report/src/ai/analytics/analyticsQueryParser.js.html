@@ -1,0 +1,1195 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/ai/analytics/analyticsQueryParser.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/ai/analytics</a> analyticsQueryParser.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">94.6% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>193/204</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">93.03% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>187/201</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">95% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>19/20</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">97.46% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>154/158</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">124x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">116x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">115x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">114x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">112x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-yes">109x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">771x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2656x</span>
+<span class="cline-any cline-yes">664x</span>
+<span class="cline-any cline-yes">579x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">557x</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">527x</span>
+<span class="cline-any cline-yes">410x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">730x</span>
+<span class="cline-any cline-yes">141x</span>
+<span class="cline-any cline-yes">140x</span>
+<span class="cline-any cline-yes">70x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">70x</span>
+<span class="cline-any cline-yes">196x</span>
+<span class="cline-any cline-yes">196x</span>
+<span class="cline-any cline-yes">196x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">60x</span>
+<span class="cline-any cline-yes">53x</span>
+<span class="cline-any cline-yes">52x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">120x</span>
+<span class="cline-any cline-yes">226x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">630x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">49x</span>
+<span class="cline-any cline-yes">37x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">759x</span>
+<span class="cline-any cline-yes">759x</span>
+<span class="cline-any cline-yes">759x</span>
+<span class="cline-any cline-yes">759x</span>
+<span class="cline-any cline-yes">730x</span>
+<span class="cline-any cline-yes">730x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">730x</span>
+<span class="cline-any cline-yes">730x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5049x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">666x</span>
+<span class="cline-any cline-yes">666x</span>
+<span class="cline-any cline-yes">666x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">329x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">133x</span>
+<span class="cline-any cline-yes">124x</span>
+<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">61x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">192x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">190x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">117x</span>
+<span class="cline-any cline-yes">96x</span>
+<span class="cline-any cline-yes">93x</span>
+<span class="cline-any cline-yes">96x</span>
+<span class="cline-any cline-yes">92x</span>
+<span class="cline-any cline-yes">452x</span>
+<span class="cline-any cline-yes">92x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">125x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
+&nbsp;
+const { detectLanguage, foldLatin } = require("../language/languageDetector");
+const { extractEntities } = require("../orchestrator/entityExtractor");
+&nbsp;
+/**
+ * # AnalyticsQueryParser — comprendre une question analytique CRM (FR/EN/RU)
+ *
+ * « Quel est l'ingénieur le plus utilisé dans le CRM ? »
+ * « Which engineer is assigned to the most projects? »
+ * « Какой инженер работает с наибольшим количеством проектов? »
+ *   → { domain: "project", groupBy: "engineer", aggregation: "count", operation: "max" }
+ *
+ * Déterministe (aucun modèle de langage) : une DIMENSION (ingénieur,
+ * commercial, statut, client, famille, mois, machine, opérateur, module), un
+ * SIGNAL analytique (le plus / le moins / top N / classement / chaque / par X
+ * / moyenne / combien) et un DOMAINE (projets, contacts, relances, fiches).
+ * Les filtres (PROBAR, statut, période, « mes », hors archivés) sont
+ * normalisés vers des valeurs techniques uniques, quelle que soit la langue.
+ *
+ * `parse()` renvoie `null` quand la question n'est pas analytique — elle
+ * suit alors le routage habituel (aucun parcours existant n'est détourné).
+ */
+&nbsp;
+// Priorité : la première dimension trouvée l'emporte (« Quelle machine a
+// produit le plus de fiches » → machine, jamais « produit »).
+const DIMENSIONS = [
+  { key: "engineer", domain: "project", re: /\bingenieurs?\b|\bengineers?\b|инженер/, plural: /\bingenieurs\b|\bengineers\b|инженер(?:ов|ы|ам|ами)(?![а-я])/ },
+  { key: "machine", domain: "industrial", re: /\bmachines?\b|машин|станк|оборудован/, plural: /\bmachines\b|машин(?:ы|ах|ами)?(?![а-я])|станк(?:и|ов)/ },
+  { key: "operator", domain: "industrial", re: /\boperateurs?\b|\boperators?\b|оператор/, plural: /\boperateurs\b|\boperators\b|оператор(ов|ы)/ },
+  {
+    key: "owner",
+    domain: null,
+    re: /(?&lt;!contacts? )\bcommercia(?:l|ux)\b|\bsales ?(?:reps?|people|persons?|representatives?|managers?)\b|\bsalespe(?:ople|rson)\b|менеджер|продавц/,
+    plural: /(?&lt;!contacts? )\bcommerciaux\b|\bsales ?(?:reps|people|representatives|managers)\b|\bsalespeople\b|менеджер(ов|ы)|продавц(ов|ы)/,
+  },
+  { key: "client", domain: null, re: /\bclients?\b|\bcustomers?\b|\bsocietes?\b|\bcompan(?:y|ies)\b|клиент|компани/, plural: /\bclients\b|\bcustomers\b|\bsocietes\b|\bcompanies\b|клиент(ов|ы)|компани(й|и)\b/ },
+  // « étape » désigne l'étape du pipeline (pipelineStageId), pas le statut : exclue.
+  { key: "status", domain: null, re: /\bstatuts?\b|\bstatus(?:es)?\b|статус/, plural: /\bstatuts\b|\bstatuses\b|статус(?:ов|ы)/ },
+  { key: "month", domain: null, re: /\bpar mois\b|\bmensuel|\b(?:per|by|each) month\b|\bmonthly\b|по месяц|помесячн|\bevolution\b|\btrend\b|динамик/, plural: /$^/ },
+  { key: "module", domain: "industrial", re: /\b(?:par|chaque|per|by|each) (?:module|type de fiche)\b|по модул/, plural: /$^/ },
+  {
+    key: "product_family",
+    domain: "project",
+    re: /\b(?:par|chaque|each|per|by|quelle?s?|which) (?:famille|produit|product)s?\b|\bfamilles? de produits?\b|\bproduct famil|по (?:продукт|семейств)/,
+    plural: /$^/,
+  },
+];
+&nbsp;
+const DOMAINS = [
+  { key: "relance", re: /\brelances?\b|\bfollow[- ]?ups?\b|\breminders?\b|напоминани|последующ/ },
+  { key: "industrial", re: /\bfiches?\b|\b(?:industrial|production) records?\b|\brecords?\b|\bproduction\b|запис|карточ|производств|выпуск/ },
+  { key: "contact", re: /\bcontacts?\b|\bprospects?\b|контакт/ },
+  { key: "project", re: /\bprojets?\b|\bprojects?\b|\baffaires?\b|\bchantiers?\b|проект/ },
+];
+&nbsp;
+const MAX = /\ble plus\b|\bla plus\b|\bles plus\b|\bmaximum\b|\bmost\b|\bhighest\b|\blargest\b|\bbiggest\b|\bbusiest\b|наибольш|больше всего|максимальн|чаще всего|самы\S* (?:активн|загруж|популярн|востребован)/;
+const MIN = /\ble moins\b|\bla moins\b|\bles moins\b|\bminimum\b|\bleast\b|\bfewest\b|\blowest\b|наименьш|меньше всего|минимальн/;
+const RANKING = /\bclassement\b|\bpalmares\b|\branking\b|\bleaderboard\b|\branked\b|рейтинг|\btop\b/;
+const AVERAGE = /\bmoyen(?:ne)?s?\b|\baverage\b|\bmean\b|средн/;
+const COUNT = /\bcombien\b|\bhow many\b|\bnombre (?:total )?(?:de|d)\b|\bnumber of\b|\btotal\b|сколько|количеств|\bcount\b/;
+const BREAKDOWN = /\brepartition\b|\bbreakdown\b|\bdistribution\b|распределени/;
+// NB : \b ne reconnaît que les lettres ASCII — les mots cyrilliques courts
+// sont délimités explicitement.
+const DISTRIBUTIVE = /\b(?:par|chaque|pour chaque|per|by|each|every)\b|(?:^|\s)по\s|кажд/;
+// Question qui attend UNE réponse (« quel », « which », « кто из … ») :
+// superlatif → max, même si la dimension est au pluriel (« Кто из инженеров »).
+const SINGLE_ANSWER = /\b(?:quel|quelle|which|who)\b|(?:^|\s)(?:кто|какой|какая|какое)(?=\s|$|[?.!,])/;
+const WHICH_PLURAL = /\b(?:quels|quelles|which|what)\b|(?:^|\s)(?:какие|каких|кто)(?=\s|$|[?.!,])/;
+const NOT_FOLLOWED_UP = /\b(?:pas|jamais|non|sans|aucune?)\b[^.?!]{0,30}?relanc|\bnever\b[^.?!]{0,20}follow|\bnot\b[^.?!]{0,20}follow|\bwithout (?:a |any )?follow|\bno follow|(?:^|\s)не\s[^.?!]{0,20}(?:напомин|связ|перезвон)|без напомин/;
+const EXCLUDE_ARCHIVED = /hors archiv|non[- ]archiv|sauf (?:les )?archiv|sans (?:les )?archiv|excluding archived|not archived|non-archived|without archived|без архив|кроме архив|неархив/;
+const MINE = /\bmes\b|\bmon\b|\bma\b|\bmy\b|(?:^|\s)(?:мои|моих|моим|мой|моя|моё|мое)(?=\s|$|[?.!,])/;
+&nbsp;
+const PROJECT_STATUS_SYNONYMS = [
+  { re: /\bin progress\b|\bongoing\b|\bactive\b|\bactifs?\b|в работе|активн/, value: "En cours" },
+  { re: /\bnegotiation\b|переговор/, value: "Négociation" },
+  { re: /\bdelivery\b|поставк|доставк/, value: "Livraison" },
+  { re: /\bcompleted\b|\bfinished\b|\bclosed\b|завершен/, value: "Terminé" },
+  { re: /\bidentification\b|идентификац/, value: "Identification" },
+];
+&nbsp;
+// POR PROMESH vit dans une autre table (por_promesh) que les fiches
+// industrielles analysées ici : jamais confondus.
+const POR_PROMESH = /\bpor[- ]?promesh\b|\bporpromesh\b/;
+&nbsp;
+// Répartition EXPLICITE : le marqueur précède directement la dimension
+// (« par statut », « chaque ingénieur », « per engineer », « по статусам »).
+const EXPLICIT_DISTRIBUTIVE_BEFORE = /(?:\b(?:par|chaque|pour chaque|per|by|each|every)|(?:^|\s)по|кажд\S*)\s+(?:l'|le |la |les |the )?$/;
+&nbsp;
+const DAY_MS = 86400000;
+&nbsp;
+function startOfDay(d) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+&nbsp;
+// Périodes FR/EN/RU → { key, from, to } (dates ISO).
+function extractPeriod(t, now) {
+  const today = startOfDay(now);
+  const iso = (d) =&gt; d.toISOString();
+  const lastN = t.match(/\b(?:les|ces) (\d{1,3}) derniers jours\b|\blast (\d{1,3}) days\b|за последние (\d{1,3}) (?:дн|сут)/);
+  if (lastN) {
+    const days = Number(lastN[1] || <span class="branch-1 cbranch-no" title="branch not covered" >lastN[2] </span>|| <span class="branch-2 cbranch-no" title="branch not covered" >lastN[3])</span>;
+    return { key: "last_n_days", days, from: iso(new Date(today.getTime() - days * DAY_MS)), to: iso(now) };
+  }
+  if (/\bce mois(?:[- ]ci)?\b|\bthis month\b|в этом месяце|за этот месяц|текущ\S* месяц/.test(t)) {
+    return { key: "this_month", from: iso(new Date(today.getFullYear(), today.getMonth(), 1)), to: iso(now) };
+  }
+  if (/\ble mois dernier\b|\blast month\b|в прошлом месяце|за прошлый месяц/.test(t)) {
+    return { key: "last_month", from: iso(new Date(today.getFullYear(), today.getMonth() - 1, 1)), to: iso(new Date(new Date(today.getFullYear(), today.getMonth(), 1).getTime() - 1)) };
+  }
+  if (/\bcette annee\b|\bthis year\b|в этом году|за этот год|текущ\S* год/.test(t)) {
+    return { key: "this_year", from: iso(new Date(today.getFullYear(), 0, 1)), to: iso(now) };
+  }
+  if (/\bl'?annee derniere\b|\blast year\b|в прошлом году|за прошлый год/.test(t)) {
+    return { key: "last_year", from: iso(new Date(today.getFullYear() - 1, 0, 1)), to: iso(new Date(new Date(today.getFullYear(), 0, 1).getTime() - 1)) };
+  }
+  if (/\bcette semaine\b|\bthis week\b|на этой неделе/.test(t)) {
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    return { key: "this_week", from: iso(monday), to: iso(now) };
+  }
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (/\bla semaine derniere\b|\blast week\b|на прошлой неделе/.test(t)) {
+    const monday = <span class="cstat-no" title="statement not covered" >new Date(today);</span>
+<span class="cstat-no" title="statement not covered" >    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));</span>
+<span class="cstat-no" title="statement not covered" >    return { key: "last_week", from: iso(new Date(monday.getTime() - 7 * DAY_MS)), to: iso(new Date(monday.getTime() - 1)) };</span>
+  }
+  if (/\baujourd'?hui\b|\btoday\b|сегодня/.test(t)) return { key: "today", from: iso(today), to: iso(now) };
+  return null;
+}
+&nbsp;
+function extractLimit(t) {
+  const m =
+    t.match(/\btop\s*(\d{1,2})\b/) ||
+    t.match(/\b(?:les|the)\s+(\d{1,2})\s/) ||
+    t.match(/\b(\d{1,2})\s+(?:premiers|premieres|meilleurs|ingenieurs|commerciaux|clients|machines|operateurs|engineers|customers|salespeople)\b/) ||
+    t.match(/(?:^|\s)(\d{1,2})\s+(?:инженер|клиент|менеджер|машин|оператор)/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return n &gt;= 1 &amp;&amp; n &lt;= 50 ? n : <span class="branch-1 cbranch-no" title="branch not covered" >null;</span>
+}
+&nbsp;
+function normalize(text) {
+  // Minuscules + accents latins retirés ; le cyrillique est conservé tel quel
+  // (une décomposition NFD casserait « й »).
+  return foldLatin(text).replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
+}
+&nbsp;
+function resolveDomain(dimension, t) {
+  const found = DOMAINS.filter((d) =&gt; d.re.test(t)).map((d) =&gt; d.key);
+  if (dimension &amp;&amp; dimension.domain) return dimension.domain;
+  if (dimension &amp;&amp; dimension.key === "client") {
+    // « quelle société a le plus de contacts » : non couvert (le client est
+    // une dimension des projets) → routage habituel.
+    if (!found.includes("project") &amp;&amp; (found.includes("contact") || found.includes("relance"))) return null;
+    return "project";
+  }
+  if (dimension &amp;&amp; dimension.key === "owner") {
+    if (found.includes("project")) return "project";
+    if (found.includes("relance")) return "relance";
+    if (found.includes("contact")) return "contact";
+    return "project";
+  }
+  if (found.includes("project")) return "project";
+  return found[0] || null;
+}
+&nbsp;
+// Dimensions admises par domaine (clé canonique du Tool correspondant).
+const DOMAIN_DIMENSIONS = {
+  project: { engineer: "engineer", owner: "owner", status: "status", client: "client", product_family: "product_family", month: "month" },
+  contact: { owner: "commercial", status: "status", month: "month" },
+  relance: { owner: "commercial", status: "status", month: "month" },
+  industrial: { machine: "machine", module: "module", operator: "operator", month: "month", status: "status" },
+};
+&nbsp;
+// ── Ingénieurs (intention `engineers`) ────────────────────────────────────
+// Entité = le concept « ingénieur » (FR/EN/RU) ; opération = « list » dès
+// qu'il y a un signal de consultation (verbe, question, « existent »,
+// « disponibles » — qui signifie ici « référencés », aucun statut de
+// disponibilité n'existant dans la table `engineers`).
+const ENGINEER_WORD = /\bingenieurs?\b|\bengineers?\b|\bresponsables? techniques?\b|(?:^|[^а-яё])инженер/;
+const HOW_TO = /\bcomment\b|\bhow (?:do|can|to|should)\b|\bexplique|(?:^|\s)как(?=\s)/;
+const LIST_SIGNAL =
+  /\b(?:liste[rsz]?|donne[rsz]?|montre[rsz]?|affiche[rsz]?|voir|consulter|show|give|display|get|list|see|quels?|quelles?|qui sont|qui est|which|who|what|existe(?:nt)?|exist(?:s|ing)?|disponibles?|available|registered|references?)\b|покажи|перечисли|список|выведи|дай|какие|какой|кто|есть|доступн/;
+const PROJECT_REFERENCE = [
+  /\b(?:sur|du|au|pour|de|dans)\s+(?:le\s+|ce\s+)?projet\s+["«“]?\s*(.+?)\s*["»”]?\s*[?.!]*$/i,
+  /\b(?:on|of|for|in)\s+(?:the\s+|this\s+)?project\s+["“]?\s*(.+?)\s*["”]?\s*[?.!]*$/i,
+  /(?:над\s+проектом|по\s+проекту|проекта|проекте)\s+["«“]?\s*(.+?)\s*["»”]?\s*[?.!]*$/i,
+];
+&nbsp;
+/**
+ * `undefined` : pas une question sur les ingénieurs (suite du parseur) ;
+ * `null` : question sur les ingénieurs laissée à l'analytique ou au routage
+ * habituel ; sinon la requête `engineers`.
+ */
+function parseEngineerRequest(t, raw, language) {
+  if (!ENGINEER_WORD.test(t)) return undefined;
+  if (HOW_TO.test(t)) return null; // « Comment affecter un ingénieur ? » → documentation
+  if (MAX.test(t) || MIN.test(t) || RANKING.test(t) || AVERAGE.test(t) || COUNT.test(t) || BREAKDOWN.test(t)) return undefined;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (/(?:\b(?:par|chaque|per|each|every)\b|кажд)\s+\S*(?:ingenieur|engineer|инженер)/.test(t)) <span class="cstat-no" title="statement not covered" >return undefined;</span>
+&nbsp;
+  for (const re of PROJECT_REFERENCE) {
+    const m = raw.match(re);
+    const name = m &amp;&amp; m[1].trim();
+    if (name &amp;&amp; !/^(?:mes|mon|ma|nos|ces|les|my|our|these|the|мои|моих|наши)\b/i.test(name)) {
+      return { language, domain: "engineer", groupBy: null, aggregation: null, operation: "of_project", projectName: name.slice(0, 200), limit: null, filters: {}, mine: false };
+    }
+  }
+  // Les PROJETS sont le sujet (« Quels ingénieurs travaillent sur mes
+  // projets ? » → répartition par ingénieur dans le périmètre ; « Quels projets
+  // ont une date limite ingénieur proche ? » → projets) : routage existant.
+  if (/\bprojets?\b|\bprojects?\b|проект/.test(t)) return undefined;
+  if (!LIST_SIGNAL.test(t)) return null; // « Ingénieurs » seul → clarification par entité
+  return { language, domain: "engineer", groupBy: null, aggregation: null, operation: "list", limit: null, filters: {}, mine: false };
+}
+&nbsp;
+const RANKING_OPERATIONS = new Set(["max", "min", "top", "average"]);
+const OVERRIDABLE_INTENTS = new Set(["projects", "commercial_contacts", "industrial"]);
+const UNCOVERED_DIMENSIONS = new Set(["engineer", "machine", "operator"]);
+&nbsp;
+class AnalyticsQueryParser {
+  constructor({ now = () =&gt; new Date() } = {}) {
+    this.now = now;
+  }
+&nbsp;
+  /** Langue du message (fr/en/ru), pour les réponses hors requête comprise. */
+  languageOf(message) {
+    return detectLanguage(message).language;
+  }
+&nbsp;
+  /** `true` si la question relève de l'analytique CRM. */
+<span class="fstat-no" title="function not covered" >  de</span>tect(message) {
+<span class="cstat-no" title="statement not covered" >    return this.parse(message) !== null;</span>
+  }
+&nbsp;
+  /**
+   * Faut-il router vers l'analytique alors que la détection lexicale a déjà
+   * trouvé \`currentIntent\` ? Oui pour general_chat (question non reconnue :
+   * cas signalé, EN/RU). Pour une intention métier précise, uniquement un
+   * vrai classement ou une répartition explicite que ses Agents ne savent
+   * pas calculer — les totaux (« combien de … ») restent à l'Agent existant.
+   */
+  shouldRoute(query, currentIntent) {
+    if (!query) return false;
+    // Ingénieurs : entité EXPLICITE + opération évidente (liste, ingénieur
+    // d'un projet) → exécution directe, quelle que soit l'intention détectée
+    // (y compris celle héritée d'un sujet précédent de la conversation) :
+    // aucune intention existante ne sait y répondre.
+    if (query.domain === "engineer") return true;
+    if (currentIntent === "general_chat") return true;
+    if (!OVERRIDABLE_INTENTS.has(currentIntent)) return false;
+    // CommercialAgent répond à toute question contenant « relance » par la
+    // liste des contacts « à rappeler » : ni un nombre de relances, ni les
+    // contacts JAMAIS relancés. Ces deux questions vont donc à l'analytique.
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (query.operation === "list_without_relance") <span class="cstat-no" title="statement not covered" >return true;</span>
+    if (query.domain === "relance" &amp;&amp; query.operation === "total") return true;
+    if (!query.groupBy) return false;
+    if (RANKING_OPERATIONS.has(query.operation)) return true;
+    if (query.operation !== "distribution" || query.domain === "contact" || query.domain === "relance") return false;
+    // Répartition explicite (« par statut », « chaque ingénieur ») ou
+    // dimension qu'aucun Agent existant ne sait lister (ingénieurs, machines,
+    // opérateurs : « Quels ingénieurs travaillent sur mes projets ? »).
+    return query.explicitDistribution || UNCOVERED_DIMENSIONS.has(query.groupBy);
+  }
+&nbsp;
+  /**
+   * @returns {null | { language, domain, groupBy, aggregation, operation, limit,
+   *   filters: { productFamily, module, statut, period, includeArchived }, mine }}
+   */
+  parse(message) {
+    const raw = String(message || <span class="branch-1 cbranch-no" title="branch not covered" >"")</span>;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!raw.trim()) <span class="cstat-no" title="statement not covered" >return null;</span>
+    const t = normalize(raw);
+    if (POR_PROMESH.test(t)) return null;
+    const now = this.now();
+    const { language } = detectLanguage(raw);
+&nbsp;
+    // Ingénieurs : liste, ou ingénieur d'un projet précis (intention
+    // `engineers`) — avant l'analytique, qui garde les comptages/classements
+    // et « les ingénieurs de mes projets » (répartition dans le périmètre).
+    const engineerRequest = parseEngineerRequest(t, raw, language);
+    if (engineerRequest !== undefined) return engineerRequest;
+&nbsp;
+    const dimension = DIMENSIONS.find((d) =&gt; d.re.test(t)) || null;
+    // « Quels contacts n'ont pas été relancés ? » : contacts JAMAIS relancés,
+    // avant que le mot « relancés » ne fasse choisir le domaine des relances.
+    const contactsWithoutRelance = !dimension &amp;&amp; /\bcontacts?\b|\bprospects?\b|контакт/.test(t) &amp;&amp; NOT_FOLLOWED_UP.test(t);
+    const domain = contactsWithoutRelance ? "contact" : resolveDomain(dimension, t);
+    if (!domain) return null;
+&nbsp;
+    const isMax = MAX.test(t);
+    const isMin = MIN.test(t);
+    const isRanking = RANKING.test(t);
+    const isAverage = AVERAGE.test(t);
+    const isCount = COUNT.test(t);
+    const limit = extractLimit(t);
+&nbsp;
+    let operation = null;
+    let groupBy = null;
+    let explicitDistribution = false;
+    if (dimension) {
+      groupBy = (DOMAIN_DIMENSIONS[domain] || <span class="branch-1 cbranch-no" title="branch not covered" >{})</span>[dimension.key] || <span class="branch-1 cbranch-no" title="branch not covered" >null;</span>
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!groupBy) <span class="cstat-no" title="statement not covered" >return null;</span>
+      const plural = dimension.plural.test(t);
+      const at = t.search(dimension.re);
+      explicitDistribution = at &gt; 0 &amp;&amp; EXPLICIT_DISTRIBUTIVE_BEFORE.test(t.slice(Math.max(0, at - 16), at));
+      const distributive = DISTRIBUTIVE.test(t) || BREAKDOWN.test(t);
+      const listQuestion = WHICH_PLURAL.test(t) &amp;&amp; plural;
+      if (isMin) operation = "min";
+      else if (isRanking || limit) operation = "top";
+      else if (isMax) operation = plural &amp;&amp; !SINGLE_ANSWER.test(t) ? "top" : "max";
+      else if (isAverage) operation = "average";
+      else if (distributive || listQuestion || (isCount &amp;&amp; plural)) operation = "distribution";
+      if (!operation) return null;
+    } else if (contactsWithoutRelance) {
+      operation = "list_without_relance";
+    } else if (isCount &amp;&amp; !isMax &amp;&amp; !isMin) {
+      operation = "total";
+    } else {
+      return null;
+    }
+&nbsp;
+    const filters = { productFamily: null, module: null, statut: null, period: extractPeriod(t, now), includeArchived: !EXCLUDE_ARCHIVED.test(t) };
+    if (domain === "industrial") {
+      if (/\bprobar\b|пробар/.test(t)) filters.module = "probar";
+      else <span class="missing-if-branch" title="if path not taken" >I</span>if (/\bmelange\b|\bmixture\b|смес/.test(t)) <span class="cstat-no" title="statement not covered" >filters.module = "melange";</span>
+      else <span class="missing-if-branch" title="if path not taken" >I</span>if (/\bmaintenance\b|техобслуж/.test(t)) <span class="cstat-no" title="statement not covered" >filters.module = "maintenance";</span>
+    } else if (domain === "project") {
+      if (/\bprobar\b|пробар/.test(t)) filters.productFamily = "PROBAR";
+      else <span class="missing-if-branch" title="if path not taken" >I</span>if (/\bpromesh\b|промеш/.test(t)) <span class="cstat-no" title="statement not covered" >filters.productFamily = "PROMESH";</span>
+      if (groupBy !== "status") {
+        const fr = extractEntities(raw, { now }).status;
+        const synonym = PROJECT_STATUS_SYNONYMS.find((s) =&gt; s.re.test(t));
+        filters.statut = fr || (synonym ? synonym.value : null);
+      }
+    }
+&nbsp;
+    return {
+      language,
+      domain,
+      groupBy,
+      aggregation: "count",
+      operation,
+      // Vrai classement (max, min, top, moyenne) ou répartition explicite :
+      // voir AIManager, seuls ces cas remplacent une intention déjà précise.
+      explicitDistribution,
+      limit: operation === "top" ? limit || 5 : limit,
+      filters,
+      mine: MINE.test(t),
+    };
+  }
+&nbsp;
+  /**
+   * Question de DONNÉES CRM que le parseur ne sait pas (encore) traiter —
+   * servie par une réponse honnête plutôt que par la documentation.
+   */
+  looksLikeCrmDataQuestion(message) {
+    const t = normalize(message);
+    const signal = MAX.test(t) || MIN.test(t) || RANKING.test(t) || AVERAGE.test(t) || COUNT.test(t);
+    if (!signal) return false;
+    const crmNoun =
+      DOMAINS.some((d) =&gt; d.re.test(t)) ||
+      DIMENSIONS.some((d) =&gt; d.re.test(t)) ||
+      /\bdevis\b|\bquotes?\b|\bcommandes?\b|\borders?\b|\bfactures?\b|\binvoices?\b|\bopportunit|\binterventions?\b|\bdemandes?\b|\butilisateurs?\b|\busers?\b|\barchitectes?\b|\barchitects?\b|смет|заказ|счет|сдел(?:к|ок)|пользоват/.test(t);
+    return crmNoun;
+  }
+}
+&nbsp;
+module.exports = { AnalyticsQueryParser, normalizeAnalyticsText: normalize, extractPeriod };
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-10-03T21:53:08.117Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

@@ -5,6 +5,7 @@ const actionController = require("../controllers/projectAction.controller");
 const { authRequired } = require("../middleware/auth.middleware");
 const { validateCreateAction } = require("../middleware/projectAction.validation");
 const { actionUpload } = require("../middleware/actionUpload.middleware");
+const { requireProjectAccess } = require("../modules/projects/policies/projectAccess.policy");
 
 /*
 Ajouter action CRM
@@ -14,6 +15,7 @@ from the multipart/form-data payload before any field is read.
 router.post(
   "/projects/:projectId/actions",
   authRequired,
+  requireProjectAccess("edit", "projectId"),
   actionUpload.single("file"),
   validateCreateAction,
   actionController.createAction

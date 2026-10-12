@@ -1,0 +1,114 @@
+--- page 1 (chars=487) ---
+PROJET DE FIN D'ÉTUDES — INGÉNIEUR INFORMATIQUE | Conception et Implémentation | du Copilot IA | Étude de cas : le Copilot conversationnel du CRM PROBAR | Arc
+...tail: sivement sur la lecture directe du dépôt | Date de rédaction : 29 août 2026 | 1 / 38
+--- page 2 (chars=468) ---
+Sommaire | 1. Introduction | 2. Objectifs | 3. Architecture globale | 4. Frontend Flutter | 5. Backend | 6. Intent Detection | 7. Multi-Agent | 8. LLM | 9. Prompt Engin
+...tail: ons du jury | 24. Diagrammes | 25. Conclusion | Éléments à vérifier avant dépôt | 2 / 38
+--- page 3 (chars=3398) ---
+1. Introduction | 1.1 Contexte | PROBAR est un CRM d'entreprise (CBI Tunisia) organisé en modules métiers distincts et vérifiables directement dans le | cod
+...tail:  — ce mécanisme complet est décrit en détail dans les sections | suivantes. | 3 / 38
+--- page 4 (chars=1270) ---
+2. Objectifs | Objectif Traduction technique vérifiée dans le code | Accès naturel aux | données | 21 intentions cataloguées ( intentCatalog.js ), routées ver
+...tail: tions) — jamais un LLM comme seule source de vérité sur une donnée métier | 4 / 38
+--- page 5 (chars=81) ---
+3. Architecture globale | La chaîne complète, vérifiée fichier par fichier : | 5 / 38
+...tail: . Architecture globale | La chaîne complète, vérifiée fichier par fichier : | 5 / 38
+--- page 6 (chars=432) ---
+Flutter: CopilotController | CopilotApiService (Dio) | POST /ai-copilot/chat | aiCopilot.routes.js | authRequired + requireCopilotEnabled | aiCopilot.controller
+...tail: M (Ollama qwen3:8b) MCP: McpServer -> Tool | Service metier | ResponseBuilder | 6 / 38
+--- page 7 (chars=514) ---
+PostgreSQL | Figure 1 — Chaîne complète Flutter → API → Backend → AI Bridge → Orchestrator → Intent → Agent → LLM/RAG/Tools → Services → PostgreSQL | Cett
+...tail: traduction entre le monde HTTP/Express et le monde de | l'orchestrateur IA. | 7 / 38
+--- page 8 (chars=1801) ---
+4. Frontend Flutter | Composant Fichier Rôle | CopilotFab lib/ai/widgets/copilot_fab.dart Bouton flottant, monté une seule fois au niveau d' AppShell | (don
+...tail: nnexion, lu par l'intercepteur Dio et par le service | WebSocket du Copilot | 8 / 38
+--- page 9 (chars=1450) ---
+5. Backend | Composant Fichier Rôle | AI Copilot Bridge src/modules/ai- | copilot/services/aiCopilotBridge.service.js | Seul point du backend métier qui impor
+...tail: larificationResponse ) — jamais | le message d'erreur brut exposé au client | 9 / 38
+--- page 10 (chars=1706) ---
+6. Intent Detection | Keywords/scoring : LexicalIntentRouter  ( langchain/router/lexicalIntentRouter.js ) compte, pour chaque route du | catalogue, le nom
+...tail: ur lister les | capacités réellement accessibles au rôle de l'utilisateur. | 10 / 38
+--- page 11 (chars=1786) ---
+7. Multi-Agent | 19 agents métiers réellement enregistrés ( agents/manifest.js , defaultAgentFactories ) : | Agent Domaine Intent Tools RAG LLM Écriture | A
+...tail:  — exclu de ce tableau, qui ne recense que les agents réellement actifs. | 11 / 38
+--- page 12 (chars=1316) ---
+8. LLM | Paramètre Valeur vérifiée ( Backend Master/.env  réel) | Provider actif Ollama ( src/ai/services/providers/ollamaProvider.js ) | Modèle qwen3:8b  —
+...tail: string  découple entièrement | le reste du système du fournisseur concret. | 12 / 38
+--- page 13 (chars=1652) ---
+9. Prompt Engineering | Couche Contenu / rôle | System Prompt | (générique) | buildResponseSystemPrompt()  ( responsePrompts.js ) : principes anti-hallucinati
+...tail: ent de ce que le modèle a pu lire, halluciner ou ignorer dans le | prompt. | 13 / 38
+--- page 14 (chars=1657) ---
+10. RAG | Documents | docs/, README, AI-Business-Copilot/, 1 PDF | SourceGuard | allowlist+blocklist+anti-symlink | Ingestion + Parsing | markdown/txt/pdf(pdf2jso
+...tail: s exposés au frontend ( index, title, sourceType, path, excerpt, score ) | 14 / 38
+--- page 15 (chars=665) ---
+11. Tool Calling | LLM: decision JSON call_tool | DynamicStructuredTool | (mcpToolAdapter) | McpServer.handleMessage(tools/call) | ValidationManager | (forme JSON
+...tail: métier. Boucle bornée à maxToolCalls=5  (garde-fou anti-boucle infinie). | 15 / 38
+--- page 16 (chars=961) ---
+12. MCP | Un protocole JSON-RPC 2.0 réel et conforme à la spécification MCP est implémenté ( initialize , ping , tools/list , | tools/call , transport std
+...tail: lingChain  (LangChain) ou depuis la confirmation d'un workflow proactif. | 16 / 38
+--- page 17 (chars=1871) ---
+13. Sécurité | JWT verifie (authRequired) | actingUser {id,email,role} | isAuthorized(requiredRoles,allowedEmails) | BaseAgent.execute() PermissionManager (MC
+...tail: projets d'autres utilisateurs avant le correctif scopeInputForActingUser | 17 / 38
+--- page 18 (chars=1008) ---
+14. PendingAction | confirme | annule | ambigu | Proposition | Agent construit le payload | Store | PendingActionStore.propose() | TTL 15 min | Confirmation | classifyCon
+...tail: vérifié par test réel (2e confirmation →  « aucune action en attente | »). | 18 / 38
+--- page 19 (chars=1921) ---
+15. Cas d'utilisation | # Question Intent Agent Tool/RAG Résultat | 1 « Donne-moi la liste | des projets » | projects ProjectAgent Tool: list_projects Liste s
+...tail: tinction RAG/Tool Calling déjà démontrée dans l'audit LLM/RAG précédent. | 19 / 38
+--- page 20 (chars=1474) ---
+16. Google Calendar | Google CalendarCalendarEventSyncTool create_calendar_eventTask (CRM)meetingCopilotSync.servicePendingActionStoreMeetingAgent | Googl
+...tail: pe, entityId, userId)  met à jour la ligne existante, jamais un doublon. | 20 / 38
+--- page 21 (chars=2026) ---
+17. Base de données | Agent Tool (exemple) Service Modèle Table | ProjectAgent list_projects, assign_project_owner, | move_project_stage | project.service.js 
+...tail: e code analysé » pour le nom exact de la table ; à vérifier avant dépôt. | 21 / 38
+--- page 22 (chars=1696) ---
+18. Tests | Catégorie Fichiers représentatifs | Unitaires — Intent ai.orchestrator.intentDetector.test.js, ai.orchestrator.intentConfidence.test.js | Unitai
+...tail: ire historique, pas comme un résultat vérifié à la date du 29 | août 2026. | 22 / 38
+--- page 23 (chars=2893) ---
+19. Problèmes rencontrés et corrections | 19.1 Fuite de portée — list_projects  / RBAC des Tools de lecture | PROBLÈME Un rôle non admin-tier pouvait rece
+...tail: ai.copilotPermissions.test.js  (rôle testé explicitement comme autorisé) | 23 / 38
+--- page 24 (chars=3279) ---
+RÉSULTAT Porte HTTP grossière et gate applicative désormais alignées — seul l'accès à la route est ajouté, aucune permission supplémentaire | 19.5 capab
+...tail: s ; | (P1.3) idempotence de upsertSync  par (entityType, entityId, userId) | 24 / 38
+--- page 25 (chars=2610) ---
+FICHIERS orchestrator/pendingActionStore.js , commercialAgent.js , meetingAgent.js , automationAgent.js , | multiRecipientCalendarSync.service.js | TEST t
+...tail: restrictions RBAC réelles de l'utilisateur, jamais une réponse générique | 25 / 38
+--- page 26 (chars=1153) ---
+20. Performance | Toutes les valeurs de cette section proviennent de constantes de configuration ou de mesures RÉELLES citées littéralement dans les | com
+...tail: uêtes Sequelize) NON TROUVÉ DANS LE CODE — aucune mesure chiffrée dédiée | 26 / 38
+--- page 27 (chars=1808) ---
+21. Limites | Limites actuelles | Ownership non revérifié dans les services assignOwner() / moveStage()  — seul le rôle protège | ADMIN_TIER_ROLES  dupliqué
+...tail:  assumée et documentée, pas un bug) | Aucune gestion de conflit d'horaires | 27 / 38
+--- page 28 (chars=1730) ---
+22. Perspectives | Cette section propose des améliorations non implémentées — clairement distinguées de l'état actuel décrit dans les sections | précédent
+...tail: valuation continue en production (LLM- | juge, scoring qualité de réponse) | 28 / 38
+--- page 29 (chars=2360) ---
+23. Questions du jury | 55 questions/réponses, fondées exclusivement sur le projet réel et les trois audits de code réalisés. | LLM (5) | Q1. Quel LLM est r
+...tail:  vecteurs d'embedding ? | 256, configurable via RAG_EMBEDDING_DIMENSIONS . | 29 / 38
+--- page 30 (chars=2292) ---
+Q11. Le hachage utilisé est-il sécurisé cryptographiquement ? | Non, ce n'est pas son objectif — c'est un hachage de type djb2 utilisé pour répartir des
+...tail: ellement. | MCP (4) | Q21. MCP est-il un vrai serveur séparé en production ? | 30 / 38
+--- page 31 (chars=2397) ---
+Non — le protocole JSON-RPC 2.0 est réel et conforme, mais le serveur MCP est instancié en mémoire dans le même process que | l'application, jamais comm
+...tail: nt | explicitement l'invention de valeurs absentes des résultats d'outils. | 31 / 38
+--- page 32 (chars=2204) ---
+RBAC (5) | Q33. Combien de rôles existent réellement dans ce CRM ? | 7, vérifiés dans l'ENUM Sequelize : user, commercial, accueil, admin, superadmin, sup
+...tail:  ? | Une exception est levée, le texte n'atteint jamais le prompt du tout. | 32 / 38
+--- page 33 (chars=2093) ---
+PendingAction (4) | Q45. Quels agents utilisent le mécanisme PendingAction ? | Trois : CommercialAgent, MeetingAgent, AutomationAgent. | Q46. Une double con
+...tail: t reflété honnêtement ( synced:false ), jamais présenté comme | un succès. | 33 / 38
+--- page 34 (chars=791) ---
+24. Diagrammes | Les diagrammes d'architecture globale, RAG, Tool Calling, PendingAction, Meeting et Google Calendar figurent respectivement en Figures 
+...tail: ts metier (Tools) Agents deterministes (sans LLM) Agents a PendingAction | 34 / 38
+--- page 35 (chars=294) ---
+LLM (abstraction Provider) | ILlmProvider (interface) | OpenAiProvider | AnthropicProvider | OllamaProvider (actif) | MCP | McpServer | initialize ping tools/list t
+...tail: C | actingUser.role (JWT) | isAuthorized() | BaseAgent PermissionManager (MCP) | 35 / 38
+--- page 36 (chars=199) ---
+Commercial Relance | Extraction slots | (contact,date,email) | Resolution serveur | (contact + commercial) PendingAction propose Confirmation schedule_commerc
+...tail: e Confirmation schedule_commercial_contact_relance DB + sync Task/Google | 36 / 38
+--- page 37 (chars=1732) ---
+25. Conclusion | Le Copilot IA du projet PROBAR constitue une réponse concrète et vérifiable à la problématique de navigation multi- | module d'un CRM : i
+...tail: à part entière pour un mémoire de fin d'études en ingénierie logicielle. | 37 / 38
+--- page 38 (chars=3136) ---
+Éléments à vérifier avant dépôt | Liste exhaustive des points signalés comme non confirmés, incomplets ou à revalider dans ce document, à traiter avant 
+...tail: ment sur trois audits de code exhaustifs et la lecture directe du dépôt. | 38 / 38

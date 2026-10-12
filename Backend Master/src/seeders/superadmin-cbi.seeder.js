@@ -58,7 +58,9 @@ module.exports = {
 
   async down(queryInterface) {
     await queryInterface.sequelize.query(
-      `UPDATE users SET role = 'user' WHERE email = :email`,
+      // Vocabulaire v2 (constants/roles.js) : l'ancien rôle par défaut "user"
+      // est devenu "commercial".
+      `UPDATE users SET role = 'commercial' WHERE email = :email`,
       { replacements: { email: EMAIL } }
     );
   },

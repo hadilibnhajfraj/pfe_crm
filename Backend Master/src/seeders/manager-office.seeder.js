@@ -15,7 +15,10 @@ const { v4: uuidv4 } = require("uuid");
 const EMAIL = "manegerofficecbi@gmail.com";
 
 const PASSWORD = "ChangeMe123!";
-const ROLE = "user";
+// Vocabulaire v2 (constants/roles.js) : l'ancien rôle "user" est devenu
+// "commercial" (correspondance de la migration 20260929090000). Ce compte
+// est identifié comme Responsable RH par son e-mail, pas par son rôle.
+const ROLE = "commercial";
 
 module.exports = {
   async up(queryInterface) {

@@ -17,7 +17,14 @@ const { ConversationContextResolver } = require("./conversationContextResolver")
 const { ConversationContinuityResolver } = require("./conversationContinuityResolver");
 const { SuggestionEngine } = require("./suggestionEngine");
 const { PendingActionStore } = require("./pendingActionStore");
+const { TaskPlanner } = require("../planning/taskPlanner");
+const { ConfirmationManager } = require("../planning/confirmationManager");
+const { AnalyticsQueryParser } = require("../analytics/analyticsQueryParser");
+const { QueryRouter } = require("../routing/queryRouter");
 const { AgentRegistry, loadDefaultAgents } = require("../agents");
+const { extractEntities } = require("./entityExtractor");
+const { ContextManager } = require("./contextManager");
+const { SemanticIntentResolver } = require("./semanticIntentResolver");
 
 // Builds the toolName -> moduleKey lookup ToolRouter needs to restrict
 // candidate tools to the module an Intent points at. Reuses the exact same
@@ -144,6 +151,47 @@ function buildToolPermissionIndex() {
  * effacerait toute proposition en attente — ce collaborateur doit rester
  * stable pour la durée de vie du process, exactement comme `sharedMemory`.
  */
+function createEngineerProbe(tools) {
+  const tool = (tools || []).find((t) => t.name === "find_crm_entity");
+  if (!tool) return null;
+  return async (name) => {
+    try {
+      const raw = await tool.invoke({ entityType: "engineer", name, includeDetails: false });
+      const output = typeof raw === "string" ? JSON.parse(raw) : raw;
+      return Boolean(output && Array.isArray(output.matches) && output.matches.length > 0);
+    } catch (_err) {
+      return false;
+    }
+  };
+}
+
+// Le nom désigne-t-il une personne du CRM (ingénieur, contact) et/ou un
+// projet, dans le périmètre de l'utilisateur ? Toujours via le Tool scopé.
+function createEntityProbe(tools) {
+  const tool = (tools || []).find((t) => t.name === "find_crm_entity");
+  if (!tool) return null;
+  const call = async (input) => {
+    try {
+      const raw = await tool.invoke(input);
+      const output = typeof raw === "string" ? JSON.parse(raw) : raw;
+      return output && Array.isArray(output.matches) ? output.matches : [];
+    } catch (_err) {
+      return [];
+    }
+  };
+  return async (name) => {
+    const [entities, projects] = await Promise.all([
+      call({ entityType: "auto", name, includeDetails: false }),
+      call({ entityType: "project_promoter", projectName: name }),
+    ]);
+    return {
+      person: entities.some((m) => m.entityType === "engineer" || m.entityType === "architect" || m.entityType === "contact"),
+      company: entities.some((m) => m.entityType === "company"),
+      project: projects.length > 0,
+    };
+  };
+}
+
 function createAiOrchestrator({
   llmProvider,
   retriever,
@@ -176,6 +224,15 @@ function createAiOrchestrator({
   // défaut : RoleCapabilityAuditAgent répond alors "aucune restriction
   // connue" pour tout rôle, jamais une exception ni une donnée inventée.
   moduleAccessByRole = {},
+  // Phase 1 — compréhension naturelle (voir entityExtractor.js,
+  // contextManager.js, semanticIntentResolver.js). Activée par défaut ;
+  // `false` rend le comportement strictement identique à l'avant-Phase 1.
+  enableNaturalUnderstanding = true,
+  contextManager = null,
+  // Phase 2 — documents joints au Copilot (src/ai/rag/userDocumentService.js),
+  // injecté par le bridge ; `null` : DocumentAgent répond que l'analyse de
+  // documents n'est pas disponible.
+  userDocumentService = null,
   env = process.env,
 } = {}) {
   if (!llmProvider) {
@@ -208,6 +265,14 @@ function createAiOrchestrator({
 
   const suggestionEngine = new SuggestionEngine({ toolPermissionIndex });
   const pendingActionStore = new PendingActionStore();
+  // Phase 3 — planification multi-étapes : même PendingActionStore partagé.
+  const taskPlanner = new TaskPlanner();
+  const confirmationManager = new ConfirmationManager({ store: pendingActionStore });
+  // Analytique CRM : un seul parseur, partagé par l'AIManager (routage) et l'AnalyticsAgent.
+  const analyticsParser = new AnalyticsQueryParser();
+  // Personne / société / promoteur précis : un seul routeur, partagé par
+  // l'AIManager (routage) et l'EntityLookupAgent.
+  const queryRouter = new QueryRouter();
 
   let resolvedAgentRegistry = agentRegistry;
   if (!resolvedAgentRegistry && includeSpecializedAgents) {
@@ -235,6 +300,11 @@ function createAiOrchestrator({
       toolPermissionIndex,
       toolModuleIndex,
       moduleAccessByRole,
+      userDocumentService,
+      taskPlanner,
+      confirmationManager,
+      analyticsParser,
+      queryRouter,
     });
   }
   const agentRouter = new AgentRouter({ agentRegistry: resolvedAgentRegistry });
@@ -257,6 +327,21 @@ function createAiOrchestrator({
   const resolvedContinuityResolver =
     continuityResolver || (enableConversationContinuity ? new ConversationContinuityResolver({ catalog: intentCatalog }) : null);
 
+  // Repli sémantique : le LlmIntentRouter EXISTANT (langchain/router), contraint
+  // aux clés du catalogue ; toute réponse invalide retombe sur general_chat.
+  let semanticResolver = null;
+  let resolvedContextManager = null;
+  if (enableNaturalUnderstanding) {
+    const llmRouter = config.intentLlmFallback
+      ? langChainPipeline.createLlmRouter(
+          intentCatalog.map((entry) => ({ key: entry.key, description: entry.description || entry.key })),
+          { route: async () => "general_chat" }
+        )
+      : null;
+    semanticResolver = new SemanticIntentResolver({ catalog: intentCatalog, llmRouter, llmTimeoutMs: config.intentLlmTimeoutMs });
+    resolvedContextManager = contextManager || new ContextManager();
+  }
+
   const aiManager = new AIManager({
     conversationManager,
     intentDetector,
@@ -270,6 +355,16 @@ function createAiOrchestrator({
     continuityResolver: resolvedContinuityResolver,
     pendingActionStore,
     intentCatalog,
+    entityExtractor: enableNaturalUnderstanding ? extractEntities : null,
+    contextManager: resolvedContextManager,
+    semanticResolver,
+    taskPlanner,
+    analyticsParser,
+    queryRouter,
+    // « Les projets de X » sans le mot « ingénieur » : X est-il un ingénieur du
+    // CRM ? Vérifié par le Tool scopé (jamais par un accès direct au CRM).
+    engineerProbe: createEngineerProbe(langChainPipeline.tools),
+    entityProbe: createEntityProbe(langChainPipeline.tools),
   });
 
   return {
@@ -285,6 +380,8 @@ function createAiOrchestrator({
     responseBuilder,
     suggestionEngine,
     pendingActionStore,
+    contextManager: resolvedContextManager,
+    semanticResolver,
     aiManager,
   };
 }

@@ -19,6 +19,11 @@ const { createMeetingAgent } = require("./meetingAgent");
 const { createRoleCapabilityAuditAgent } = require("./roleCapabilityAuditAgent");
 const { createHrAgent } = require("./hrAgent");
 const { createPorPromeshAgent } = require("./porPromeshAgent");
+// Phase 2 — assistant documentaire (documents joints au Copilot).
+const { createDocumentAgent } = require("./documentAgent");
+const { createTaskPlannerAgent } = require("./taskPlannerAgent");
+const { createAnalyticsAgent } = require("./analyticsAgent");
+const { createEntityLookupAgent } = require("./entityLookupAgent");
 
 // Manifeste explicite des Agents spécialisés — même discipline que
 // mcp/tools/index.js::defaultToolFactories : une liste réviewable, pas une
@@ -125,6 +130,12 @@ const defaultAgentFactories = [
   createRoleCapabilityAuditAgent,
   createHrAgent,
   createPorPromeshAgent,
+  createDocumentAgent,
+  createTaskPlannerAgent,
+  createAnalyticsAgent,
+  // 23e Agent — intention `entity_lookup` (personne / société / promoteur
+  // précis : find_crm_entity + web_search, réponse déterministe et sourcée).
+  createEntityLookupAgent,
 ];
 
 // Construit et enregistre les Agents par défaut dans `agentRegistry`

@@ -53,20 +53,26 @@ const ROLE_TONE_GUIDANCE = {
 
 const SUPPORTED_ROLES = Object.freeze(Object.keys(ROLE_TONE_GUIDANCE));
 
+// Rôles CRM (users.role, vocabulaire v2) partageant le ton d'un autre profil
+// sans en être un nouveau : commercial_sedentaire (ancien rôle "commercial")
+// conserve le ton commercial qu'il avait avant la migration.
+const ROLE_TONE_ALIASES = Object.freeze({ commercial_sedentaire: "commercial" });
+
 /**
  * Compose le prompt système final : principes de base + ton du rôle (si
  * reconnu) + instructions propres à la Chain appelante (`extra`, ex. le
  * protocole JSON de `ToolCallingChain`).
  *
  * `role` est comparé insensible à la casse (`"Admin"`/`"admin"` équivalents)
- * — un rôle absent ou non reconnu (ex. `"user"`, le rôle CRM par défaut, qui
- * n'a volontairement pas de ton dédié parmi les 5 demandés) applique
- * seulement les principes de base, jamais une erreur.
+ * — un rôle absent ou non reconnu (ex. `"accueil"`, sans ton dédié parmi
+ * les 5 demandés) applique seulement les principes de base, jamais une
+ * erreur.
  */
 function buildResponseSystemPrompt({ role = null, extra = "" } = {}) {
   const parts = [RESPONSE_PRINCIPLES];
 
-  const normalizedRole = role ? String(role).toLowerCase() : null;
+  const lowered = role ? String(role).toLowerCase() : null;
+  const normalizedRole = lowered ? ROLE_TONE_ALIASES[lowered] || lowered : null;
   if (normalizedRole && ROLE_TONE_GUIDANCE[normalizedRole]) {
     parts.push(ROLE_TONE_GUIDANCE[normalizedRole]);
   }

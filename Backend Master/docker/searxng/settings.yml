@@ -1,0 +1,13 @@
+# Instance SearXNG locale pour PROBAR ASSISTANT (recherche Web sans compte).
+# Le format JSON doit être activé : le backend interroge /search?format=json.
+use_default_settings: true
+server:
+  # À remplacer par une valeur aléatoire si l'instance est exposée hors de la machine.
+  secret_key: "change-me-probar-assistant-local"
+  limiter: false
+  image_proxy: false
+search:
+  safe_search: 1
+  formats:
+    - html
+    - json

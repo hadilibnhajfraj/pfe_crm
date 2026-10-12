@@ -67,7 +67,14 @@ function applyIndustrialPromeshOverride(message, key, catalogByKey) {
   const industrialScore = score(message, industrialEntry.keywords || []);
   const porPromeshScore = score(message, porPromeshEntry.keywords || []);
   if (porPromeshScore === 0) return key;
-  return porPromeshScore >= industrialScore ? "por_promesh" : key;
+  if (porPromeshScore >= industrialScore) return "por_promesh";
+  // PROMESH nommé, aucun autre module : la demande porte sur les fiches
+  // PROMESH même si « fiche », « production » font pencher le score
+  // (« donne-moi la fiche de production PROMESH »). Seule exception : un
+  // « enregistrement industriel » demandé en toutes lettres (scénario ind-09).
+  const terms = new Set(tokenize(message));
+  const explicitIndustrialRecord = ["enregistrement", "enregistrements", "industriel", "industrielle", "industriels", "industrielles"].some((w) => terms.has(w));
+  return terms.has("promesh") && !explicitIndustrialRecord ? "por_promesh" : key;
 }
 
 module.exports = { applyIndustrialPromeshOverride, mentionsIndustrialDomain };

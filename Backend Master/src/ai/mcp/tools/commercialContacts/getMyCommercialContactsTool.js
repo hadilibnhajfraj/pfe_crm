@@ -42,11 +42,15 @@ function createGetMyCommercialContactsTool() {
       limit: Joi.number().integer().min(1).max(100).optional(),
       offset: Joi.number().integer().min(0).optional(),
     }),
-    requiredRoles: ["commercial", ...ADMIN_TIER_ROLES],
+    // « commercial » (terrain, vocabulaire v2) : mêmes droits que l'API CRM
+    // (contactAccess.policy.js) — ses contacts créés, affectés ou suivis par
+    // relance, jamais ceux des autres. Le périmètre est décidé ICI à partir
+    // du rôle authentifié, jamais par un paramètre de l'appelant.
+    requiredRoles: ["commercial", "commercial_sedentaire", ...ADMIN_TIER_ROLES],
     run: async (input, { actingUser }) => {
       const scopedInput = scopeInputForActingUser(input, actingUser);
       const userId = ADMIN_TIER_ROLES.has(actingUser.role) ? null : actingUser.id;
-      return kpiService.listCommercialContacts(userId, scopedInput);
+      return kpiService.listCommercialContacts(userId, scopedInput, { scope: actingUser.role === "commercial" ? "assigned" : "created" });
     },
   });
 }

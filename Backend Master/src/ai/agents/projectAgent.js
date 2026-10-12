@@ -6,6 +6,20 @@ const { tokenize } = require("../utils/tokenize");
 const { analyzeProjectAttention } = require("../reasoning/projectAttentionAnalyzer");
 const { buildAttentionAnswer } = require("../reasoning/attentionAnswerBuilder");
 const { checkProjectsCoherence } = require("../reasoning/dataCoherenceChecker");
+const { detectProjectListRequest } = require("../reasoning/projectListRequest");
+const {
+  PAGE_SIZE,
+  buildProjectListAnswer,
+  buildProjectCountAnswer,
+  buildProjectAnalysisAnswer,
+  buildProjectListError,
+  buildProjectListEnd,
+} = require("../reasoning/projectListAnswerBuilder");
+
+// Lecture de l'ensemble des projets : taille de page maximale acceptée par
+// listProjects() et garde-fou sur le nombre de pages (5 000 projets).
+const LIST_FETCH_SIZE = 100;
+const LIST_MAX_PAGES = 50;
 
 // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md — mission "CORRIGER
 // PROJECT AGENT POUR LES PROJETS CRITIQUES ADMIN". Identique au triplet
@@ -105,35 +119,10 @@ const PROJECT_NAME_WITHOUT_KEYWORD = /\b(?:[Dd][ée]tails?|[Ii]nformations?)\s+(
 // voir AI-Business-Copilot/21_TOOL_CALLING_RELIABILITY.md pour la même
 // classe de problème déjà rencontrée).
 //
-// Les 11 valeurs RÉELLES et STABLES de Project.statut (vérifiées en
-// direct : décompte par valeur de la colonne statut, table projects — la
-// même agrégation que "Breakdown by Status" du dashboard, voir
-// dashboard.service.js) — jamais devinées, jamais dérivées d'un Tool
-// "valeurs distinctes" (aucun n'existe).
-const KNOWN_STATUS_VALUES = [
-  "Identification",
-  "Préparation",
-  "Proposition technique",
-  "Proposition commerciale",
-  "Négociation",
-  "En cours",
-  "Livraison",
-  "Fidélisation",
-  "Terminé",
-  "Plan technique",
-  "Prospect",
-];
-
-// Insensible aux accents ET à la casse — même algorithme (NFD + strip des
-// diacritiques) que _normalizeProjectName ci-dessous, factorisé ici pour
-// pouvoir construire STATUS_LOOKUP une seule fois au chargement du module.
-function normalizeAccents(value) {
-  return (value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-}
+// Les 11 valeurs RÉELLES et STABLES de Project.statut et la normalisation
+// accents/casse — désormais partagées avec orchestrator/entityExtractor.js
+// (voir reasoning/projectStatuses.js), jamais deux copies.
+const { KNOWN_STATUS_VALUES, normalizeAccents } = require("../reasoning/projectStatuses");
 
 // Table normalisée -> valeur RÉELLEMENT stockée en base (jamais l'inverse :
 // la valeur envoyée au Tool doit toujours être celle que Postgres connaît
@@ -213,6 +202,37 @@ const ATTENTION_MARKERS = [
   "critiques",
 ].map((m) => m.toLowerCase());
 
+// Phase 1 — libellés des périodes reconnues par orchestrator/entityExtractor.js.
+const PERIOD_LABELS = {
+  today: "aujourd'hui",
+  this_week: "cette semaine",
+  this_month: "ce mois-ci",
+  this_year: "cette année",
+  recent: "récemment (30 derniers jours)",
+  last_n_days: "sur la période demandée",
+};
+
+// Élément compact mémorisé par le ContextManager (jamais d'email/téléphone).
+function toResultItem(p) {
+  return {
+    id: p.id,
+    name: p.nomProjet || null,
+    statut: p.statut || null,
+    productFamily: p.productFamily || null,
+    ownerName: (p.owner && (p.owner.name || p.owner.email)) || null,
+    createdAt: p.createdAt || null,
+    dateDemarrage: p.dateDemarrage || null,
+    lastRelanceAt: p.lastRelanceAt || null,
+    nextRelanceDate: p.nextRelanceDate || null,
+  };
+}
+
+function formatDate(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return String(value);
+  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
 const SYSTEM_PROMPT = [
   "Tu es l'Agent Projets du CRM CBI Tunisia.",
   "Tu aides à consulter la liste des projets, changer l'étape d'un projet et",
@@ -272,9 +292,16 @@ class ProjectAgent extends BaseAgent {
     this.suggestionEngine = suggestionEngine;
   }
 
-  async _run({ message, user, conversationId }) {
+  async _run({ intent = null, message, user, conversationId, context = null }) {
+    // « suite » après une liste de projets : page suivante de CETTE liste.
+    if (intent && intent.listCursor && intent.listCursor.entity === "project") {
+      return this._runListRequest(this._detectListRequest(message, intent), user);
+    }
     if (this._looksLikeAttentionQuery(message)) {
       return this._runAttentionAnalysis(user);
+    }
+    if (this._hasContextualReference(context)) {
+      return this._runContextualQuery(context, user);
     }
     const statusValue = this._extractStatus(message);
     if (statusValue) {
@@ -288,7 +315,270 @@ class ProjectAgent extends BaseAgent {
     if (projectName) {
       return this._runProjectDescribeQuery(projectName, user);
     }
+    // Liste / nombre / analyse de l'ensemble des projets, sans autre critère :
+    // demande explicite, qui ne reprend pas un filtre d'un tour précédent.
+    const listRequest = this._detectListRequest(message, intent);
+    if (listRequest) {
+      return this._runListRequest(listRequest, user);
+    }
+    if (this._hasContextualFilters(context)) {
+      return this._runContextualQuery(context, user);
+    }
     return super._run({ message, user, conversationId });
+  }
+
+  // ── Liste / nombre / analyse de l'ensemble des projets ─────────────────────
+  // Chemin ENTIÈREMENT déterministe, sans modèle de langage. Le chemin
+  // générique appelait list_projects sans paramètre (20 projets, première
+  // page) et laissait le modèle rédiger : une partie seulement des projets
+  // était citée, sans total ni avertissement. Ici toutes les pages sont lues,
+  // le nombre annoncé est celui réellement récupéré, et un échec du Tool est
+  // dit tel quel — jamais une liste partielle présentée comme complète.
+  //
+  // Périmètre : inchangé. Rôle admin-tier → tous les projets non archivés
+  // (ou les siens s'il dit « mes projets ») ; tout autre rôle → `mine:true`,
+  // que scopeInputForActingUser() (listProjectsTool.js) impose de toute façon.
+
+  _detectListRequest(message, intent) {
+    const cursor = intent && intent.listCursor;
+    if (cursor && cursor.entity === "project") {
+      return { kind: "list", mine: cursor.mine === true, language: cursor.language || "fr", offset: cursor.nextOffset };
+    }
+    const request = detectProjectListRequest(message);
+    return request ? { ...request, offset: 0 } : null;
+  }
+
+  // Lit toutes les pages. `complete` n'est vrai que si le nombre de projets
+  // distincts lus est égal au total annoncé par la source.
+  async _fetchAllProjects(tool, baseInput) {
+    const byId = new Map();
+    let total = 0;
+    let stats = null;
+    let pages = 1;
+    let pagesRead = 0;
+    for (let page = 1; page <= pages && page <= LIST_MAX_PAGES; page += 1) {
+      const parsed = JSON.parse(await tool.invoke({ ...baseInput, page }));
+      if (!parsed || !Array.isArray(parsed.data) || !Number.isFinite(Number(parsed.total))) {
+        throw new AgentError(`list_projects returned an unexpected result for page ${page}.`);
+      }
+      pagesRead += 1;
+      total = Number(parsed.total);
+      stats = parsed.stats || stats;
+      pages = Math.ceil(total / (Number(parsed.limit) || baseInput.limit));
+      for (const p of parsed.data) if (p && p.id && !byId.has(p.id)) byId.set(p.id, p);
+      if (parsed.data.length === 0) break;
+    }
+    const projects = [...byId.values()];
+    return { projects, total, stats, pagesRead, complete: projects.length === total };
+  }
+
+  async _runListRequest(request, user) {
+    const tool = this._allowedTools().find((t) => t.name === "list_projects");
+    if (!tool) {
+      throw new AgentError(`Agent "${this.name}" has no "list_projects" Tool available to list the projects.`);
+    }
+    const isAdmin = ADMIN_TIER_ROLES.has(user.role);
+    const mine = !isAdmin || request.mine;
+    const scope = request.mine ? "mine" : isAdmin ? "all" : "restricted";
+    const { language, kind } = request;
+    const toolInput = { isArchived: false, limit: LIST_FETCH_SIZE, ...(mine ? { mine: true } : {}) };
+
+    let fetched;
+    try {
+      fetched = await this._fetchAllProjects(tool, toolInput);
+    } catch (err) {
+      // Le détail technique va au journal, jamais dans la réponse.
+      this.logger.error(`[PROJECT_LIST_FAILED] list_projects failed (${kind}, scope ${scope}): ${err.message}`, err);
+      return {
+        answer: buildProjectListError(language),
+        citations: [],
+        toolSteps: [{ tool: "list_projects", input: toolInput, failed: true, output: { error: "PROJECT_LIST_FAILED" } }],
+      };
+    }
+
+    const { projects, total, stats, pagesRead, complete } = fetched;
+    const archived = stats && Number.isFinite(Number(stats.archived)) ? Number(stats.archived) : 0;
+    const summary = { kind, scope, total, fetched: projects.length, pagesRead, complete };
+    if (!complete) this.logger.warn(`[PROJECT_LIST_INCOMPLETE] ${projects.length} projet(s) lu(s) sur ${total} annoncé(s) (${pagesRead} page(s))`);
+
+    if (kind === "count") {
+      return {
+        answer: buildProjectCountAnswer({ language, scope, total, stats }),
+        citations: [],
+        toolSteps: [{ tool: "list_projects", input: toolInput, output: summary }],
+      };
+    }
+    if (kind === "analysis") {
+      return {
+        answer: buildProjectAnalysisAnswer({ language, scope, projects, total, complete, archived, canSeeAll: isAdmin }),
+        citations: [],
+        toolSteps: [{ tool: "list_projects", input: toolInput, output: summary }],
+        resultSet: { entity: "project", total, items: projects.slice(0, LIST_FETCH_SIZE).map(toResultItem) },
+      };
+    }
+
+    const offset = request.offset || 0;
+    const items = projects.slice(offset, offset + PAGE_SIZE);
+    if (offset > 0 && items.length === 0) {
+      return { answer: buildProjectListEnd(language), citations: [], toolSteps: [{ tool: "list_projects", input: toolInput, output: summary }] };
+    }
+    const nextOffset = offset + items.length;
+    const hasMore = nextOffset < projects.length;
+    return {
+      // L'identifiant technique n'est affiché qu'aux rôles admin-tier.
+      answer: buildProjectListAnswer({ language, scope, total, fetched: projects.length, complete, items, offset, archived, showIds: isAdmin, canSeeAll: isAdmin }),
+      citations: [],
+      toolSteps: [{ tool: "list_projects", input: toolInput, output: { ...summary, page: Math.floor(offset / PAGE_SIZE) + 1, pageSize: PAGE_SIZE, shown: items.length, hasMore } }],
+      resultSet: { entity: "project", total, items: items.map(toResultItem) },
+      listCursor: hasMore ? { entity: "project", nextOffset, total, language, ...(request.mine ? { mine: true } : {}) } : null,
+    };
+  }
+
+  // ── Phase 1 — requêtes contextuelles (voir orchestrator/contextManager.js) ──
+  // « Quels sont ceux qui sont encore en cours ? », « Et lesquels n'ont pas été
+  // relancés récemment ? », « le deuxième », « celui-ci », « ceux de cette
+  // semaine » : chemin ENTIÈREMENT déterministe, sans appel LLM, fondé
+  // uniquement sur list_projects (même Tool, même RBAC que partout ailleurs :
+  // scopeInputForActingUser() impose mine:true à tout non-admin côté serveur).
+
+  _hasContextualReference(context) {
+    return Boolean(context && context.entityType === "project" && context.reference);
+  }
+
+  _hasContextualFilters(context) {
+    if (!context || context.entityType !== "project") return false;
+    const f = context.filters || {};
+    return Boolean(f.status || f.relance || f.period || f.product || f.person);
+  }
+
+  async _runContextualQuery(context, user) {
+    const tool = this._allowedTools().find((t) => t.name === "list_projects");
+    if (!tool) {
+      throw new AgentError(`Agent "${this.name}" has no "list_projects" Tool available to run the contextual query.`);
+    }
+    const filters = context.filters || {};
+    const reference = context.reference || null;
+    const isAdmin = ADMIN_TIER_ROLES.has(user.role);
+
+    const toolInput = { isArchived: false, limit: 100 };
+    if (!isAdmin || filters.ownership === "mine") toolInput.mine = true;
+    // Le statut est filtré côté serveur quand on ne restreint pas à un
+    // ensemble déjà affiché (sinon, filtré localement sur cet ensemble).
+    if (filters.status && !(reference && reference.kind === "set")) toolInput.statut = filters.status;
+
+    const rawOutput = await tool.invoke(toolInput);
+    const { data: rows = [], total = rows.length } = JSON.parse(rawOutput);
+
+    if (reference && reference.kind === "single") {
+      return this._answerSingleReference(reference, rows, toolInput);
+    }
+
+    let candidates = rows;
+    const applied = [];
+    if (reference && reference.kind === "set") {
+      const ids = new Set((reference.items || []).map((i) => i.id));
+      candidates = candidates.filter((p) => ids.has(p.id));
+      applied.push("parmi les projets affichés précédemment");
+    }
+    if (filters.ownership === "mine" || !isAdmin) applied.push("vos projets");
+    if (filters.status) {
+      const wanted = normalizeAccents(filters.status);
+      candidates = candidates.filter((p) => normalizeAccents(p.statut) === wanted);
+      applied.push(`statut « ${filters.status} »`);
+    }
+    if (filters.relance) {
+      const days = filters.relance.notRelancedWithinDays;
+      const limit = Date.now() - days * 86400000;
+      candidates = candidates.filter((p) => !p.lastRelanceAt || new Date(p.lastRelanceAt).getTime() < limit);
+      applied.push(`sans relance depuis plus de ${days} jours (ou jamais relancés)`);
+    }
+    if (filters.period && filters.period.from) {
+      const from = new Date(filters.period.from).getTime();
+      const to = new Date(filters.period.to || Date.now()).getTime();
+      candidates = candidates.filter((p) => p.createdAt && new Date(p.createdAt).getTime() >= from && new Date(p.createdAt).getTime() <= to);
+      applied.push(`créés ${PERIOD_LABELS[filters.period.key] || "sur la période demandée"}`);
+    }
+    if (filters.product) {
+      candidates = candidates.filter((p) => p.productFamily === filters.product);
+      applied.push(`famille ${filters.product}`);
+    }
+    if (filters.person) {
+      const wanted = normalizeAccents(filters.person);
+      candidates = candidates.filter((p) => {
+        const owner = p.owner && (p.owner.name || p.owner.email);
+        return owner && normalizeAccents(owner).includes(wanted);
+      });
+      applied.push(`responsable « ${filters.person} »`);
+    }
+
+    const truncatedSource = total > rows.length;
+    return {
+      answer: this._buildContextualAnswer(candidates, applied, { truncatedSource, fetched: rows.length, total, quantity: filters.quantity }),
+      citations: [],
+      toolSteps: [{ tool: "list_projects", input: toolInput, output: `${candidates.length} projet(s) retenu(s) sur ${rows.length} analysé(s) (${applied.join(", ") || "aucun filtre"})` }],
+      resultSet: { entity: "project", total: candidates.length, items: candidates.map(toResultItem) },
+    };
+  }
+
+  _answerSingleReference(reference, rows, toolInput) {
+    const wantedId = reference.item && reference.item.id;
+    const project = rows.find((p) => p.id === wantedId);
+    const toolSteps = [{ tool: "list_projects", input: toolInput, output: project ? "1 projet retrouvé" : "projet introuvable dans votre périmètre" }];
+    if (!project) {
+      // Jamais de données « de mémoire » : si le projet n'est plus dans le
+      // périmètre renvoyé par le Tool (droits, archivage), on le dit.
+      return {
+        answer: "Je ne retrouve pas ce projet parmi les projets auxquels vous avez accès (il a peut-être été archivé ou n'est pas dans votre périmètre).",
+        citations: [],
+        toolSteps,
+      };
+    }
+    const item = toResultItem(project);
+    return {
+      answer: this._describeProject(project),
+      citations: [],
+      toolSteps,
+      resultSet: { entity: "project", total: 1, items: [item] },
+      selectedRecord: { entity: "project", ...item, source: reference.source || "reference" },
+    };
+  }
+
+  _describeProject(p) {
+    const owner = p.owner && (p.owner.name || p.owner.email);
+    const lines = [`📁 ${p.nomProjet || "Projet sans nom"}`, ""];
+    lines.push(`📊 Statut : ${p.statut || "non renseigné"}`);
+    if (owner) lines.push(`👤 Responsable : ${owner}`);
+    if (p.productFamily) lines.push(`🏭 Famille : ${p.productFamily}`);
+    if (p.dateDemarrage) lines.push(`📅 Date de début : ${formatDate(p.dateDemarrage)}`);
+    lines.push(`🔔 Dernière relance : ${p.lastRelanceAt ? formatDate(p.lastRelanceAt) : "aucune"}`);
+    if (p.nextRelanceDate) lines.push(`⏭️ Prochaine relance : ${formatDate(p.nextRelanceDate)}`);
+    return lines.join("\n");
+  }
+
+  _buildContextualAnswer(projects, applied, { truncatedSource, fetched, total, quantity }) {
+    const criteria = applied.length ? ` (${applied.join(", ")})` : "";
+    if (projects.length === 0) {
+      const note = truncatedSource ? ` — analyse limitée aux ${fetched} projets les plus récents sur ${total}.` : ".";
+      return `Aucun projet ne correspond${criteria}${note}`;
+    }
+    const DISPLAY_LIMIT = Math.min(quantity || 10, 10);
+    const shown = projects.slice(0, DISPLAY_LIMIT);
+    const lines = [`📋 ${projects.length} projet${projects.length > 1 ? "s" : ""} trouvé${projects.length > 1 ? "s" : ""}${criteria}`, ""];
+    shown.forEach((p, i) => {
+      lines.push(`${i + 1}. ${p.nomProjet || "Projet sans nom"}`);
+      lines.push(`   📊 Statut : ${p.statut || "non renseigné"}`);
+      const owner = p.owner && (p.owner.name || p.owner.email);
+      if (owner) lines.push(`   👤 Responsable : ${owner}`);
+      lines.push(`   🔔 Dernière relance : ${p.lastRelanceAt ? formatDate(p.lastRelanceAt) : "aucune"}`);
+      lines.push("");
+    });
+    if (projects.length > shown.length) {
+      lines.push(`... et ${projects.length - shown.length} autre(s) projet(s) — précisez si vous voulez la suite.`);
+    }
+    if (truncatedSource) {
+      lines.push(`ℹ️ Analyse limitée aux ${fetched} projets les plus récents sur ${total}.`);
+    }
+    return lines.join("\n").trimEnd();
   }
 
   _looksLikeAttentionQuery(message) {
@@ -358,6 +648,7 @@ class ProjectAgent extends BaseAgent {
       answer: this._buildStatusProjectsAnswer(statusValue, projects, total),
       citations: [],
       toolSteps: [{ tool: "list_projects", input: toolInput, output: `${projects.length}/${total} projet(s) au statut « ${statusValue} »` }],
+      resultSet: { entity: "project", total, items: projects.map(toResultItem) },
     };
   }
 

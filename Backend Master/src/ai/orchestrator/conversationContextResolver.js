@@ -2,6 +2,8 @@
 
 const { tokenize } = require("../utils/tokenize");
 const { DEFAULT_INTENT_CATALOG } = require("./intentCatalog");
+const { extractEntities } = require("./entityExtractor");
+const { INTENT_ENTITY } = require("./semanticIntentResolver");
 
 /**
  * # ConversationContextResolver — comprendre les références et reformulations
@@ -166,6 +168,18 @@ class ConversationContextResolver {
   }
 
   _resolveAgainstTopic(message, history, { blockIfUnresolved, signal, currentTopic }) {
+    // Ellipse (signal FAIBLE) : un message court qui NOMME explicitement une
+    // autre entité métier que celle du sujet en cours est une nouvelle
+    // demande autonome, pas une suite — « donner moi liste des ingénieurs »
+    // après une question RH ne parle pas de RH. « Et les dossiers ? » après
+    // les projets (même entité) reste une suite.
+    if (signal === "ellipsis") {
+      const namedEntity = extractEntities(message).entityType;
+      const topic = (currentTopic && this.catalogByKey.has(currentTopic) ? currentTopic : null) || this._lastKnownTopic(history);
+      if (namedEntity && (!topic || INTENT_ENTITY[topic] !== namedEntity)) {
+        return { isReference: false, resolvedTopic: null, ambiguous: false, enrichedMessage: message, signal: null };
+      }
+    }
     // `currentTopic` (fourni par ConversationManager.getCurrentTopic(),
     // survit au-delà de la fenêtre d'historique — voir
     // conversationManager.js, "conversations longues") prend le pas quand

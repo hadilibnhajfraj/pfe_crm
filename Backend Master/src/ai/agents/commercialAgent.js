@@ -2,6 +2,7 @@
 
 const crypto = require("crypto");
 const { BaseAgent } = require("./baseAgent");
+const { detectContactStatusRequest, buildContactStatusAnswer, buildContactStatusError, STATUS_ORDER } = require("../reasoning/contactStatusRequest");
 const { AgentError, ConfigurationError } = require("./errors");
 const { tokenize } = require("../utils/tokenize");
 const { extractCommercialActionSlots, isCommercialActionRequest } = require("./commercialActionSlotExtractor");
@@ -47,7 +48,23 @@ const ALLOWED_TOOL_NAMES = [
 // Agent), aucun Tool de ce module n'est ouvert à tout authentifié — le gate
 // de l'Agent peut donc refléter fidèlement celui des Tools, sans être ni
 // plus large ni plus restrictif.
-const REQUIRED_ROLES = ["commercial", "admin", "superadmin", "superadmin2"];
+// Vocabulaire v2 (constants/roles.js) : l'ancien rôle "commercial" de ce
+// module (gestion des contacts) est devenu "commercial_sedentaire".
+// Le rôle « commercial » ACTUEL (commercial terrain, ancien « user ») a lui
+// aussi des contacts dans l'API CRM — ceux qu'il a créés, qui lui sont
+// affectés ou qu'il suit par relance (contactAccess.policy.js). La migration
+// l'avait retiré de cet Agent en renommant l'ancien « commercial » : il était
+// refusé alors que l'API l'autorise. Il est donc admis ici, avec ce périmètre
+// (appliqué par les Tools) ; les KPI globaux restent réservés à KPI_ROLES,
+// comme sur les routes /commercial-contacts/kpi*.
+const REQUIRED_ROLES = ["commercial", "commercial_sedentaire", "admin", "superadmin", "superadmin2"];
+const KPI_ROLES = new Set(["commercial_sedentaire", "admin", "superadmin", "superadmin2"]);
+const ADMIN_TIER_ROLES = new Set(["admin", "superadmin", "superadmin2"]);
+// « analyse / résume / bilan … » de ses contacts ou de son activité.
+const ANALYSIS_MARKERS = ["analyse", "analyses", "analyser", "analysez", "analyze", "analysis", "resume", "résume", "résumé", "resumer", "résumer", "synthese", "synthèse", "bilan", "activite", "activité", "summary", "overview"];
+const ANALYSIS_PAGE = 100;
+const ANALYSIS_MAX_PAGES = 30;
+const STATUS_LABELS = { ok: "OK (contact établi)", rappeler_plus_tard: "À rappeler plus tard", user_injoignable: "Injoignable", client_refuse: "Refus du client" };
 
 // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md — mission "CORRIGER
 // LE COPILOT POUR LE RÔLE COMMERCIAL". Signal lexical scopé à CET Agent
@@ -190,7 +207,8 @@ class CommercialAgent extends BaseAgent {
     // (qui échouerait ou halluciderait sur un message d'un seul mot), une
     // réponse honnête à la place.
     const bareTerms = tokenize(message);
-    if (bareTerms.length <= 3) {
+    // « contacts OK » est un filtre par statut, pas un « OK » de confirmation.
+    if (bareTerms.length <= 3 && !detectContactStatusRequest(message)) {
       const decision = classifyConfirmation(message);
       if (decision === "confirm" || decision === "cancel") {
         return { answer: buildRelanceExpiredAnswer(), citations: [], toolSteps: [], pendingAction: null };
@@ -202,7 +220,19 @@ class CommercialAgent extends BaseAgent {
     const allMessages = [...freshUserMessages, message];
     const actionSlots = extractCommercialActionSlots(allMessages);
 
-    if (isCommercialActionRequest(actionSlots)) {
+    // Une action en cours de collecte (nom déjà donné, date attendue…) n'est
+    // poursuivie que si le message COURANT y apporte quelque chose : un nom,
+    // une date ou un e-mail. Sinon c'est une nouvelle demande — une lecture,
+    // le plus souvent — et le nom retenu d'un message précédent ne doit pas
+    // la capturer (elle recevait « aucun contact correspondant à … »).
+    const currentSlots = extractCommercialActionSlots([message]);
+    const contributes = Boolean(currentSlots.contactName || currentSlots.dateRelance || currentSlots.commercialEmail);
+    if (isCommercialActionRequest(actionSlots) && !contributes && conversationId) {
+      // Collecte abandonnée : les messages antérieurs ne sont plus relus.
+      this._proposedUpToByConversation.set(conversationId, pastUserMessages.length + 1);
+    }
+
+    if (isCommercialActionRequest(actionSlots) && contributes) {
       return this._handleActionRequest(actionSlots, user, conversationId, pastUserMessages.length);
     }
 
@@ -210,13 +240,30 @@ class CommercialAgent extends BaseAgent {
       return this._runRelanceAnalysis(user);
     }
 
+    // Contacts d'un statut (« contacts refusés », « combien d'injoignables »,
+    // « projets dont le client est refusé ») : le mot de l'utilisateur est
+    // ramené à l'une des 4 valeurs réelles de la colonne statut, et l'outil
+    // filtre dessus — même colonne que le tableau de bord KPI.
+    const statusRequest = detectContactStatusRequest(message);
+    if (statusRequest) {
+      return this._runContactStatusQuery(statusRequest, user);
+    }
+
     const searchName = this._extractContactSearchName(message);
     if (searchName) {
       return this._runContactSearchQuery(searchName);
     }
 
+    // Analyse de SES contacts : calculée sur les contacts que l'outil renvoie
+    // pour cet utilisateur (périmètre décidé par l'outil), sans modèle de langage.
+    if (this._looksLikeAnalysisQuery(message)) {
+      return this._runContactAnalysis(user);
+    }
+
     if (this._looksLikeKpiQuery(message)) {
-      return this._runKpiQuery();
+      // KPI globaux réservés (même règle que /commercial-contacts/kpi) : un
+      // commercial reçoit le total de SES contacts.
+      return KPI_ROLES.has(user.role) ? this._runKpiQuery() : this._runContactAnalysis(user);
     }
 
     // Reproduit en direct : "Donne-moi la liste des contacts commerciaux" /
@@ -256,6 +303,116 @@ class CommercialAgent extends BaseAgent {
   _looksLikeRelanceQuery(message) {
     const terms = new Set(tokenize(message));
     return RELANCE_MARKERS.some((marker) => terms.has(marker));
+  }
+
+  // Périmètre RÉELLEMENT appliqué par get_my_commercial_contacts pour ce rôle
+  // (décidé par l'outil — rappelé ici uniquement pour le dire dans la réponse).
+  _contactScopeOf(user) {
+    return ADMIN_TIER_ROLES.has(user.role) ? "all" : user.role === "commercial" ? "assigned" : "created";
+  }
+
+  // Statistiques des contacts d'un statut, dans le périmètre de l'utilisateur.
+  // Tous les nombres viennent de l'outil CRM (COUNT SQL), jamais du modèle :
+  //   Y = contacts consultables ; un comptage par statut ; puis, si besoin, les
+  //   contacts du statut demandé. Le périmètre est appliqué PAR L'OUTIL.
+  // Un échec de lecture est dit comme un échec — jamais comme « 0 contact ».
+  async _runContactStatusQuery(request, user) {
+    const tool = this._findRealTool("get_my_commercial_contacts");
+    if (!tool) {
+      throw new AgentError(`Agent "${this.name}" has no "get_my_commercial_contacts" Tool available to filter contacts by status.`);
+    }
+    const scope = this._contactScopeOf(user);
+    const read = async (input) => {
+      const output = JSON.parse(await tool.invoke(input));
+      if (!output || !Number.isInteger(Number(output.total))) throw new AgentError("get_my_commercial_contacts returned an unexpected result.");
+      return { total: Number(output.total), contacts: Array.isArray(output.contacts) ? output.contacts : [] };
+    };
+    try {
+      const totalAll = (await read({ limit: 1 })).total;
+      const counts = {};
+      for (const status of STATUS_ORDER) counts[status] = totalAll ? (await read({ status, limit: 1 })).total : 0;
+
+      const wanted = request.status ? counts[request.status] : 0;
+      const byId = new Map();
+      if (wanted > 0 && request.operation !== "count" && request.operation !== "distribution") {
+        const all = request.operation === "analysis";
+        const pageSize = all ? ANALYSIS_PAGE : 20;
+        for (let page = 0; page < (all ? ANALYSIS_MAX_PAGES : 1); page += 1) {
+          const { contacts } = await read({ status: request.status, limit: pageSize, offset: page * pageSize });
+          for (const c of contacts) if (c && c.id && !byId.has(c.id)) byId.set(c.id, c);
+          if (!contacts.length || byId.size >= wanted) break;
+        }
+      }
+      const contacts = [...byId.values()];
+      return {
+        answer: buildContactStatusAnswer({ request, scope, counts, totalAll, contacts }),
+        citations: [],
+        toolSteps: [{ tool: "get_my_commercial_contacts", input: request.status ? { status: request.status } : {}, output: { status: request.status, operation: request.operation, scope, total: wanted, totalAll, counts, read: contacts.length } }],
+      };
+    } catch (err) {
+      this.logger.error(`[CONTACT_STATUS_FAILED] lecture des contacts impossible (${request.operation}, statut ${request.status || "tous"}, périmètre ${scope}) : ${err.message}`, err);
+      return {
+        answer: buildContactStatusError(request.language),
+        citations: [],
+        toolSteps: [{ tool: "get_my_commercial_contacts", input: request.status ? { status: request.status } : {}, failed: true, output: { error: "CONTACT_STATUS_FAILED" } }],
+      };
+    }
+  }
+
+  _looksLikeAnalysisQuery(message) {
+    const terms = new Set(tokenize(message));
+    return ANALYSIS_MARKERS.some((marker) => terms.has(marker));
+  }
+
+  // Lit TOUTES les pages des contacts accessibles, puis calcule. Un échec de
+  // lecture remonte tel quel (réponse d'erreur de l'Agent) — jamais une
+  // analyse sur des données partielles présentée comme complète.
+  async _runContactAnalysis(user) {
+    const tool = this._findRealTool("get_my_commercial_contacts");
+    if (!tool) {
+      throw new AgentError(`Agent "${this.name}" has no "get_my_commercial_contacts" Tool available to analyse contacts.`);
+    }
+    const byId = new Map();
+    let total = 0;
+    for (let page = 0; page < ANALYSIS_MAX_PAGES; page += 1) {
+      const output = JSON.parse(await tool.invoke({ limit: ANALYSIS_PAGE, offset: page * ANALYSIS_PAGE }));
+      const contacts = Array.isArray(output.contacts) ? output.contacts : [];
+      total = Number(output.total) || 0;
+      for (const c of contacts) if (c && c.id && !byId.has(c.id)) byId.set(c.id, c);
+      if (!contacts.length || byId.size >= total) break;
+    }
+    const contacts = [...byId.values()];
+    const admin = ADMIN_TIER_ROLES.has(user.role);
+    return {
+      answer: this._buildContactAnalysisAnswer(contacts, total, { admin }),
+      citations: [],
+      toolSteps: [{ tool: "get_my_commercial_contacts", input: { limit: ANALYSIS_PAGE }, output: `${contacts.length}/${total} contact(s) analysé(s)` }],
+    };
+  }
+
+  _buildContactAnalysisAnswer(contacts, total, { admin }) {
+    const scope = admin ? "tous les contacts du CRM" : "vos contacts (créés par vous, qui vous sont affectés ou que vous suivez)";
+    if (!total) return `Aucun contact commercial à analyser pour ${scope}.`;
+    const lines = ["📊 ANALYSE DES CONTACTS COMMERCIAUX", "", `${contacts.length} contact${contacts.length > 1 ? "s" : ""} analysé${contacts.length > 1 ? "s" : ""} — ${scope}.`];
+    if (contacts.length < total) lines.push(`⚠️ Lecture incomplète : ${contacts.length} contacts lus sur ${total}. Cette analyse n'est pas exhaustive.`);
+
+    const counts = new Map();
+    for (const c of contacts) counts.set(c.statut || "", (counts.get(c.statut || "") || 0) + 1);
+    lines.push("", "Répartition par statut :");
+    for (const [status, n] of [...counts.entries()].sort((a, b) => b[1] - a[1])) lines.push(`• ${STATUS_LABELS[status] || status || "Sans statut"} : ${n}`);
+
+    const calls = contacts.reduce((sum, c) => sum + (Number.isInteger(c.nbAppels) ? c.nbAppels : 0), 0);
+    const neverCalled = contacts.filter((c) => !c.dateAppel).length;
+    const noPhone = contacts.filter((c) => !c.telephone || !String(c.telephone).trim()).length;
+    lines.push("", "Activité :", `• Appels enregistrés : ${calls}`, `• Contacts sans appel enregistré : ${neverCalled}`, `• Contacts sans téléphone : ${noPhone}`);
+
+    const toCall = contacts.filter((c) => c.statut === "rappeler_plus_tard" || c.statut === "user_injoignable");
+    if (toCall.length) {
+      lines.push("", `À rappeler (${toCall.length}) :`);
+      lines.push(...this._formatContactLines(toCall.slice(0, 10)));
+      if (toCall.length > 10) lines.push(`... et ${toCall.length - 10} autre(s).`);
+    }
+    return lines.join("\n");
   }
 
   _looksLikeKpiQuery(message) {

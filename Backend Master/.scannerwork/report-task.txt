@@ -1,0 +1,6 @@
+projectKey=crm-probar-backend
+serverUrl=http://localhost:9001
+serverVersion=26.9.0.129388
+dashboardUrl=http://localhost:9001/dashboard?id=crm-probar-backend
+ceTaskId=3c8c4189-857d-49a5-afde-8857f1cbf570
+ceTaskUrl=http://localhost:9001/api/ce/task?id=3c8c4189-857d-49a5-afde-8857f1cbf570

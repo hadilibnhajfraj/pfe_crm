@@ -139,14 +139,14 @@ class BaseAgent extends IAgent {
     return `${this.systemPrompt}${historyText}\n\nDemande de l'utilisateur : ${message}`;
   }
 
-  async execute({ intent, message, user, conversationId }) {
+  async execute({ intent, message, user, conversationId, context = null }) {
     if (!isAuthorized({ requiredRoles: this.requiredRoles, allowedEmails: this.allowedEmails }, user)) {
       this.logger.warn(`denied for role "${user && user.role}"`);
       throw new AgentPermissionError(this.name, user && user.role);
     }
 
     try {
-      return await this._run({ intent, message, user, conversationId });
+      return await this._run({ intent, message, user, conversationId, context });
     } catch (err) {
       // Avant cette ligne, seul `err.message` était loggé (en `warn`), le
       // reste de l'erreur (stack, cause, éventuelle erreur Sequelize/Tool/

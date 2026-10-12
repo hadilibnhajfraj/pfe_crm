@@ -31,7 +31,9 @@ function createScheduleCommercialContactRelanceTool() {
       commercialId: Joi.string().guid({ version: "uuidv4" }).allow(null).optional(),
       commentaire: Joi.string().max(2000).allow(null, "").optional(),
     }),
-    requiredRoles: ["commercial", "admin", "superadmin", "superadmin2"],
+    // « commercial » : admis ici comme sur POST /commercial-contacts/:id/relances ;
+    // le service refuse tout contact hors de son périmètre (canAccessContact, niveau MANAGE).
+    requiredRoles: ["commercial", "commercial_sedentaire", "admin", "superadmin", "superadmin2"],
     run: async (input, { actingUser }) => relanceService.scheduleContactRelance(input.contactId, input, actingUser),
   });
 }

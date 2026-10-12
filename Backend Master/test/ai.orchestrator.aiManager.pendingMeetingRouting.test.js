@@ -227,7 +227,7 @@ describe("TEST 8 — PendingAction AutomationAgent existant : comportement non c
     const response = await manager.handleMessage({ message: "planifie une automatisation", user: USER_A, conversationId: "conv-8b" });
 
     expect(response.mode).toBe("error");
-    expect(response.error.message).toMatch(/not allowed to invoke agent "automation_agent"/i);
+    expect(response.error.message).toMatch(/ne vous autorise pas à utiliser cette fonction/);
   });
 });
 

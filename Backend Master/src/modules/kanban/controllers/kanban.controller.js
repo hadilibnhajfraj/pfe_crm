@@ -1,5 +1,6 @@
 const svc = require("../services/kanban.service");
 const projectSvc = require("../../projects/services/project.service");
+const { isAdmin, scopeListQuery } = require("../../projects/policies/projectAccess.policy");
 
 /**
  * GET /pipeline/kanban
@@ -12,7 +13,7 @@ const projectSvc = require("../../projects/services/project.service");
 async function getKanban(req, res) {
   try {
     const board = await svc.getKanbanBoard({
-      mine: req.query.mine,
+      mine: isAdmin(req.user) ? req.query.mine : "true",
       userId: req.user.sub,
       projectModele: req.query.projectModele || null,
       search: req.query.search || null,
@@ -49,7 +50,7 @@ async function getStages(req, res) {
  */
 async function getPipelineProjects(req, res) {
   try {
-    const result = await projectSvc.listProjects(req.query, req.user.sub);
+    const result = await projectSvc.listProjects(scopeListQuery(req.query, req.user), req.user.sub);
     res.json(result);
   } catch (err) {
     console.error("getPipelineProjects error:", err);

@@ -23,9 +23,9 @@ const { createServer } = require("../src/ai/mcp/server/start");
 const { createMcpToolAdapters } = require("../src/ai/langchain/tools/mcpToolAdapter");
 
 const REAL_SUPERADMIN = { id: "6242fb88-a0bc-4535-bddd-5285b91ca0ed", role: "superadmin", email: "cbitunisia@cbi-tunisia.com" };
-const REAL_HADIL = { id: "516f6dca-7a6f-43cb-b527-5c5652e3e03f", role: "user", email: "hadil.ibnhajfraj@gmail.com" };
-const REAL_OTHER_USER = { id: "4397d7c5-dc08-4ea0-b24c-d55c6aa0413f", role: "user", email: "wethek@gmail.com" };
-const REAL_COMMERCIAL = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial", email: "info@probardistribution.com" };
+const REAL_HADIL = { id: "516f6dca-7a6f-43cb-b527-5c5652e3e03f", role: "commercial", email: "hadil.ibnhajfraj@gmail.com" };
+const REAL_OTHER_USER = { id: "4397d7c5-dc08-4ea0-b24c-d55c6aa0413f", role: "commercial", email: "wethek@gmail.com" };
+const REAL_COMMERCIAL = { id: "b7c50110-31de-4d2c-96b4-5a117c9e262a", role: "commercial_sedentaire", email: "info@probardistribution.com" };
 
 afterAll(async () => {
   await sequelize.close();

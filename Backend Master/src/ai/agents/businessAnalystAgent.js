@@ -134,6 +134,12 @@ const SYSTEM_PROMPT = [
  * `get_professional_dashboard` pour "pipeline" et "performance") n'est
  * appelé QU'UNE FOIS (mise en cache locale au tour de conversation).
  */
+// Le refus traverse l'adaptateur d'outils sous forme d'une erreur simple :
+// reconnu par son code (permission refusée du serveur d'outils) ou son libellé.
+function isToolPermissionDenial(err) {
+  return Boolean(err) && (err.code === -32001 || err.code === "PERMISSION_DENIED" || String(err.message || "").includes("is not allowed to call tool"));
+}
+
 class BusinessAnalystAgent extends BaseAgent {
   async _run({ message }) {
     const domainKeys = this._detectDomains(message);
@@ -204,8 +210,11 @@ class BusinessAnalystAgent extends BaseAgent {
       toolCache.set(def.tool, raw);
       return raw;
     } catch (err) {
-      toolErrors.set(def.tool, err.message);
-      toolSteps.push({ tool: def.tool, input: toolInput, output: `Error: ${err.message}` });
+      // Refus du serveur d'outils : dit en clair, sans le texte technique (rôle, nom de l'outil).
+      const denied = isToolPermissionDenial(err);
+      if (!denied) this.logger.error(`[BUSINESS_ANALYSIS] ${def.tool} a échoué : ${err.message}`, err);
+      toolErrors.set(def.tool, denied ? "ces indicateurs sont réservés aux administrateurs et ne sont pas accessibles avec votre rôle" : "la lecture des données a échoué (ce n'est pas un résultat égal à zéro)");
+      toolSteps.push({ tool: def.tool, input: toolInput, failed: true, output: { error: denied ? "PERMISSION_DENIED" : "TOOL_FAILED" } });
       toolCache.set(def.tool, undefined);
       return undefined;
     }

@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="CRM PROBAR — API (audit non fonctionnel)" tests="126" time="56.138">
+  <testsuite name="Authentication / Sonde de santé" id="32536a6f-553c-455e-9f16-69befea34e97" timestamp="2026-10-03T21:30:00.422Z" tests="4" failures="0" errors="0" time="0.082">
+    <testcase name="Code HTTP 200" time="0.082" classname="AuthenticationSondeDeSante"/>
+    <testcase name="Réponse JSON" time="0.082" classname="AuthenticationSondeDeSante"/>
+    <testcase name="status = ok" time="0.082" classname="AuthenticationSondeDeSante"/>
+    <testcase name="base de données joignable" time="0.082" classname="AuthenticationSondeDeSante"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion commercial" id="1a8d3d2f-28e7-4c75-8db8-8fc2561e2b12" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.691">
+    <testcase name="Code HTTP 200" time="0.691" classname="AuthenticationConnexionCommercial"/>
+    <testcase name="Réponse JSON" time="0.691" classname="AuthenticationConnexionCommercial"/>
+    <testcase name="accessToken présent" time="0.691" classname="AuthenticationConnexionCommercial"/>
+    <testcase name="rôle = commercial" time="0.691" classname="AuthenticationConnexionCommercial"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.691" classname="AuthenticationConnexionCommercial"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion commercial_sedentaire" id="f40fb509-43bb-44b7-a375-24e6d644d538" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.495">
+    <testcase name="Code HTTP 200" time="0.495" classname="AuthenticationConnexionCommercialSedentaire"/>
+    <testcase name="Réponse JSON" time="0.495" classname="AuthenticationConnexionCommercialSedentaire"/>
+    <testcase name="accessToken présent" time="0.495" classname="AuthenticationConnexionCommercialSedentaire"/>
+    <testcase name="rôle = commercial_sedentaire" time="0.495" classname="AuthenticationConnexionCommercialSedentaire"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.495" classname="AuthenticationConnexionCommercialSedentaire"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion accueil" id="2231ae52-aeaa-4e01-99b9-032014593379" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.480">
+    <testcase name="Code HTTP 200" time="0.480" classname="AuthenticationConnexionAccueil"/>
+    <testcase name="Réponse JSON" time="0.480" classname="AuthenticationConnexionAccueil"/>
+    <testcase name="accessToken présent" time="0.480" classname="AuthenticationConnexionAccueil"/>
+    <testcase name="rôle = accueil" time="0.480" classname="AuthenticationConnexionAccueil"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.480" classname="AuthenticationConnexionAccueil"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion responsable_logistique_achat" id="6036ee27-3cbd-4284-a05a-e0d8adc0bed0" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.474">
+    <testcase name="Code HTTP 200" time="0.474" classname="AuthenticationConnexionResponsableLogistiqueAchat"/>
+    <testcase name="Réponse JSON" time="0.474" classname="AuthenticationConnexionResponsableLogistiqueAchat"/>
+    <testcase name="accessToken présent" time="0.474" classname="AuthenticationConnexionResponsableLogistiqueAchat"/>
+    <testcase name="rôle = responsable_logistique_achat" time="0.474" classname="AuthenticationConnexionResponsableLogistiqueAchat"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.474" classname="AuthenticationConnexionResponsableLogistiqueAchat"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion admin" id="d9a2663f-4c7a-4e7f-9078-84cdb8201643" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.481">
+    <testcase name="Code HTTP 200" time="0.481" classname="AuthenticationConnexionAdmin"/>
+    <testcase name="Réponse JSON" time="0.481" classname="AuthenticationConnexionAdmin"/>
+    <testcase name="accessToken présent" time="0.481" classname="AuthenticationConnexionAdmin"/>
+    <testcase name="rôle = admin" time="0.481" classname="AuthenticationConnexionAdmin"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.481" classname="AuthenticationConnexionAdmin"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion superadmin" id="d5ae4c87-c010-4e13-8891-b8e0e2c88cd9" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.522">
+    <testcase name="Code HTTP 200" time="0.522" classname="AuthenticationConnexionSuperadmin"/>
+    <testcase name="Réponse JSON" time="0.522" classname="AuthenticationConnexionSuperadmin"/>
+    <testcase name="accessToken présent" time="0.522" classname="AuthenticationConnexionSuperadmin"/>
+    <testcase name="rôle = superadmin" time="0.522" classname="AuthenticationConnexionSuperadmin"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.522" classname="AuthenticationConnexionSuperadmin"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion superadmin2" id="ddd2e66b-2a3a-4be6-afde-d18facadf301" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.498">
+    <testcase name="Code HTTP 200" time="0.498" classname="AuthenticationConnexionSuperadmin2"/>
+    <testcase name="Réponse JSON" time="0.498" classname="AuthenticationConnexionSuperadmin2"/>
+    <testcase name="accessToken présent" time="0.498" classname="AuthenticationConnexionSuperadmin2"/>
+    <testcase name="rôle = superadmin2" time="0.498" classname="AuthenticationConnexionSuperadmin2"/>
+    <testcase name="Le hash du mot de passe n'est pas exposé" time="0.498" classname="AuthenticationConnexionSuperadmin2"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion — mot de passe incorrect" id="3c54c125-1788-4fa0-b87d-9cc1876e5258" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.247">
+    <testcase name="Code HTTP 401" time="0.247" classname="AuthenticationConnexionMotDePasseIncorrect"/>
+    <testcase name="Aucun jeton émis" time="0.247" classname="AuthenticationConnexionMotDePasseIncorrect"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion — e-mail inconnu" id="c762062f-3b0c-47ef-8db8-f637874b98fb" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 401" time="0.008" classname="AuthenticationConnexionEMailInconnu"/>
+    <testcase name="Aucun jeton émis" time="0.008" classname="AuthenticationConnexionEMailInconnu"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion — e-mail mal formé" id="ea2bdd07-e8d2-4546-befe-384f6785bfaf" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.002">
+    <testcase name="Code HTTP 400" time="0.002" classname="AuthenticationConnexionEMailMalForme"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion — mot de passe trop court" id="24ec8e7a-0bb9-4642-b411-e09136550df4" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 400" time="0.006" classname="AuthenticationConnexionMotDePasseTropCourt"/>
+  </testsuite>
+  <testsuite name="Authentication / Connexion — compte désactivé" id="d407f1f5-faff-4141-8f66-e48869f22ae1" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.013">
+    <testcase name="Code HTTP 403" time="0.013" classname="AuthenticationConnexionCompteDesactive"/>
+    <testcase name="Aucun jeton émis" time="0.013" classname="AuthenticationConnexionCompteDesactive"/>
+  </testsuite>
+  <testsuite name="Authentication / Profil courant — JWT valide" id="96210c91-eb21-472d-9383-425eca9e3830" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.007">
+    <testcase name="Code HTTP 200" time="0.007" classname="AuthenticationProfilCourantJwtValide"/>
+    <testcase name="rôle commercial" time="0.007" classname="AuthenticationProfilCourantJwtValide"/>
+  </testsuite>
+  <testsuite name="Authentication / Profil courant — JWT absent" id="30b54afc-52bc-4f53-aa65-6cda6c25f8d3" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.002">
+    <testcase name="Code HTTP 401" time="0.002" classname="AuthenticationProfilCourantJwtAbsent"/>
+  </testsuite>
+  <testsuite name="Authentication / Profil courant — JWT invalide" id="c390def5-ee3e-4f97-a36c-a462d2cb18b9" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.004">
+    <testcase name="Code HTTP 401" time="0.004" classname="AuthenticationProfilCourantJwtInvalide"/>
+  </testsuite>
+  <testsuite name="Authentication / Rafraîchissement — jeton absent" id="511987ea-369c-46f1-b558-4a432d2b61b3" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="1" errors="0" time="0.237">
+    <testcase name="Code HTTP 401" time="0.237" classname="AuthenticationRafraichissementJetonAbsent">
+      <failure type="AssertionFailure" message="expected response to have status code 401 but got 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 66751dd0-e0d8-42d6-a063-bf0c432edf65.]]>
+        <![CDATA[Collection name: CRM PROBAR — API (audit non fonctionnel).]]>
+        <![CDATA[Request name: Authentication / Rafraîchissement — jeton absent.]]>
+        <![CDATA[Test description: Code HTTP 401.]]>
+        <![CDATA[Error message: expected response to have status code 401 but got 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 401 but got 200
+   at Object.eval sandbox-script.js:1:17).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Authentication / Rafraîchissement — jeton valide" id="27db5fe9-0fdc-4dc7-b0b0-fb1a14802ceb" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.244">
+    <testcase name="Code HTTP 200" time="0.244" classname="AuthenticationRafraichissementJetonValide"/>
+    <testcase name="nouvel accessToken" time="0.244" classname="AuthenticationRafraichissementJetonValide"/>
+  </testsuite>
+  <testsuite name="Authentication / Métriques — sans jeton" id="53b6a5cc-3f14-4b17-a1ae-8b20a0c2e003" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 401" time="0.003" classname="AuthenticationMetriquesSansJeton"/>
+  </testsuite>
+  <testsuite name="Users / Liste des utilisateurs — superadmin" id="15c92abc-f263-4fb1-acbf-9b32c2ffa0fe" timestamp="2026-10-03T21:30:00.422Z" tests="4" failures="0" errors="0" time="0.016">
+    <testcase name="Code HTTP 200" time="0.016" classname="UsersListeDesUtilisateursSuperadmin"/>
+    <testcase name="Réponse JSON" time="0.016" classname="UsersListeDesUtilisateursSuperadmin"/>
+    <testcase name="tableau non vide" time="0.016" classname="UsersListeDesUtilisateursSuperadmin"/>
+    <testcase name="Aucun hash de mot de passe exposé" time="0.016" classname="UsersListeDesUtilisateursSuperadmin"/>
+  </testsuite>
+  <testsuite name="Users / Liste des utilisateurs — admin" id="3192d3fb-e573-4dba-a4df-5212c346ee4b" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.025">
+    <testcase name="Code HTTP 200" time="0.025" classname="UsersListeDesUtilisateursAdmin"/>
+  </testsuite>
+  <testsuite name="Users / Liste des utilisateurs — commercial refusé" id="a33cf788-21e3-4bc9-8410-e421eb810698" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 403" time="0.008" classname="UsersListeDesUtilisateursCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Users / Liste des utilisateurs — accueil refusé" id="d1bc9780-e73b-4957-9c48-736f63f0e1c1" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 403" time="0.009" classname="UsersListeDesUtilisateursAccueilRefuse"/>
+  </testsuite>
+  <testsuite name="Users / Liste des utilisateurs — sans jeton" id="5a25abf4-7a3c-4071-9e61-978e7530f40e" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.004">
+    <testcase name="Code HTTP 401" time="0.004" classname="UsersListeDesUtilisateursSansJeton"/>
+  </testsuite>
+  <testsuite name="Users / Mon profil" id="cdcfe3de-b650-468c-8059-f24e5e7f4c60" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 200" time="0.009" classname="UsersMonProfil"/>
+    <testcase name="Réponse JSON" time="0.009" classname="UsersMonProfil"/>
+  </testsuite>
+  <testsuite name="Users / Changer un rôle — rôle inexistant" id="302e0f36-a96b-44c0-b6e1-0b9f04f45b0d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 400" time="0.008" classname="UsersChangerUnRoleRoleInexistant"/>
+  </testsuite>
+  <testsuite name="Users / Changer un rôle — admin simple refusé" id="3d158a36-33b8-4e33-b5e4-ca0971a9312d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="Code HTTP 403" time="0.005" classname="UsersChangerUnRoleAdminSimpleRefuse"/>
+  </testsuite>
+  <testsuite name="Users / Changer un rôle — commercial refusé" id="fbbe92d5-5cd4-4b16-8bb4-c06e7137d9f5" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 403" time="0.008" classname="UsersChangerUnRoleCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Users / Désactiver un compte — RLA refusé" id="ed722e16-c1ae-41d7-adec-1f796e82d2ca" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="Code HTTP 403" time="0.005" classname="UsersDesactiverUnCompteRlaRefuse"/>
+  </testsuite>
+  <testsuite name="Contacts / Créer un contact — nom manquant" id="2b81eac7-ab9b-4447-8b48-dbfc9fe9c3bc" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 400" time="0.009" classname="ContactsCreerUnContactNomManquant"/>
+  </testsuite>
+  <testsuite name="Contacts / Créer un contact — RLA refusé" id="4a7ac59f-4aa8-41d9-8f1f-c3fc5e144f0e" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 403" time="0.003" classname="ContactsCreerUnContactRlaRefuse"/>
+  </testsuite>
+  <testsuite name="Contacts / Créer un contact" id="2722c87c-587a-4ecc-8f9e-bd047c0145c6" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.036">
+    <testcase name="Code HTTP 201" time="0.036" classname="ContactsCreerUnContact"/>
+    <testcase name="Réponse JSON" time="0.036" classname="ContactsCreerUnContact"/>
+    <testcase name="identifiant présent" time="0.036" classname="ContactsCreerUnContact"/>
+    <testcase name="créateur = commercial sédentaire" time="0.036" classname="ContactsCreerUnContact"/>
+    <testcase name="étape Prospect par défaut" time="0.036" classname="ContactsCreerUnContact"/>
+  </testsuite>
+  <testsuite name="Contacts / Lire le contact" id="1b41dbd8-d402-4510-b90c-bb86fe94094b" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.019">
+    <testcase name="Code HTTP 200" time="0.019" classname="ContactsLireLeContact"/>
+    <testcase name="bon contact" time="0.019" classname="ContactsLireLeContact"/>
+  </testsuite>
+  <testsuite name="Contacts / Lister les contacts" id="12489fc0-0ba5-449f-98c4-adb1ca54dc77" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.096">
+    <testcase name="Code HTTP 200" time="0.096" classname="ContactsListerLesContacts"/>
+    <testcase name="tableau" time="0.096" classname="ContactsListerLesContacts"/>
+  </testsuite>
+  <testsuite name="Contacts / Lister les contacts — RLA refusé" id="65e8c7b6-f6de-4ca1-99c2-061efd3012a1" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="Code HTTP 403" time="0.005" classname="ContactsListerLesContactsRlaRefuse"/>
+  </testsuite>
+  <testsuite name="Contacts / Lire un contact inexistant" id="bd8ac6a3-1168-4f27-8288-8ded61f32754" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 404" time="0.008" classname="ContactsLireUnContactInexistant"/>
+  </testsuite>
+  <testsuite name="Contacts / Modifier — accueil non créateur refusé" id="b1fe42ba-45d9-46fc-967c-47b6933f5733" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 403" time="0.010" classname="ContactsModifierAccueilNonCreateurRefuse"/>
+  </testsuite>
+  <testsuite name="Contacts / Affecter — commercial refusé" id="51d50d89-f039-4431-85c5-b5fd29b24d57" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 403" time="0.008" classname="ContactsAffecterCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Contacts / Affecter — liste vide" id="255fb435-544c-4e5c-8dc8-298743ecca20" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 400" time="0.003" classname="ContactsAffecterListeVide"/>
+  </testsuite>
+  <testsuite name="Contacts / Affecter — destinataire non commercial" id="04d2b7b4-febc-4233-a004-555dffbcb613" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="Code HTTP 400" time="0.011" classname="ContactsAffecterDestinataireNonCommercial"/>
+  </testsuite>
+  <testsuite name="Contacts / Affecter à un commercial" id="fba4673f-2034-448c-9d78-571739a3b2b0" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.016">
+    <testcase name="Code HTTP 200" time="0.016" classname="ContactsAffecterAUnCommercial"/>
+    <testcase name="1 contact mis à jour" time="0.016" classname="ContactsAffecterAUnCommercial"/>
+  </testsuite>
+  <testsuite name="Contacts / Le commercial affecté lit le contact" id="97ddc130-f218-4369-b7de-0aa046466500" timestamp="2026-10-03T21:30:00.422Z" tests="3" failures="0" errors="0" time="0.015">
+    <testcase name="Code HTTP 200" time="0.015" classname="ContactsLeCommercialAffecteLitLeContact"/>
+    <testcase name="commercialId = commercial" time="0.015" classname="ContactsLeCommercialAffecteLitLeContact"/>
+    <testcase name="assignedBy = commercial sédentaire" time="0.015" classname="ContactsLeCommercialAffecteLitLeContact"/>
+  </testsuite>
+  <testsuite name="Contacts / Supprimer — commercial refusé" id="7386bdc8-2af6-4463-a0ee-6e12258229d2" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 403" time="0.008" classname="ContactsSupprimerCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Projects / Lister les projets" id="1e66d8fc-9800-4ecd-b271-66e0a2854d19" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="0.052">
+    <testcase name="Code HTTP 200" time="0.052" classname="ProjectsListerLesProjets"/>
+    <testcase name="Réponse JSON" time="0.052" classname="ProjectsListerLesProjets"/>
+    <testcase name="items est un tableau" time="0.052" classname="ProjectsListerLesProjets"/>
+    <testcase name="au plus 5 éléments" time="0.052" classname="ProjectsListerLesProjets"/>
+    <testcase name="total numérique" time="0.052" classname="ProjectsListerLesProjets"/>
+  </testsuite>
+  <testsuite name="Projects / Lister les projets — sans jeton" id="ba48d0b6-2b6f-4222-ae1f-e84576267697" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 401" time="0.003" classname="ProjectsListerLesProjetsSansJeton"/>
+  </testsuite>
+  <testsuite name="Projects / Lister les projets — RLA refusé" id="aee68487-2492-4cf7-992f-ab17754175c1" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.004">
+    <testcase name="Code HTTP 403" time="0.004" classname="ProjectsListerLesProjetsRlaRefuse"/>
+  </testsuite>
+  <testsuite name="Projects / Lire un projet" id="d23dc10e-eb6b-454b-901d-761a817cdae7" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.178">
+    <testcase name="Code HTTP 200" time="0.178" classname="ProjectsLireUnProjet"/>
+    <testcase name="Réponse JSON" time="0.178" classname="ProjectsLireUnProjet"/>
+  </testsuite>
+  <testsuite name="Projects / Lire un projet inexistant" id="e3798efc-7ec1-4ea7-a5b7-4c501c4228e1" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="Code HTTP 404" time="0.011" classname="ProjectsLireUnProjetInexistant"/>
+  </testsuite>
+  <testsuite name="Projects / Créer un projet — données invalides" id="586811a7-7e21-492a-b8fa-628d4b844836" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 400" time="0.008" classname="ProjectsCreerUnProjetDonneesInvalides"/>
+    <testcase name="liste d'erreurs" time="0.008" classname="ProjectsCreerUnProjetDonneesInvalides"/>
+  </testsuite>
+  <testsuite name="Projects / Créer un projet — RLA refusé" id="aadca04e-dc68-486e-a9ee-ac631a72534c" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Code HTTP 403" time="0.007" classname="ProjectsCreerUnProjetRlaRefuse"/>
+  </testsuite>
+  <testsuite name="Projects / Étapes du pipeline" id="705a8306-18c0-41b3-b537-4ec3f83b79e8" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.018">
+    <testcase name="Code HTTP 200" time="0.018" classname="ProjectsEtapesDuPipeline"/>
+    <testcase name="Réponse JSON" time="0.018" classname="ProjectsEtapesDuPipeline"/>
+  </testsuite>
+  <testsuite name="Projects / Indicateurs projets" id="0bbd60bf-700a-44e4-8441-f81ddc844679" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.024">
+    <testcase name="Code HTTP 200" time="0.024" classname="ProjectsIndicateursProjets"/>
+    <testcase name="Réponse JSON" time="0.024" classname="ProjectsIndicateursProjets"/>
+  </testsuite>
+  <testsuite name="Actions / Actions du contact" id="547dc15a-36fe-4f20-b35f-252f0c432435" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.021">
+    <testcase name="Code HTTP 200" time="0.021" classname="ActionsActionsDuContact"/>
+    <testcase name="au moins une action" time="0.021" classname="ActionsActionsDuContact"/>
+  </testsuite>
+  <testsuite name="Actions / Relance — date manquante" id="0d6a202f-0b58-4c45-9137-26db194361fd" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 400" time="0.010" classname="ActionsRelanceDateManquante"/>
+  </testsuite>
+  <testsuite name="Actions / Créer une relance" id="9b7579c6-718f-4189-a261-803acfe5da2e" timestamp="2026-10-03T21:30:00.422Z" tests="3" failures="0" errors="0" time="0.022">
+    <testcase name="Code HTTP 201" time="0.022" classname="ActionsCreerUneRelance"/>
+    <testcase name="statut planifiee" time="0.022" classname="ActionsCreerUneRelance"/>
+    <testcase name="rattachée au contact" time="0.022" classname="ActionsCreerUneRelance"/>
+  </testsuite>
+  <testsuite name="Actions / Relance — contact inexistant" id="abf6c0a6-1d04-4da1-b830-7a64cea4bb8f" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 404" time="0.010" classname="ActionsRelanceContactInexistant"/>
+  </testsuite>
+  <testsuite name="Actions / Relance — sans jeton" id="2b348c3a-6900-4e71-abfe-1cd77d3b8aaf" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 401" time="0.006" classname="ActionsRelanceSansJeton"/>
+  </testsuite>
+  <testsuite name="Actions / Nettoyage — supprimer le contact (superadmin)" id="542f43b4-7255-4ecf-a921-d7185d8107d9" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="Code HTTP 200" time="0.017" classname="ActionsNettoyageSupprimerLeContactSuperadmin"/>
+  </testsuite>
+  <testsuite name="Actions / Le contact supprimé n'existe plus" id="fa4dba6a-242a-407a-bc8a-824a982f2a78" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 404" time="0.010" classname="ActionsLeContactSupprimeNexistePlus"/>
+  </testsuite>
+  <testsuite name="Production / Machines — liste" id="5413ded4-0bd3-4708-ba60-a1fe79b8975d" timestamp="2026-10-03T21:30:00.422Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 200" time="0.008" classname="ProductionMachinesListe"/>
+    <testcase name="liste non vide" time="0.008" classname="ProductionMachinesListe"/>
+    <testcase name="types PROBAR / PROMESH uniquement" time="0.008" classname="ProductionMachinesListe"/>
+  </testsuite>
+  <testsuite name="Production / Machines — numéro manquant" id="f3f42885-882c-4eb1-86fa-e99931410317" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 400" time="0.006" classname="ProductionMachinesNumeroManquant"/>
+  </testsuite>
+  <testsuite name="Production / Machines — type inconnu" id="e937fff2-0c5c-424f-a378-5082cb1bd5e6" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 400" time="0.006" classname="ProductionMachinesTypeInconnu"/>
+  </testsuite>
+  <testsuite name="Production / Machines — doublon" id="6438f862-8763-44c6-81c1-849990f5fb5a" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="Code HTTP 409" time="0.011" classname="ProductionMachinesDoublon"/>
+  </testsuite>
+  <testsuite name="Production / Machines — commercial refusé en écriture" id="69ef0e21-c217-4fdf-8d4d-7a5e902803ea" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 403" time="0.008" classname="ProductionMachinesCommercialRefuseEnEcriture"/>
+  </testsuite>
+  <testsuite name="Production / POR — poste manquant" id="210902bc-8490-4dfa-b418-288864c23f34" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 400" time="0.010" classname="ProductionPorPosteManquant"/>
+  </testsuite>
+  <testsuite name="Production / POR — commercial refusé" id="e9283433-cd0f-466e-823f-0d746e0b9f77" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="ProductionPorCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Production / POR — nouvelle fiche" id="b9d2a234-d5c4-4a2b-bfac-563ab764e48a" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.034">
+    <testcase name="Code HTTP 200 ou 201" time="0.034" classname="ProductionPorNouvelleFiche"/>
+    <testcase name="statut BROUILLON" time="0.034" classname="ProductionPorNouvelleFiche"/>
+  </testsuite>
+  <testsuite name="Production / POR — modifier le brouillon" id="06cdc5f8-eba1-4442-b5bf-a55141aa259a" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.022">
+    <testcase name="Code HTTP 200" time="0.022" classname="ProductionPorModifierLeBrouillon"/>
+    <testcase name="non verrouillée" time="0.022" classname="ProductionPorModifierLeBrouillon"/>
+  </testsuite>
+  <testsuite name="Production / POR — valider" id="aa975620-9d9c-4de5-ae51-eb0c160be6e6" timestamp="2026-10-03T21:30:00.422Z" tests="4" failures="0" errors="0" time="0.021">
+    <testcase name="Code HTTP 200" time="0.021" classname="ProductionPorValider"/>
+    <testcase name="statut VALIDE" time="0.021" classname="ProductionPorValider"/>
+    <testcase name="verrouillée" time="0.021" classname="ProductionPorValider"/>
+    <testcase name="date de validation" time="0.021" classname="ProductionPorValider"/>
+  </testsuite>
+  <testsuite name="Production / POR — modification après validation refusée" id="f3d51deb-89b4-43f2-a9c8-83dff4da778c" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="ProductionPorModificationApresValidationRefusee"/>
+  </testsuite>
+  <testsuite name="Production / POR — modification par superadmin refusée" id="4626bfe1-ce72-4800-ad5c-e2d981ba516b" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="ProductionPorModificationParSuperadminRefusee"/>
+  </testsuite>
+  <testsuite name="Production / POR — seconde validation refusée" id="3c2bc524-474b-43cf-81a0-d5982cd57364" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 403" time="0.008" classname="ProductionPorSecondeValidationRefusee"/>
+  </testsuite>
+  <testsuite name="Production / POR — la fiche validée reste inchangée" id="755b2870-c3f1-4494-9575-bac8b6dca796" timestamp="2026-10-03T21:30:00.422Z" tests="3" failures="0" errors="0" time="0.017">
+    <testcase name="Code HTTP 200" time="0.017" classname="ProductionPorLaFicheValideeResteInchangee"/>
+    <testcase name="opérateur inchangé" time="0.017" classname="ProductionPorLaFicheValideeResteInchangee"/>
+    <testcase name="toujours verrouillée" time="0.017" classname="ProductionPorLaFicheValideeResteInchangee"/>
+  </testsuite>
+  <testsuite name="Production / POR — liste refusée au commercial" id="a44e56fa-0815-4aa2-a9d1-7eee263dea3e" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="ProductionPorListeRefuseeAuCommercial"/>
+  </testsuite>
+  <testsuite name="Production / POR — fiche inexistante" id="b21044cd-315d-4b75-b859-d6d105ec4927" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 404" time="0.010" classname="ProductionPorFicheInexistante"/>
+  </testsuite>
+  <testsuite name="Production / Fiche de production — module inconnu" id="d4fe2b02-ec28-43e8-90a9-1e60205780f1" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.004">
+    <testcase name="Code HTTP 400" time="0.004" classname="ProductionFicheDeProductionModuleInconnu"/>
+  </testsuite>
+  <testsuite name="Production / Fiche de production — Mélange sans machine" id="54a1c6e6-1009-44c9-9019-bcea7e92c098" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.023">
+    <testcase name="Code HTTP 201" time="0.023" classname="ProductionFicheDeProductionMelangeSansMachine"/>
+    <testcase name="machine facultative (machineId nul)" time="0.023" classname="ProductionFicheDeProductionMelangeSansMachine"/>
+  </testsuite>
+  <testsuite name="Production / Fiche de production — lecture" id="74cb11bf-5bc7-42f8-b772-936394ee452b" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 200" time="0.008" classname="ProductionFicheDeProductionLecture"/>
+  </testsuite>
+  <testsuite name="Production / Fiche de production — accueil refusé" id="6d18b42c-7447-474c-b04b-e92730e974a2" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="ProductionFicheDeProductionAccueilRefuse"/>
+  </testsuite>
+  <testsuite name="Production / Nettoyage — supprimer la fiche de production" id="e4d1ffe5-6a74-40b9-b6a6-feeaa81bab67" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Code HTTP 200" time="0.007" classname="ProductionNettoyageSupprimerLaFicheDeProduction"/>
+  </testsuite>
+  <testsuite name="Production / Récupérables — liste" id="8f08f7eb-0818-42ea-b7f0-4c08f336a320" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="Code HTTP 200" time="0.011" classname="ProductionRecuperablesListe"/>
+    <testcase name="Réponse JSON" time="0.011" classname="ProductionRecuperablesListe"/>
+  </testsuite>
+  <testsuite name="Production / Récupérables — ligne invalide" id="e4d35157-b2ad-45cc-9fec-11857d3ba295" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 400" time="0.003" classname="ProductionRecuperablesLigneInvalide"/>
+  </testsuite>
+  <testsuite name="Maintenance / Créer — champs manquants" id="bd904c05-0fba-4222-97d8-3bd380cc6801" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="Code HTTP 400" time="0.005" classname="MaintenanceCreerChampsManquants"/>
+  </testsuite>
+  <testsuite name="Maintenance / Créer une demande" id="93bb0a60-fccd-4e72-b36e-ab7e59f41b5e" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.124">
+    <testcase name="Code HTTP 201" time="0.124" classname="MaintenanceCreerUneDemande"/>
+    <testcase name="statut en_attente" time="0.124" classname="MaintenanceCreerUneDemande"/>
+  </testsuite>
+  <testsuite name="Maintenance / Mes demandes" id="a7ec53c5-f798-436e-bffb-c76ef0ec9fd3" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="Code HTTP 200" time="0.012" classname="MaintenanceMesDemandes"/>
+    <testcase name="contient la demande créée" time="0.012" classname="MaintenanceMesDemandes"/>
+  </testsuite>
+  <testsuite name="Maintenance / Toutes les demandes — commercial refusé" id="2c380aaa-28f7-45f7-b7f0-c59774b83ec0" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 403" time="0.003" classname="MaintenanceToutesLesDemandesCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Maintenance / Toutes les demandes — RLA" id="b3e6c462-5580-4989-b9ed-40af472a7237" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="Code HTTP 200" time="0.013" classname="MaintenanceToutesLesDemandesRla"/>
+  </testsuite>
+  <testsuite name="Maintenance / Accepter — demandeur refusé" id="89ac47a9-dc00-4674-8f21-1571cf1ba7ac" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 403" time="0.003" classname="MaintenanceAccepterDemandeurRefuse"/>
+  </testsuite>
+  <testsuite name="Maintenance / Accepter — RLA" id="b88da923-5f6b-44ae-b6c3-afe7c63589a9" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.023">
+    <testcase name="Code HTTP 200" time="0.023" classname="MaintenanceAccepterRla"/>
+    <testcase name="statut acceptee" time="0.023" classname="MaintenanceAccepterRla"/>
+  </testsuite>
+  <testsuite name="Maintenance / Démarrer sans technicien" id="9d61d64c-8b58-42da-9165-66cd8df1af82" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.015">
+    <testcase name="Code HTTP 400" time="0.015" classname="MaintenanceDemarrerSansTechnicien"/>
+  </testsuite>
+  <testsuite name="Maintenance / Historique" id="441d7c0d-15d6-447e-8bf9-0605c655cdd3" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="Code HTTP 200" time="0.012" classname="MaintenanceHistorique"/>
+    <testcase name="au moins 2 événements" time="0.012" classname="MaintenanceHistorique"/>
+  </testsuite>
+  <testsuite name="Maintenance / Nettoyage — supprimer la demande" id="d21864ea-55c8-4d79-be1b-3dca244e1c5d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 200" time="0.008" classname="MaintenanceNettoyageSupprimerLaDemande"/>
+  </testsuite>
+  <testsuite name="RH / Créer — type inconnu" id="30708e8c-b7a1-45cf-aed6-3520e602cacb" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 400" time="0.009" classname="RhCreerTypeInconnu"/>
+  </testsuite>
+  <testsuite name="RH / Créer — dates incohérentes" id="9d92a7cd-75d5-4cf9-8116-a37e37ef9193" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Code HTTP 400" time="0.007" classname="RhCreerDatesIncoherentes"/>
+  </testsuite>
+  <testsuite name="RH / Créer — profil employé incomplet" id="180e3858-65d6-4a06-bfa3-eeeb5ac8fd90" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 422" time="0.010" classname="RhCreerProfilEmployeIncomplet"/>
+  </testsuite>
+  <testsuite name="RH / Créer une autorisation de sortie" id="ab443993-014b-4679-99d4-2840e640917b" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.082">
+    <testcase name="Code HTTP 201" time="0.082" classname="RhCreerUneAutorisationDeSortie"/>
+    <testcase name="statut en_attente" time="0.082" classname="RhCreerUneAutorisationDeSortie"/>
+  </testsuite>
+  <testsuite name="RH / Mes demandes RH" id="8edf03aa-2b46-474b-84a1-df67551e87cd" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.021">
+    <testcase name="Code HTTP 200" time="0.021" classname="RhMesDemandesRh"/>
+    <testcase name="Réponse JSON" time="0.021" classname="RhMesDemandesRh"/>
+  </testsuite>
+  <testsuite name="RH / Accepter — demandeur refusé" id="a7ffee58-cdd4-45a5-871b-2295487c0b96" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="Code HTTP 403" time="0.011" classname="RhAccepterDemandeurRefuse"/>
+  </testsuite>
+  <testsuite name="RH / Lire — autre collaborateur refusé" id="b22e5cc2-0f3e-46fc-ae97-50a73932605d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="Code HTTP 403 ou 404" time="0.017" classname="RhLireAutreCollaborateurRefuse"/>
+  </testsuite>
+  <testsuite name="RH / Lire une demande inexistante" id="98f02d23-87a9-4051-acf3-6ca9a32a2eb5" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.018">
+    <testcase name="Code HTTP 404" time="0.018" classname="RhLireUneDemandeInexistante"/>
+  </testsuite>
+  <testsuite name="RH / Nettoyage — supprimer la demande RH" id="22f18f93-1850-403d-966e-dde45b7b564d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="Code HTTP 200" time="0.012" classname="RhNettoyageSupprimerLaDemandeRh"/>
+  </testsuite>
+  <testsuite name="Archive / Créer — champs manquants" id="565fdfe5-125b-473a-98cd-70116f1d024f" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 400" time="0.009" classname="ArchiveCreerChampsManquants"/>
+  </testsuite>
+  <testsuite name="Archive / Créer — projet d'un autre utilisateur" id="26432564-d7fe-448c-930c-6fe2d7b409bf" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 403" time="0.010" classname="ArchiveCreerProjetDunAutreUtilisateur"/>
+  </testsuite>
+  <testsuite name="Archive / Créer — projet inexistant" id="b8053e2f-0076-4b4d-9769-1a7c12dbeb9f" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 404" time="0.009" classname="ArchiveCreerProjetInexistant"/>
+  </testsuite>
+  <testsuite name="Archive / Mes demandes d'archivage" id="c4ee1136-a43b-4171-bf50-8337b4bfdc20" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 200" time="0.009" classname="ArchiveMesDemandesDarchivage"/>
+    <testcase name="Réponse JSON" time="0.009" classname="ArchiveMesDemandesDarchivage"/>
+  </testsuite>
+  <testsuite name="Archive / Toutes les demandes — commercial refusé" id="f7b77c94-414c-4dba-9cb9-e0628d4a5a5f" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.004">
+    <testcase name="Code HTTP 403" time="0.004" classname="ArchiveToutesLesDemandesCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Archive / Approuver — commercial refusé" id="a5ded2ee-4d57-4dae-ac58-01e4472f620e" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="ArchiveApprouverCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Archive / Sans jeton" id="23b10240-3fba-4cf2-b853-e422e5b07349" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 401" time="0.003" classname="ArchiveSansJeton"/>
+  </testsuite>
+  <testsuite name="Notifications / Mes notifications" id="d0fe1bbc-8d87-4db7-8948-abe5b9e99f33" timestamp="2026-10-03T21:30:00.422Z" tests="3" failures="0" errors="0" time="0.018">
+    <testcase name="Code HTTP 200" time="0.018" classname="NotificationsMesNotifications"/>
+    <testcase name="items est un tableau" time="0.018" classname="NotificationsMesNotifications"/>
+    <testcase name="compteur non lu numérique" time="0.018" classname="NotificationsMesNotifications"/>
+  </testsuite>
+  <testsuite name="Notifications / Sans jeton" id="6e1b58d6-bf0b-434b-96bd-062c2613d79e" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="Code HTTP 401" time="0.005" classname="NotificationsSansJeton"/>
+  </testsuite>
+  <testsuite name="Notifications / Tout marquer comme lu" id="89c3e94f-b2ad-46df-8724-d263ee89b90a" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="Code HTTP 200" time="0.014" classname="NotificationsToutMarquerCommeLu"/>
+  </testsuite>
+  <testsuite name="Notifications / Marquer une notification inexistante" id="fe8a7d98-2968-48b3-bc69-f39d48f6900d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Code HTTP 404" time="0.007" classname="NotificationsMarquerUneNotificationInexistante"/>
+  </testsuite>
+  <testsuite name="Dashboard / Tableau de bord utilisateur" id="dd951d06-8b47-4ed2-917f-e08f67538ad2" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.016">
+    <testcase name="Code HTTP 200" time="0.016" classname="DashboardTableauDeBordUtilisateur"/>
+    <testcase name="Réponse JSON" time="0.016" classname="DashboardTableauDeBordUtilisateur"/>
+  </testsuite>
+  <testsuite name="Dashboard / KPI globaux — commercial refusé" id="89a2e283-8bc3-436d-a31a-70a926683b87" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 403" time="0.006" classname="DashboardKpiGlobauxCommercialRefuse"/>
+  </testsuite>
+  <testsuite name="Dashboard / KPI globaux — superadmin" id="e01549e1-b881-4070-8e2f-d48cecf3fb2f" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.028">
+    <testcase name="Code HTTP 200" time="0.028" classname="DashboardKpiGlobauxSuperadmin"/>
+    <testcase name="Réponse JSON" time="0.028" classname="DashboardKpiGlobauxSuperadmin"/>
+  </testsuite>
+  <testsuite name="Dashboard / Statistiques d'administration — admin" id="1cd9c010-b8ef-4714-85f9-16513c8d945e" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.016">
+    <testcase name="Code HTTP 200" time="0.016" classname="DashboardStatistiquesDadministrationAdmin"/>
+    <testcase name="Réponse JSON" time="0.016" classname="DashboardStatistiquesDadministrationAdmin"/>
+  </testsuite>
+  <testsuite name="Dashboard / Statistiques d'administration — accueil refusé" id="a7656e9f-d370-4ad4-9acf-bbbb5bf40bad" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Code HTTP 403" time="0.003" classname="DashboardStatistiquesDadministrationAccueilRefuse"/>
+  </testsuite>
+  <testsuite name="Dashboard / Statistiques POR — RLA" id="04b146c5-18d1-42cb-88c2-efbdf438d1a1" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.010">
+    <testcase name="Code HTTP 200" time="0.010" classname="DashboardStatistiquesPorRla"/>
+    <testcase name="Réponse JSON" time="0.010" classname="DashboardStatistiquesPorRla"/>
+  </testsuite>
+  <testsuite name="Dashboard / Sans jeton" id="5217c9aa-b8cf-4a83-a185-0a79dc86a88d" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.002">
+    <testcase name="Code HTTP 401" time="0.002" classname="DashboardSansJeton"/>
+  </testsuite>
+  <testsuite name="Copilot / Chat — sans jeton" id="febb9e3e-b956-44fd-8c75-fc90a713d578" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="Code HTTP 401" time="0.005" classname="CopilotChatSansJeton"/>
+  </testsuite>
+  <testsuite name="Copilot / Chat — rôle non autorisé (accueil)" id="247258d3-3a42-4e09-9107-0c6846dbb180" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="Code HTTP 403" time="0.013" classname="CopilotChatRoleNonAutoriseAccueil"/>
+  </testsuite>
+  <testsuite name="Copilot / Chat — message vide" id="547be942-89f5-4d96-bb40-46a5030238a4" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Code HTTP 400" time="0.006" classname="CopilotChatMessageVide"/>
+  </testsuite>
+  <testsuite name="Copilot / Conversations" id="b82d9057-87a0-43d0-98d8-e77aa674ade2" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.008">
+    <testcase name="Code HTTP 200" time="0.008" classname="CopilotConversations"/>
+    <testcase name="Réponse JSON" time="0.008" classname="CopilotConversations"/>
+  </testsuite>
+  <testsuite name="Copilot / Conversation inexistante" id="23dce5c3-7a2f-4bd8-a08c-c784f6375d70" timestamp="2026-10-03T21:30:00.422Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Code HTTP 404" time="0.009" classname="CopilotConversationInexistante"/>
+  </testsuite>
+  <testsuite name="Copilot / Documents RAG" id="28343cc9-d374-420d-9524-cb909122d39d" timestamp="2026-10-03T21:30:00.422Z" tests="2" failures="0" errors="0" time="0.004">
+    <testcase name="Code HTTP 200" time="0.004" classname="CopilotDocumentsRag"/>
+    <testcase name="Réponse JSON" time="0.004" classname="CopilotDocumentsRag"/>
+  </testsuite>
+  <testsuite name="Copilot / Chat réel — « Quels sont mes projets ? »" id="e6ffba4c-a553-4c54-8c64-7f84482241c7" timestamp="2026-10-03T21:30:00.422Z" tests="5" failures="0" errors="0" time="50.025">
+    <testcase name="Code HTTP 200" time="50.025" classname="CopilotChatReelQuelsSontMesProjets"/>
+    <testcase name="réponse non vide" time="50.025" classname="CopilotChatReelQuelsSontMesProjets"/>
+    <testcase name="un outil a réellement été appelé" time="50.025" classname="CopilotChatReelQuelsSontMesProjets"/>
+    <testcase name="outil list_projects" time="50.025" classname="CopilotChatReelQuelsSontMesProjets"/>
+    <testcase name="aucune action en attente pour une lecture" time="50.025" classname="CopilotChatReelQuelsSontMesProjets"/>
+  </testsuite>
+</testsuites>

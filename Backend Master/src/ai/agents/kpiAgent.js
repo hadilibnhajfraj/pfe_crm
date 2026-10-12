@@ -11,7 +11,15 @@ const { buildKpiAnswer } = require("../reasoning/kpiAnswerBuilder");
 // est le seul REQUIS (disponible à tout rôle) ; les 3 autres sont invoqués
 // en meilleur effort — leur absence/refus dégrade une section, jamais toute
 // la réponse (voir _run ci-dessous et KPI_AGENT.md).
-const ALLOWED_TOOL_NAMES = ["get_dashboard_kpis", "get_user_dashboard", "get_professional_dashboard", "get_legacy_dashboard_kpis"];
+const ALLOWED_TOOL_NAMES = ["get_dashboard_kpis", "get_user_dashboard", "get_professional_dashboard", "get_legacy_dashboard_kpis", "get_por_promesh_dashboard", "list_industrial_records"];
+
+// Rôles administrateurs : seuls autorisés à get_professional_dashboard /
+// get_legacy_dashboard_kpis (mêmes rôles que les routes /dashboard/professional).
+const ADMIN_TIER_ROLES = new Set(["admin", "superadmin", "superadmin2"]);
+// Rôle industriel : son tableau de bord est celui de la production (PROMESH,
+// fiches industrielles), pas celui des projets commerciaux — il n'a aucun projet.
+const INDUSTRIAL_ROLES = new Set(["responsable_logistique_achat"]);
+const INDUSTRIAL_MODULE_LABELS = { probar: "PROBAR", melange: "Mélange", maintenance: "Maintenance" };
 
 // Les 2 seuls champs numériques présents dans LES DEUX formes de série
 // mensuelle réelle (`charts.monthlyEvolution` admin ET `charts.myMonthlyEvolution`
@@ -76,9 +84,14 @@ const SYSTEM_PROMPT = [
  * n'est jamais comparée/projetée, seulement rapportée telle quelle.
  */
 class KpiAgent extends BaseAgent {
-  async _run({ message }) {
+  async _run({ message, user }) {
     const toolByName = new Map(this._allowedTools().map((t) => [t.name, t]));
     const toolSteps = [];
+
+    if (user && INDUSTRIAL_ROLES.has(user.role)) {
+      return this._runIndustrialDashboard(toolByName, toolSteps);
+    }
+    const admin = Boolean(user && ADMIN_TIER_ROLES.has(user.role));
 
     const dashboardTool = toolByName.get("get_dashboard_kpis");
     if (!dashboardTool) throw new AgentError('Agent "kpi_agent" needs the "get_dashboard_kpis" Tool to build the intelligent dashboard.');
@@ -101,8 +114,10 @@ class KpiAgent extends BaseAgent {
     const extraSections = [];
 
     await this._enrichWithUserDashboard(toolByName, toolSteps, extraSections);
-    await this._enrichWithProfessionalDashboard(toolByName, toolSteps, alerts);
-    await this._enrichWithLegacyDashboard(message, toolByName, toolSteps, extraSections);
+    if (admin) {
+      await this._enrichWithProfessionalDashboard(toolByName, toolSteps, alerts);
+      await this._enrichWithLegacyDashboard(message, toolByName, toolSteps, extraSections);
+    }
 
     const answer = buildKpiAnswer({ kpiAnalysis, comparison, forecasts, chart, explanations, alerts, fieldLabels: MONTHLY_FIELD_LABELS, extraSections });
 
@@ -152,6 +167,51 @@ class KpiAgent extends BaseAgent {
     } catch (err) {
       toolSteps.push({ tool: "get_user_dashboard", input: {}, output: `Error: ${err.message}` });
     }
+  }
+
+  // Tableau de bord INDUSTRIEL (responsable logistique) : indicateurs PROMESH
+  // (get_por_promesh_dashboard) et fiches industrielles par module
+  // (list_industrial_records). Le périmètre est appliqué par les outils et
+  // leurs services : ce rôle ne voit que SES fiches PROMESH.
+  async _runIndustrialDashboard(toolByName, toolSteps) {
+    const lines = ["📊 TABLEAU DE BORD INDUSTRIEL", ""];
+    let read = 0;
+    const promeshTool = toolByName.get("get_por_promesh_dashboard");
+    if (promeshTool) {
+      try {
+        const d = await this._invoke(promeshTool, {}, toolSteps);
+        read += 1;
+        lines.push("Fiches PROMESH (votre périmètre) :", `• Fiches : ${d.fichesCount ?? 0} (${d.fichesValidees ?? 0} validée(s), ${d.fichesBrouillon ?? 0} en brouillon)`, `• Production totale : ${Math.round((Number(d.productionTotale) || 0) * 100) / 100} m²`, `• Non-conformités : ${d.nonConformites ?? 0}`, `• Opérateurs : ${d.operateursPresents ?? 0}`, "");
+      } catch (err) {
+        this.logger.error(`[INDUSTRIAL_DASHBOARD] get_por_promesh_dashboard a échoué : ${err.message}`, err);
+        toolSteps.push({ tool: "get_por_promesh_dashboard", input: {}, failed: true, output: { error: "TOOL_FAILED" } });
+        lines.push("Fiches PROMESH : les indicateurs n'ont pas pu être récupérés (ce n'est pas un résultat égal à zéro).", "");
+      }
+    }
+    const listTool = toolByName.get("list_industrial_records");
+    if (listTool) {
+      try {
+        const out = await this._invoke(listTool, { pageSize: 2000 }, toolSteps);
+        read += 1;
+        const list = Array.isArray(out && out.data) ? out.data : [];
+        const total = typeof (out && out.total) === "number" ? out.total : list.length;
+        const byModule = new Map();
+        for (const r of list) byModule.set(r.module, (byModule.get(r.module) || 0) + 1);
+        lines.push(`Fiches industrielles : ${total}`);
+        for (const [module, label] of Object.entries(INDUSTRIAL_MODULE_LABELS)) lines.push(`• ${label} : ${byModule.get(module) || 0}`);
+        if (list.length < total) lines.push(`(répartition calculée sur ${list.length} fiches lues sur ${total})`);
+        lines.push("");
+      } catch (err) {
+        this.logger.error(`[INDUSTRIAL_DASHBOARD] list_industrial_records a échoué : ${err.message}`, err);
+        toolSteps.push({ tool: "list_industrial_records", input: {}, failed: true, output: { error: "TOOL_FAILED" } });
+        lines.push("Fiches industrielles : les données n'ont pas pu être récupérées (ce n'est pas un résultat égal à zéro).", "");
+      }
+    }
+    if (!read) {
+      return { answer: "Je n'ai pas pu récupérer le tableau de bord industriel : la lecture des données a échoué. Réessayez dans un instant ; si le problème persiste, prévenez l'administrateur.", citations: [], toolSteps };
+    }
+    lines.push("Les indicateurs commerciaux (projets, pipeline, contacts) sont réservés aux rôles commerciaux et aux administrateurs.", "Pour le détail : « analyse la production PROMESH », « résume les fiches PROBAR ».");
+    return { answer: lines.join("\n"), citations: [], toolSteps };
   }
 
   // Alertes réelles du tableau de bord professionnel — admin-tier

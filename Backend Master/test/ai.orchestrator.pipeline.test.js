@@ -143,9 +143,30 @@ describe("createAiOrchestrator — wiring", () => {
     expect(pipeline.config.defaultIntent).toBe("hr");
   });
 
-  test("wires the 19 specialized Agents by default (agents/manifest.js::loadDefaultAgents)", () => {
+  test("wires the 23 specialized Agents by default (agents/manifest.js::loadDefaultAgents)", () => {
     const pipeline = build();
-    expect(pipeline.agentRegistry.list()).toHaveLength(19);
+    expect(pipeline.agentRegistry.list()).toHaveLength(23);
+  });
+
+  // Analytique CRM : un seul AnalyticsQueryParser, partagé par l'AIManager
+  // (routage) et l'AnalyticsAgent (requête).
+  test("wires AnalyticsAgent and the AIManager on the SAME AnalyticsQueryParser", () => {
+    const pipeline = build();
+    const agent = pipeline.agentRegistry.get("analytics_agent");
+    expect(agent).toBeTruthy();
+    expect(agent.parser).toBe(pipeline.aiManager.analyticsParser);
+  });
+
+  // Phase 3 — TaskPlannerAgent : même PendingActionStore partagé, index de
+  // permissions réel (celui des Tools), et TaskPlanner transmis à l'AIManager.
+  test("wires TaskPlannerAgent on the SHARED PendingActionStore and the real tool permission index", () => {
+    const pipeline = build();
+    const agent = pipeline.agentRegistry.get("task_planner_agent");
+    expect(agent.confirmationManager.store).toBe(pipeline.pendingActionStore);
+    // Même index (même instance) que celui du SuggestionEngine — construit
+    // depuis les rôles déclarés par les Tools (mcp/tools est simulé ici).
+    expect(agent.toolPermissionIndex).toBe(pipeline.suggestionEngine.toolPermissionIndex);
+    expect(pipeline.aiManager.taskPlanner).toBeTruthy();
   });
 
   // AI-Business-Copilot/35_ROLE_CAPABILITY_AUDIT_AGENT.md

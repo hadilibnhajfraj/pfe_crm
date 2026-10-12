@@ -1,0 +1,231 @@
+FAIL test/nfr.dataIntegrity.test.js (6.669 s)
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [2026-10-03T21:13:15.080Z] [INFO] [ai:config] [AI-COPILOT] enabled=true provider=ollama
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      🚀 CRM Scheduler started
+
+      at Object.log (src/services/scheduler.js:10:9)
+
+    console.log
+      [scheduler] AUTO_EMAIL_JOBS_ENABLED=false — relance cron NOT scheduled.
+
+      at Object.log (src/services/scheduler.js:17:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.log
+      [checkProjects] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/checkProjects.js:19:11)
+
+    console.log
+      [CRON] AUTO_ARCHIVE_ENABLED = false
+
+      at Object.log (src/cron/projectCron.js:22:9)
+
+    console.log
+      [projectCron] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/projectCron.js:199:11)
+
+    console.log
+      🔥 FOLLOWUP CRON LOADED
+
+      at Object.log (src/cron/followup.job.js:23:9)
+
+    console.log
+      [followup.job] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/followup.job.js:432:11)
+
+    console.log
+      🔥 GOOGLE CALENDAR CHANNEL RENEWAL CRON LOADED
+
+      at Object.log (src/cron/googleCalendarChannelRenewal.job.js:13:9)
+
+    console.log
+      [googleCalendarChannelRenewal.job] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/googleCalendarChannelRenewal.job.js:29:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      🔥 PROACTIVE AI MONITOR CRON LOADED
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:27:9)
+
+    console.log
+      [proactiveAiMonitor.job] AI_PROACTIVE_MONITORING_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:81:11)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › project_actions.createdBy → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › projects.engineerId → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › projects.architectId → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › commercial_contact_actions.createdBy → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Cohérence des données existantes › tout contact affecté l'est à un utilisateur de rôle commercial
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 485
+
+    [0m [90m 327 |[39m         [32m`SELECT count(*) FROM commercial_contacts c JOIN users u ON u.id = c."commercialId" WHERE u.role <> 'commercial'`[39m
+     [90m 328 |[39m       )
+    [31m[1m>[22m[39m[90m 329 |[39m     )[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 330 |[39m   })[33m;[39m
+     [90m 331 |[39m
+     [90m 332 |[39m   test([32m"tout contact affecté porte l'auteur et la date de l'affectation"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:329:7)
+
+  ● Cohérence des données existantes › tout contact affecté porte l'auteur et la date de l'affectation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 485
+
+    [0m [90m 335 |[39m         [32m`SELECT count(*) FROM commercial_contacts WHERE "commercialId" IS NOT NULL AND ("assignedBy" IS NULL OR "assignedAt" IS NULL)`[39m
+     [90m 336 |[39m       )
+    [31m[1m>[22m[39m[90m 337 |[39m     )[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 338 |[39m   })[33m;[39m
+     [90m 339 |[39m
+     [90m 340 |[39m   test([32m"toute fiche rattachée à une machine référence une machine de la bonne famille (POR → PROMESH)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:337:7)
+
+  ● Cohérence des données existantes › la contrainte d'unicité users.email n'est déclarée qu'une seule fois
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 723
+
+    [0m [90m 355 |[39m     expect(
+     [90m 356 |[39m       [36mawait[39m scalar([32m`SELECT count(*) FROM pg_constraint WHERE conrelid = 'users'::regclass AND contype = 'u'`[39m)
+    [31m[1m>[22m[39m[90m 357 |[39m     )[33m.[39mtoBe([35m1[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 358 |[39m   })[33m;[39m
+     [90m 359 |[39m })[33m;[39m
+     [90m 360 |[39m[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:357:7)
+
+
+Test Suites: 1 failed, 5 passed, 6 total
+Tests:       7 failed, 317 passed, 324 total
+Snapshots:   0 total
+Time:        57.322 s
+Ran all test suites matching test/nfr.
+Test results written to: reports\jest\nfr-try.json
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

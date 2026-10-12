@@ -56,8 +56,8 @@ describe("CapabilityMatrixService — sécurité : jamais de rôle depuis le mes
 
 describe("TEST OBLIGATOIRE — capabilities par rôle réel", () => {
   test.each([
-    ["user", "user-1"],
-    ["commercial", "commercial-1"],
+    ["commercial", "user-1"],
+    ["commercial_sedentaire", "commercial-1"],
     ["responsable_logistique_achat", "logistique-1"],
     ["admin", "admin-1"],
     ["superadmin", "superadmin-1"],
@@ -77,7 +77,7 @@ describe("TEST OBLIGATOIRE — capabilities par rôle réel", () => {
 
   test("commercial : commercial_contacts disponible (commercial_agent), automation refusé (admin-tier)", () => {
     const service = buildService();
-    const caps = service.getCapabilities({ id: "c1", role: "commercial" });
+    const caps = service.getCapabilities({ id: "c1", role: "commercial_sedentaire" });
     const byIntent = Object.fromEntries(caps.intents.map((c) => [c.intent, c]));
 
     expect(byIntent.commercial_contacts.status).toBe("available");
@@ -101,14 +101,15 @@ describe("TEST OBLIGATOIRE — capabilities par rôle réel", () => {
     expect(caps.moduleAccessPrefixes).toEqual(["/por-promesh", "/industrial-records", "/hr-requests", "/recuperables", "/maintenance-requests"]);
   });
 
-  test("user : projects/dashboard/maintenance disponibles, commercial_contacts/industrial/automation refusés", () => {
+  test("commercial (terrain) : projects/dashboard/commercial_contacts disponibles, industrial/automation refusés", () => {
     const service = buildService();
-    const caps = service.getCapabilities({ id: "u1", role: "user" });
+    const caps = service.getCapabilities({ id: "u1", role: "commercial" });
     const byIntent = Object.fromEntries(caps.intents.map((c) => [c.intent, c]));
 
     expect(byIntent.projects.status).toBe("available");
     expect(byIntent.dashboard.status).toBe("available");
-    expect(byIntent.commercial_contacts.status).toBe("denied");
+    // Ses propres contacts (créés, affectés, suivis) — même règle que l'API CRM.
+    expect(byIntent.commercial_contacts.status).toBe("available");
     expect(byIntent.industrial.status).toBe("denied");
     expect(byIntent.automation.status).toBe("denied");
   });
@@ -127,7 +128,7 @@ describe("TEST OBLIGATOIRE — capabilities par rôle réel", () => {
 describe("TEST OBLIGATOIRE — commercial demandant l'accès aux données d'un autre commercial : refus correct", () => {
   test("canUseIntent ne dit jamais qu'un commercial a une visibilité transverse", () => {
     const service = buildService();
-    const commercialCap = service.canUseIntent({ id: "c1", role: "commercial" }, "commercial_contacts");
+    const commercialCap = service.canUseIntent({ id: "c1", role: "commercial_sedentaire" }, "commercial_contacts");
     // L'intention EST disponible (commercial_agent la gère) — mais la donnée
     // reste scopée à actingUser.id, jamais un autre commercial nommé (voir
     // getPersonalKpiSummaryTool.js::scopeInputForActingUser, correctif RBAC
@@ -139,7 +140,7 @@ describe("TEST OBLIGATOIRE — commercial demandant l'accès aux données d'un a
 
   test("le résumé complet (getCapabilities) affirme explicitement l'absence de visibilité transverse pour un rôle non admin-tier", () => {
     const service = buildService();
-    const caps = service.getCapabilities({ id: "c1", role: "commercial" });
+    const caps = service.getCapabilities({ id: "c1", role: "commercial_sedentaire" });
     expect(caps.isAdminTier).toBe(false);
     // Consommé par buildCapabilityAnswer() (voir son propre test) pour
     // produire la phrase "vous ne voyez jamais les données d'un autre
@@ -162,8 +163,8 @@ describe("TEST OBLIGATOIRE — un faux rôle fourni dans le message est structur
     expect(service.getCapabilities.length).toBeLessThanOrEqual(1); // (actingUser)
     expect(service.canUseIntent.length).toBeLessThanOrEqual(2); // (actingUser, intentKey)
 
-    const caps = service.getCapabilities({ id: "c1", role: "commercial" });
-    expect(caps.role).toBe("commercial");
+    const caps = service.getCapabilities({ id: "c1", role: "commercial_sedentaire" });
+    expect(caps.role).toBe("commercial_sedentaire");
     expect(caps.isAdminTier).toBe(false);
   });
 });
@@ -192,7 +193,7 @@ describe("findMentionedIntent — lecture seule du catalogue, jamais une décisi
 describe("canUseIntent — jamais une intention inventée", () => {
   test("retourne null pour une clé qui n'existe pas dans le catalogue réel", () => {
     const service = buildService();
-    expect(service.canUseIntent({ id: "u1", role: "user" }, "achat_fournisseur_inexistant")).toBeNull();
+    expect(service.canUseIntent({ id: "u1", role: "commercial" }, "achat_fournisseur_inexistant")).toBeNull();
   });
 });
 
@@ -203,7 +204,7 @@ describe("canUseIntent — jamais une intention inventée", () => {
 describe("getCapabilities — nonExposedDomains/notImplementedDomains/brokenCapabilities (knownCopilotGaps.js)", () => {
   test("user : nonExposedDomains contient Tasks/Documents/Calendar, aucun domaine inventé", () => {
     const service = buildService();
-    const caps = service.getCapabilities({ id: "u1", role: "user" });
+    const caps = service.getCapabilities({ id: "u1", role: "commercial" });
 
     expect(caps.nonExposedDomains).toEqual([
       { domain: "tasks", label: "Tâches" },
@@ -231,7 +232,7 @@ describe("getCapabilities — nonExposedDomains/notImplementedDomains/brokenCapa
 
   test("un autre rôle (commercial) n'a jamais de notImplementedDomains — c'est bien scopé par rôle, pas global", () => {
     const service = buildService();
-    const caps = service.getCapabilities({ id: "c1", role: "commercial" });
+    const caps = service.getCapabilities({ id: "c1", role: "commercial_sedentaire" });
     expect(caps.notImplementedDomains).toEqual([]);
   });
 });
@@ -239,19 +240,19 @@ describe("getCapabilities — nonExposedDomains/notImplementedDomains/brokenCapa
 describe("findKnownGap — repli, jamais prioritaire sur une intention réelle", () => {
   test("'Puis-je consulter mes tâches ?' (commercial) → NOT_EXPOSED", () => {
     const service = buildService();
-    const gap = service.findKnownGap("Puis-je consulter mes tâches ?", { id: "c1", role: "commercial" });
+    const gap = service.findKnownGap("Puis-je consulter mes tâches ?", { id: "c1", role: "commercial_sedentaire" });
     expect(gap).toEqual({ status: "not_exposed", domain: "tasks", label: "Tâches" });
   });
 
   test("'Puis-je consulter mon calendrier ?' (commercial) → NOT_EXPOSED", () => {
     const service = buildService();
-    const gap = service.findKnownGap("Puis-je consulter mon calendrier ?", { id: "c1", role: "commercial" });
+    const gap = service.findKnownGap("Puis-je consulter mon calendrier ?", { id: "c1", role: "commercial_sedentaire" });
     expect(gap).toEqual({ status: "not_exposed", domain: "calendar", label: "Calendrier" });
   });
 
   test("'Puis-je consulter mes documents ?' (user) → NOT_EXPOSED", () => {
     const service = buildService();
-    const gap = service.findKnownGap("Puis-je consulter mes documents ?", { id: "u1", role: "user" });
+    const gap = service.findKnownGap("Puis-je consulter mes documents ?", { id: "u1", role: "commercial" });
     expect(gap).toEqual({ status: "not_exposed", domain: "documents", label: "Documents" });
   });
 
@@ -263,7 +264,7 @@ describe("findKnownGap — repli, jamais prioritaire sur une intention réelle",
 
   test("'Puis-je gérer les factures ?' posée par un rôle SANS entrée notImplementedDomains (commercial) → null, jamais un faux NOT_IMPLEMENTED", () => {
     const service = buildService();
-    const gap = service.findKnownGap("Puis-je gérer les factures ?", { id: "c1", role: "commercial" });
+    const gap = service.findKnownGap("Puis-je gérer les factures ?", { id: "c1", role: "commercial_sedentaire" });
     expect(gap).toBeNull();
   });
 
@@ -271,7 +272,7 @@ describe("findKnownGap — repli, jamais prioritaire sur une intention réelle",
     const service = buildService();
     // "projets" n'apparaît dans AUCUN mot-clé de knownCopilotGaps.js —
     // preuve structurelle qu'aucune collision n'est possible ici.
-    const gap = service.findKnownGap("Quels sont mes projets ?", { id: "u1", role: "user" });
+    const gap = service.findKnownGap("Quels sont mes projets ?", { id: "u1", role: "commercial" });
     expect(gap).toBeNull();
   });
 });

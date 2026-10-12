@@ -45,12 +45,18 @@ function handle(res, err) {
 // requête) : un pageContext cassé ne doit jamais empêcher un message
 // d'aboutir.
 async function chat(req, res) {
-  const { message, conversationId, pageContext } = req.body || {};
+  const { message, conversationId, pageContext, documentIds } = req.body || {};
   if (typeof message !== "string" || !message.trim()) {
     return res.status(400).json({ success: false, message: "'message' is required and must be a non-empty string." });
   }
+  // Phase 2 — documents joints : tableau de chaînes, ignoré s'il est malformé
+  // (la propriété de chaque document est revérifiée dans le bridge).
+  const safeDocumentIds = Array.isArray(documentIds) ? documentIds.filter((id) => typeof id === "string" && id.length <= 64) : [];
   try {
-    const data = await bridge.sendMessage(req.user, { message, conversationId: conversationId || null, pageContext: pageContext || null });
+    // `documentIds` transmis SEULEMENT s'il y en a : contrat d'appel du bridge inchangé sinon.
+    const payload = { message, conversationId: conversationId || null, pageContext: pageContext || null };
+    if (safeDocumentIds.length) payload.documentIds = safeDocumentIds;
+    const data = await bridge.sendMessage(req.user, payload);
     res.json({ success: true, data });
   } catch (err) {
     handle(res, err);
@@ -156,4 +162,47 @@ async function reportPdf(req, res) {
   }
 }
 
-module.exports = { chat, listConversations, getConversation, dashboard, confirmProactiveWorkflow, rejectProactiveWorkflow, reportPdf };
+// ── Phase 2 — documents du Copilot ─────────────────────────────────────────
+// Erreurs de document (validation, extraction, quota) : code et message FIXES
+// choisis par le service (jamais un détail interne, jamais le contenu du
+// fichier) ; toute autre erreur passe par le classifieur habituel.
+function handleDocumentError(res, err) {
+  if (err && err.code && err.status && /^DOCUMENT_/.test(err.code)) {
+    return res.status(err.status).json({ success: false, reason: err.code, message: err.message });
+  }
+  return handle(res, err);
+}
+
+// POST /ai-copilot/documents (multipart, champ « file ») -> 201 { documentId, filename, sourceType, pageCount, chunkCount, uploadedAt, expiresAt }
+async function uploadDocument(req, res) {
+  try {
+    const data = await bridge.uploadDocument(req.user, req.file);
+    res.status(201).json({ success: true, data });
+  } catch (err) {
+    handleDocumentError(res, err);
+  }
+}
+
+// GET /ai-copilot/documents — UNIQUEMENT les documents de l'appelant.
+async function listDocuments(req, res) {
+  try {
+    const data = await bridge.listDocuments(req.user);
+    res.json({ success: true, data });
+  } catch (err) {
+    handleDocumentError(res, err);
+  }
+}
+
+// DELETE /ai-copilot/documents/:id — 404 identique qu'il n'existe pas ou
+// appartienne à quelqu'un d'autre (aucune fuite d'existence).
+async function deleteDocument(req, res) {
+  try {
+    const deleted = await bridge.deleteDocument(req.user, req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, reason: "DOCUMENT_NOT_FOUND", message: "Document introuvable." });
+    res.json({ success: true });
+  } catch (err) {
+    handleDocumentError(res, err);
+  }
+}
+
+module.exports = { chat, listConversations, getConversation, dashboard, confirmProactiveWorkflow, rejectProactiveWorkflow, reportPdf, uploadDocument, listDocuments, deleteDocument };

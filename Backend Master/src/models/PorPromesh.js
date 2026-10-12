@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../db");
+const { attachMachineLink } = require("./helpers/machineLink");
 
 const PorPromesh = sequelize.define(
   "PorPromesh",
@@ -44,6 +45,15 @@ const PorPromesh = sequelize.define(
     // l'origine de la fiche — préremplis depuis la page Machine du nouveau
     // module industriel, nullable pour ne pas casser les fiches existantes.
     machine: { type: DataTypes.STRING(10), allowNull: true },
+    // Lien vers le référentiel `machines` (typeMachine = PROMESH), dérivé de
+    // `machine` par le hook linkMachine — null tant que la fiche brouillon
+    // n'a pas de machine.
+    machineId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "machines", key: "id" },
+      onDelete: "RESTRICT",
+    },
     poste: { type: DataTypes.ENUM("matin", "nuit"), allowNull: true },
 
     diametreMaille1: { type: DataTypes.STRING(50), allowNull: true },
@@ -148,8 +158,11 @@ const PorPromesh = sequelize.define(
       { fields: ["dateProduction"] },
       { fields: ["createdBy"] },
       { fields: ["createdAt"] },
+      { fields: ["machineId"] },
     ],
   }
 );
+
+attachMachineLink(PorPromesh, () => ({ defaultType: "PROMESH", strict: true }));
 
 module.exports = PorPromesh;

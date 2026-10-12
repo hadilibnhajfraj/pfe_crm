@@ -51,7 +51,7 @@ function buildDefaultRules({ lowScoreThreshold = 0.3 } = {}) {
   };
 }
 
-function createSalesAnalyzer({ tools = [], dataSources = DEFAULT_DATA_SOURCES, rules, lowScoreThreshold, requiredRoles = ["commercial", "admin", "superadmin", "superadmin2"], allowedEmails = [] } = {}) {
+function createSalesAnalyzer({ tools = [], dataSources = DEFAULT_DATA_SOURCES, rules, lowScoreThreshold, requiredRoles = ["commercial_sedentaire", "admin", "superadmin", "superadmin2"], allowedEmails = [] } = {}) {
   return new DomainAnalyzer({
     domain: "sales",
     tools,

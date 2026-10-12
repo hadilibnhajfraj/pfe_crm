@@ -1,0 +1,58 @@
+--- page 1 (chars=450) ---
+RAPPORT TECHNIQUE — PROJET DE FIN D'ÉTUDES | LLM, RAG & Providers | Copilot IA du projet PROBAR — Analyse académique et technique du sous-système | d'Intelligence Artificielle | Portée : B
+--- page 2 (chars=326) ---
+Sommaire | 1. Introduction | 2. Architecture IA — vue d'ensemble | 3. Providers LLM | 4. Modèle LLM | 5. Pipeline LLM — traçage complet | 6. Prompt Engineering | 7. RAG — implémentation complète
+--- page 3 (chars=1139) ---
+1. Introduction | Ce rapport approfondit un sous-ensemble précis de l'architecture du Copilot IA du projet PROBAR : la couche | d'intelligence artificielle proprement dite — les fourni
+--- page 4 (chars=1045) ---
+2. Architecture IA — vue d'ensemble | La couche IA repose sur une architecture en ports/adaptateurs (Clean Architecture) explicitement revendiquée dans | src/ai/README.md : chaque capa
+--- page 5 (chars=2834) ---
+3. Providers LLM | 3.1 Recherche exhaustive dans le dépôt | Recherche par mot-clé sur l'ensemble de Backend Master/src/  : | Provider | recherché | Résultat | Ollama Trouvé et actif — src/ai/s
+--- page 6 (chars=2484) ---
+Fallback NON TROUVÉ — aucune bascule automatique vers un autre provider | Logs logger.info  (namespace llm:ollama ) journalise à chaque appel : prompt_eval_count , eval_count , | load_
+--- page 7 (chars=3193) ---
+3.3 Retry — mécanisme partagé ( providers/retry.js ) | withControlledRetry(fn, options)  (:24) : DEFAULT_MAX_ATTEMPTS = 2  (:5, « 1 real call + 1 retry — "contrôlé", never | unbounded 
+--- page 8 (chars=702) ---
+.env  actuel — l'architecture ne permet qu'UN SEUL provider actif à la fois (pas de répartition de charge multi- | provider) | Provider | fallback | NON TROUVÉ DANS LE CODE — aucune bascul
+--- page 9 (chars=2276) ---
+4. Modèle LLM | 4.1 Modèle réellement utilisé | qwen3:8b , servi localement par Ollama ( OLLAMA_MODEL=qwen3:8b  dans le .env  réel). Aucune information sur les | performances intrinsèque
+--- page 10 (chars=1656) ---
+4.5 Format de réponse réel et extraction | ollamaProvider.js:154 : const text = response.data.message.content;  — si ce n'est pas une chaîne, AiError("Ollama | returned an unexpected r
+--- page 11 (chars=2229) ---
+5. Pipeline LLM — traçage complet | Étape Fichier + fonction Responsabilité | User message aiCopilot.controller.js::chat() Réception HTTP, extraction | message / req.user | Preprocessing o
+--- page 12 (chars=2877) ---
+6. Prompt Engineering | 6.1 Deux couches de prompt, non fusionnées | 1) Principes génériques + ton par rôle — langchain/prompts/responsePrompts.js::buildResponseSystemPrompt() | (:66-77)
+--- page 13 (chars=3580) ---
+KpiAgent (kpiAgent.js:28-38) — objectif : Dashboard intelligent | « Jamais un chiffre inventé ; quand l'historique est insuffisant pour comparer ou prévoir, tu le dis explicitement. 
+--- page 14 (chars=47) ---
+dont le modèle interprète ou déforme le prompt.
+--- page 15 (chars=2616) ---
+7. RAG — implémentation complète | 7.1 Ingestion et documents | Racines du corpus (rag/reindex.js:24-30) : docs/ , GOOGLE_CALENDAR_SETUP.md , src/ai/README.md , AI-Business- | Copilot/ ,
+--- page 16 (chars=3000) ---
+C'est un chunking lexical/structurel (paragraphes + regex de titre), pas un découpage sémantique basé sur un | modèle. | 7.5 Embeddings — rag/embeddings/hashingEmbeddingProvider.js | Con
+--- page 17 (chars=3036) ---
+une similarité de Jaccard sur les tokens (:6-13). | Facteur de catégorie par chemin de document (:71-78), issu directement des métadonnées déjà présentes sur | chaque chunk : | Catégorie
+--- page 18 (chars=141) ---
+8. Flux RAG (diagramme) | Diagramme construit exclusivement à partir des composants réellement identifiés en section 7 — aucun élément | supposé.
+--- page 19 (chars=652) ---
+Documents | docs/, README.md, AI-Business-Copilot/, 1 PDF | SourceGuard | allowlist ext. + blocklist chemins + anti-symlink | Ingestion (DirectoryScanner) | Parsing | markdownLoader / textLoad
+--- page 20 (chars=722) ---
++ historique conversation, scan anti-injection | Prompt | QaChain: ChatPromptTemplate systeme+contexte+question | LLM | Ollama qwen3:8b via LlmProviderChatModel | Reponse | {answer, citations}
+--- page 21 (chars=2912) ---
+9. RAG vs Tool Calling | 9.1 Différence de principe | RAG répond à partir de documentation statique indexée (guides, FAQ) — jamais de données métier en base, garanti | structurellement p
+--- page 22 (chars=227) ---
+qu'à travers un pipeline de validation (Joi) et de permission ( isAuthorized() ) totalement indépendant du LLM. | Aucune des deux voies ne fait confiance au texte généré par le modèl
+--- page 23 (chars=3108) ---
+10. Protections contre l'hallucination | 10.1 Panorama des protections identifiées | Protection Fichier Mécanisme | requireToolUse toolCallingChain.js:161-173, 204-210 Rejette un final_a
+--- page 24 (chars=1215) ---
+vérité fiable est l'état structurel de la boucle d'exécution : | « The model's own protocol-following is NOT trustworthy enough to be the source of truth for "was a tool actually cal
+--- page 25 (chars=2484) ---
+11. Performance | Aucun chiffre de ce chapitre n'est un benchmark inventé — toutes les valeurs proviennent soit de constantes de configuration | lues dans le code, soit de mesures réel
+--- page 26 (chars=620) ---
+taille du prompt). MAX_TOOL_RESULT_CHARS = 4000  (:34) limite désormais ce qui est renvoyé AU MODÈLE — jamais l'audit trail | ( steps ), qui reste complet. | 11.5 Latence RAG et Tool | A
+--- page 27 (chars=1623) ---
+12. Limites | Latence locale non déterministe : sur la machine actuelle (CPU seul, size_vram: 0 ), la même requête peut varier | d'un facteur ~20× selon la contention avec les autres p
+--- page 28 (chars=1431) ---
+13. Perspectives | Ces pistes sont formulées à partir des points d'extension explicitement anticipés par les interfaces du code | ( IEmbeddingProvider , IVectorStore , IReranker , ILlm
+--- page 29 (chars=2216) ---
+14. Conclusion | La couche IA du Copilot PROBAR présente un contraste net entre la rigueur de son architecture logicielle et la | simplicité assumée de ses choix techniques concrets. S

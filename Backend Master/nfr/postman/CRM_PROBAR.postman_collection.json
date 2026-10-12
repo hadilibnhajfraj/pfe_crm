@@ -1,0 +1,3864 @@
+{
+  "info": {
+    "name": "CRM PROBAR — API (audit non fonctionnel)",
+    "description": "Collection générée par nfr/postman/build-collection.js. À exécuter contre l'instance de TEST (port 4100).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:4100"
+    },
+    {
+      "key": "qaPassword",
+      "value": "QaAudit#2026"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Sonde de santé",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"status = ok\", () => { const b = pm.response.json(); pm.expect(b.status === 'ok', \"status = ok\").to.be.ok; });",
+                  "pm.test(\"base de données joignable\", () => { const b = pm.response.json(); pm.expect(b.database === 'up', \"base de données joignable\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rafraîchissement — jeton absent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/refresh",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion commercial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.commercial@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = commercial\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'commercial', \"rôle = commercial\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_commercial\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_commercial\", b.user.id); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"refresh_commercial\", b.refreshToken); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion commercial_sedentaire",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.commercial_sedentaire@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = commercial_sedentaire\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'commercial_sedentaire', \"rôle = commercial_sedentaire\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_commercial_sedentaire\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_commercial_sedentaire\", b.user.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion accueil",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.accueil@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = accueil\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'accueil', \"rôle = accueil\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_accueil\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_accueil\", b.user.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion responsable_logistique_achat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.responsable_logistique_achat@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = responsable_logistique_achat\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'responsable_logistique_achat', \"rôle = responsable_logistique_achat\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_responsable_logistique_achat\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_responsable_logistique_achat\", b.user.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.admin@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = admin\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'admin', \"rôle = admin\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_admin\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_admin\", b.user.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion superadmin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.superadmin@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = superadmin\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'superadmin', \"rôle = superadmin\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_superadmin\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_superadmin\", b.user.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion superadmin2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.superadmin2@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"accessToken présent\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"accessToken présent\").to.be.ok; });",
+                  "pm.test(\"rôle = superadmin2\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'superadmin2', \"rôle = superadmin2\").to.be.ok; });",
+                  "pm.test(\"Le hash du mot de passe n'est pas exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"token_superadmin2\", b.accessToken); }",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"id_superadmin2\", b.user.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion — mot de passe incorrect",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.commercial@qa-probar.com\",\n  \"password\": \"MauvaisMotDePasse1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Aucun jeton émis\", () => pm.expect(pm.response.json().accessToken).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion — e-mail inconnu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"inconnu@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Aucun jeton émis\", () => pm.expect(pm.response.json().accessToken).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion — e-mail mal formé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pas-un-email\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion — mot de passe trop court",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.commercial@qa-probar.com\",\n  \"password\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion — compte désactivé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"qa.inactive@qa-probar.com\",\n  \"password\": \"{{qaPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"Aucun jeton émis\", () => pm.expect(pm.response.json().accessToken).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profil courant — JWT valide",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"rôle commercial\", () => { const b = pm.response.json(); pm.expect(b.user.role === 'commercial', \"rôle commercial\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profil courant — JWT absent",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profil courant — JWT invalide",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer jeton.invalide.xyz"
+              }
+            ],
+            "url": "{{baseUrl}}/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rafraîchissement — jeton valide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/refresh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_commercial}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"nouvel accessToken\", () => { const b = pm.response.json(); pm.expect(typeof b.accessToken === 'string', \"nouvel accessToken\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Métriques — sans jeton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/metrics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Liste des utilisateurs — superadmin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"tableau non vide\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b) ? b.length > 0 : (b.users || b.data || b.items).length > 0, \"tableau non vide\").to.be.ok; });",
+                  "pm.test(\"Aucun hash de mot de passe exposé\", () => pm.expect(pm.response.text()).to.not.include(\"passwordHash\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Liste des utilisateurs — admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Liste des utilisateurs — commercial refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Liste des utilisateurs — accueil refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Liste des utilisateurs — sans jeton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mon profil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users/me/profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Changer un rôle — rôle inexistant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users/{{id_accueil}}/role",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"pirate\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Changer un rôle — admin simple refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users/{{id_accueil}}/role",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"commercial\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Changer un rôle — commercial refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users/{{id_accueil}}/role",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"superadmin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Désactiver un compte — RLA refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users/{{id_accueil}}/active",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "Créer un contact — nom manquant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prenom\": \"Sans\",\n  \"telephone\": \"20000001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un contact — RLA refusé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"X\",\n  \"prenom\": \"Y\",\n  \"telephone\": \"20000001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeClient\": \"Tuteur\",\n  \"nom\": \"NEWMAN\",\n  \"prenom\": \"Contact\",\n  \"telephone\": \"20000001\",\n  \"statut\": \"ok\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"identifiant présent\", () => { const b = pm.response.json(); pm.expect(!!b.id, \"identifiant présent\").to.be.ok; });",
+                  "pm.test(\"créateur = commercial sédentaire\", () => { const b = pm.response.json(); pm.expect(b.createdBy === pm.collectionVariables.get('id_commercial_sedentaire'), \"créateur = commercial sédentaire\").to.be.ok; });",
+                  "pm.test(\"étape Prospect par défaut\", () => { const b = pm.response.json(); pm.expect(b.pipelineStage === 'Prospect', \"étape Prospect par défaut\").to.be.ok; });",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"contactId\", b.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire le contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"bon contact\", () => { const b = pm.response.json(); pm.expect(b.id === pm.collectionVariables.get('contactId'), \"bon contact\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lister les contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"tableau\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b), \"tableau\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lister les contacts — RLA refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire un contact inexistant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/00000000-0000-0000-0000-000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier — accueil non créateur refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Modifié\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Affecter — commercial refusé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactIds\": [\n    \"{{contactId}}\"\n  ],\n  \"commercialId\": \"{{id_commercial}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Affecter — liste vide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactIds\": [],\n  \"commercialId\": \"{{id_commercial}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Affecter — destinataire non commercial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactIds\": [\n    \"{{contactId}}\"\n  ],\n  \"commercialId\": \"{{id_accueil}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Affecter à un commercial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactIds\": [\n    \"{{contactId}}\"\n  ],\n  \"commercialId\": \"{{id_commercial}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"1 contact mis à jour\", () => { const b = pm.response.json(); pm.expect(b.updatedCount === 1, \"1 contact mis à jour\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Le commercial affecté lit le contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"commercialId = commercial\", () => { const b = pm.response.json(); pm.expect(b.commercialId === pm.collectionVariables.get('id_commercial'), \"commercialId = commercial\").to.be.ok; });",
+                  "pm.test(\"assignedBy = commercial sédentaire\", () => { const b = pm.response.json(); pm.expect(b.assignedBy === pm.collectionVariables.get('id_commercial_sedentaire'), \"assignedBy = commercial sédentaire\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Supprimer — commercial refusé",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "Lister les projets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects?limit=5"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);",
+                  "pm.test(\"items est un tableau\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b.items), \"items est un tableau\").to.be.ok; });",
+                  "pm.test(\"au plus 5 éléments\", () => { const b = pm.response.json(); pm.expect(b.items.length <= 5, \"au plus 5 éléments\").to.be.ok; });",
+                  "pm.test(\"total numérique\", () => { const b = pm.response.json(); pm.expect(typeof b.total === 'number', \"total numérique\").to.be.ok; });",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"projectId\", b.items[0].id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lister les projets — sans jeton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/projects"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lister les projets — RLA refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire un projet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects/{{projectId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire un projet inexistant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects/00000000-0000-0000-0000-000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un projet — données invalides",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"liste d'erreurs\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b.errors) && b.errors.length > 0, \"liste d'erreurs\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un projet — RLA refusé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomProjet\": \"X\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Étapes du pipeline",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/pipeline-stages"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Indicateurs projets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/projects/kpi/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Actions",
+      "item": [
+        {
+          "name": "Actions du contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}/actions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"au moins une action\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b) && b.length >= 1, \"au moins une action\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Relance — date manquante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}/relances",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer une relance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial_sedentaire}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}/relances",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateRelance\": \"2027-01-15\",\n  \"heureRelance\": \"10:00\",\n  \"commentaire\": \"Relance Newman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"statut planifiee\", () => { const b = pm.response.json(); pm.expect(b.statutRelance === 'planifiee', \"statut planifiee\").to.be.ok; });",
+                  "pm.test(\"rattachée au contact\", () => { const b = pm.response.json(); pm.expect(b.commercialContactId === pm.collectionVariables.get('contactId'), \"rattachée au contact\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Relance — contact inexistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/00000000-0000-0000-0000-000000000000/relances",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateRelance\": \"2027-01-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Relance — sans jeton",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}/relances",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateRelance\": \"2027-01-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nettoyage — supprimer le contact (superadmin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Le contact supprimé n'existe plus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/commercial-contacts/{{contactId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Production",
+      "item": [
+        {
+          "name": "Machines — liste",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/machines"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"liste non vide\", () => { const b = pm.response.json(); pm.expect(b.data.length > 0, \"liste non vide\").to.be.ok; });",
+                  "pm.test(\"types PROBAR / PROMESH uniquement\", () => { const b = pm.response.json(); pm.expect(b.data.every(m => ['PROBAR','PROMESH'].includes(m.typeMachine)), \"types PROBAR / PROMESH uniquement\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Machines — numéro manquant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/machines",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeMachine\": \"PROBAR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Machines — type inconnu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/machines",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeMachine\": \"AUTRE\",\n  \"numero\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Machines — doublon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/machines",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeMachine\": \"PROBAR\",\n  \"numero\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 409\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Machines — commercial refusé en écriture",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/machines",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typeMachine\": \"PROBAR\",\n  \"numero\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — poste manquant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/new",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"machine\": \"1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — commercial refusé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/new",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"machine\": \"1\",\n  \"poste\": \"matin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — nouvelle fiche",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/new",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"machine\": \"1\",\n  \"poste\": \"matin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200 ou 201\", () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+                  "pm.test(\"statut BROUILLON\", () => { const b = pm.response.json(); pm.expect(b.data.status === 'BROUILLON', \"statut BROUILLON\").to.be.ok; });",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"porId\", b.data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — modifier le brouillon",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/{{porId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operateur\": \"Opérateur Newman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"non verrouillée\", () => { const b = pm.response.json(); pm.expect(b.data.isLocked === false, \"non verrouillée\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — valider",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/{{porId}}/validate"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"statut VALIDE\", () => { const b = pm.response.json(); pm.expect(b.data.status === 'VALIDE', \"statut VALIDE\").to.be.ok; });",
+                  "pm.test(\"verrouillée\", () => { const b = pm.response.json(); pm.expect(b.data.isLocked === true, \"verrouillée\").to.be.ok; });",
+                  "pm.test(\"date de validation\", () => { const b = pm.response.json(); pm.expect(!!b.data.validatedAt, \"date de validation\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — modification après validation refusée",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/{{porId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operateur\": \"Interdit\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — modification par superadmin refusée",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/{{porId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operateur\": \"Interdit\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — seconde validation refusée",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/{{porId}}/validate"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — la fiche validée reste inchangée",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/{{porId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"opérateur inchangé\", () => { const b = pm.response.json(); pm.expect(b.data.operateur === 'Opérateur Newman', \"opérateur inchangé\").to.be.ok; });",
+                  "pm.test(\"toujours verrouillée\", () => { const b = pm.response.json(); pm.expect(b.data.isLocked === true, \"toujours verrouillée\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — liste refusée au commercial",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POR — fiche inexistante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/00000000-0000-0000-0000-000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fiche de production — module inconnu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/industrial-records",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"inconnu\",\n  \"dateFiche\": \"2026-10-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fiche de production — Mélange sans machine",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/industrial-records",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"melange\",\n  \"dateFiche\": \"2026-10-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"machine facultative (machineId nul)\", () => { const b = pm.response.json(); pm.expect(b.data.machineId === null, \"machine facultative (machineId nul)\").to.be.ok; });",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"recordId\", b.data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fiche de production — lecture",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/industrial-records/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fiche de production — accueil refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/industrial-records"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nettoyage — supprimer la fiche de production",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/industrial-records/{{recordId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Récupérables — liste",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/recuperables"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Récupérables — ligne invalide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/recuperables",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"PROBAR\",\n  \"machine\": \"1\",\n  \"ligne\": \"L9\",\n  \"poste\": \"matin\",\n  \"date\": \"2026-10-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Maintenance",
+      "item": [
+        {
+          "name": "Créer — champs manquants",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipement\": \"\",\n  \"typePanne\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer une demande",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipement\": \"Compresseur Newman\",\n  \"typePanne\": \"Fuite\",\n  \"urgence\": \"faible\",\n  \"description\": \"Demande de test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"statut en_attente\", () => { const b = pm.response.json(); pm.expect(b.data.statut === 'en_attente', \"statut en_attente\").to.be.ok; });",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"maintenanceId\", b.data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mes demandes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests/my"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"contient la demande créée\", () => { const b = pm.response.json(); pm.expect((b.data || b).some(r => r.id === pm.collectionVariables.get('maintenanceId')), \"contient la demande créée\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toutes les demandes — commercial refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toutes les demandes — RLA",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Accepter — demandeur refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests/{{maintenanceId}}/accept"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Accepter — RLA",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests/{{maintenanceId}}/accept"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"statut acceptee\", () => { const b = pm.response.json(); pm.expect(b.statut === 'acceptee', \"statut acceptee\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Démarrer sans technicien",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests/{{maintenanceId}}/start"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Historique",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests/{{maintenanceId}}/history"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"au moins 2 événements\", () => { const b = pm.response.json(); pm.expect(b.data.length >= 2, \"au moins 2 événements\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nettoyage — supprimer la demande",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance-requests/{{maintenanceId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "RH",
+      "item": [
+        {
+          "name": "Créer — type inconnu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"vacances\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer — dates incohérentes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"conge\",\n  \"typeConge\": \"ordinaire\",\n  \"dateDebut\": \"2027-03-10\",\n  \"dateFin\": \"2027-03-01\",\n  \"adresse\": \"Tunis\",\n  \"telephone\": \"20000001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer — profil employé incomplet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sortie\",\n  \"dateSortie\": \"2027-02-01\",\n  \"heureSortie\": \"10:00\",\n  \"heureRetour\": \"11:00\",\n  \"motif\": \"Rendez-vous\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 422\", () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer une autorisation de sortie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sortie\",\n  \"dateSortie\": \"2027-02-01\",\n  \"heureSortie\": \"10:00\",\n  \"heureRetour\": \"11:00\",\n  \"motif\": \"Rendez-vous\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"statut en_attente\", () => { const b = pm.response.json(); pm.expect(b.data.statut === 'en_attente', \"statut en_attente\").to.be.ok; });",
+                  "{ const b = pm.response.json(); pm.collectionVariables.set(\"hrId\", b.data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mes demandes RH",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Accepter — demandeur refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests/{{hrId}}/accept"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire — autre collaborateur refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests/{{hrId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403 ou 404\", () => pm.expect(pm.response.code).to.be.oneOf([403, 404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire une demande inexistante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests/00000000-0000-0000-0000-000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nettoyage — supprimer la demande RH",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/hr-requests/{{hrId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Archive",
+      "item": [
+        {
+          "name": "Créer — champs manquants",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/archive-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer — projet d'un autre utilisateur",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/archive-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": \"{{projectId}}\",\n  \"subject\": \"Archivage\",\n  \"message\": \"Test\",\n  \"type\": \"ARCHIVAGE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer — projet inexistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/archive-requests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": \"00000000-0000-0000-0000-000000000000\",\n  \"subject\": \"Archivage\",\n  \"message\": \"Test\",\n  \"type\": \"ARCHIVAGE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mes demandes d'archivage",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/archive-requests/my"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toutes les demandes — commercial refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/archive-requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approuver — commercial refusé",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/archive-requests/00000000-0000-0000-0000-000000000000/approve"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sans jeton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/archive-requests/my"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Mes notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/notifications"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"items est un tableau\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b.items), \"items est un tableau\").to.be.ok; });",
+                  "pm.test(\"compteur non lu numérique\", () => { const b = pm.response.json(); pm.expect(typeof b.unreadCount === 'number', \"compteur non lu numérique\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sans jeton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/notifications"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tout marquer comme lu",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/notifications/read-all"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marquer une notification inexistante",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/notifications/00000000-0000-0000-0000-000000000000/read"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Tableau de bord utilisateur",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/dashboard/user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "KPI globaux — commercial refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/dashboard/kpis"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "KPI globaux — superadmin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_superadmin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/dashboard/kpis"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Statistiques d'administration — admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin-dashboard/stats"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Statistiques d'administration — accueil refusé",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin-dashboard/stats"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Statistiques POR — RLA",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_responsable_logistique_achat}}"
+              }
+            ],
+            "url": "{{baseUrl}}/por-promesh/stats"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sans jeton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/dashboard/user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Copilot",
+      "item": [
+        {
+          "name": "Chat — sans jeton",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/chat",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Bonjour\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chat — rôle non autorisé (accueil)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_accueil}}"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/chat",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Bonjour\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chat — message vide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/chat",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/conversations"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Conversation inexistante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/conversations/00000000-0000-0000-0000-000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Documents RAG",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/documents"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Réponse JSON\", () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chat réel — « Quels sont mes projets ? »",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_commercial}}"
+              }
+            ],
+            "url": "{{baseUrl}}/ai-copilot/chat",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Quels sont mes projets ?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Code HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"réponse non vide\", () => { const b = pm.response.json(); pm.expect(typeof b.data.answer === 'string' && b.data.answer.length > 0, \"réponse non vide\").to.be.ok; });",
+                  "pm.test(\"un outil a réellement été appelé\", () => { const b = pm.response.json(); pm.expect(Array.isArray(b.data.toolCalls) && b.data.toolCalls.length >= 1, \"un outil a réellement été appelé\").to.be.ok; });",
+                  "pm.test(\"outil list_projects\", () => { const b = pm.response.json(); pm.expect(b.data.explainability.toolsCalled.includes('list_projects'), \"outil list_projects\").to.be.ok; });",
+                  "pm.test(\"aucune action en attente pour une lecture\", () => { const b = pm.response.json(); pm.expect(b.data.pendingAction === null, \"aucune action en attente pour une lecture\").to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

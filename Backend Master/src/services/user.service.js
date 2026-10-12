@@ -12,14 +12,13 @@ const { Op } = require("sequelize");
 const User = require("../models/User");
 const UserProfile = require("../models/UserProfile");
 const { NON_COMMERCIAL_ROLES } = require("../constants/commercialRoles");
+const { ALL_ROLES } = require("../constants/roles");
 const { resolveFullName } = require("../utils/userDisplay");
 
 const SUPERADMIN_ROLES = ["superadmin", "superadmin2"];
-// Liste préservée telle quelle depuis admin.js PUT /users/:id/role — connue
-// pour être plus restrictive que l'ENUM réel (superadmin2 n'y figure pas,
-// voir §14 P... du dossier d'architecture) : non corrigée ici, une
-// extraction fidèle ne change pas le comportement observé.
-const ASSIGNABLE_ROLES = ["user", "admin", "superadmin"];
+// Même liste que admin.js PUT /users/:id/role : les 7 rôles réels du
+// vocabulaire v2 (constants/roles.js) — "user" n'est plus assignable.
+const ASSIGNABLE_ROLES = ALL_ROLES;
 
 const PROFILE_FIELDS = [
   "name",
@@ -115,8 +114,7 @@ async function setUserActive(actorRole, userId, active) {
   return { id: user.id, email: user.email, isActive: user.isActive };
 }
 
-// admin.js PUT /users/:id/role — voir ASSIGNABLE_ROLES ci-dessus pour la
-// liste (volontairement inchangée).
+// admin.js PUT /users/:id/role — voir ASSIGNABLE_ROLES ci-dessus.
 async function setUserRole(userId, role) {
   if (!ASSIGNABLE_ROLES.includes(role)) throw { status: 400, message: "Invalid role" };
 

@@ -101,6 +101,29 @@ class RagIngestionService {
     return results;
   }
 
+  /**
+   * Phase 2 — indexe un document DÉJÀ extrait (document téléversé dans le
+   * Copilot, voir rag/userDocumentService.js) avec EXACTEMENT le même
+   * découpage/embedding/stockage que le corpus de documentation — un seul
+   * système RAG, une collection dédiée (`collection`) pour ne jamais mélanger
+   * documents personnels et documentation partagée.
+   *
+   * @param {{ text: string, pages?: string[]|null, pageLabels?: string[]|null }} loaded
+   * @param {object} baseMetadata — copié dans chaque chunk (documentId, ownerId, …)
+   * @param {{ idPrefix: string, collection: string }} options
+   * @returns {Promise<string[]>} identifiants des chunks indexés
+   */
+  async ingestLoaded(loaded, baseMetadata, { idPrefix, collection }) {
+    const rawChunks = this._chunkLoaded(loaded, baseMetadata).map((chunk) =>
+      loaded.pageLabels && chunk.page ? { ...chunk, pageLabel: loaded.pageLabels[chunk.page - 1] || null } : chunk
+    );
+    if (rawChunks.length === 0) return [];
+    const vectors = await this.embeddingProvider.embedBatch(rawChunks.map((chunk) => chunk.text));
+    const records = rawChunks.map((chunk, i) => ({ id: `${idPrefix}#${chunk.chunkIndex}`, vector: vectors[i], metadata: chunk }));
+    await this.vectorStore.upsert(collection, records);
+    return records.map((r) => r.id);
+  }
+
   async ingestDirectories(roots) {
     const files = this.scanner.scan(roots);
     return this.ingestPaths(files);

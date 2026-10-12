@@ -31,13 +31,13 @@ function user(role, overrides = {}) {
 // Utilisateurs stables (mêmes id à travers tout le fichier — plus lisible
 // dans les échecs de test que des id aléatoires).
 const USERS = {
-  user: { id: "u-generic", role: "user" },
-  commercial: { id: "u-commercial", role: "commercial" },
+  user: { id: "u-generic", role: "commercial" },
+  commercial: { id: "u-commercial", role: "commercial_sedentaire" },
   admin: { id: "u-admin", role: "admin" },
   superadmin: { id: "u-superadmin", role: "superadmin" },
   logistique: { id: "u-logistique", role: "responsable_logistique_achat" },
-  maintenanceManagerByEmail: { id: "u-mm-email", role: "user", email: "accueilcbif@gmail.com" },
-  hrReviewerByEmail: { id: "u-hr-email", role: "user", email: "manegerofficecbi@gmail.com" },
+  maintenanceManagerByEmail: { id: "u-mm-email", role: "commercial", email: "accueilcbif@gmail.com" },
+  hrReviewerByEmail: { id: "u-hr-email", role: "commercial", email: "manegerofficecbi@gmail.com" },
 };
 
 let seq = 0;
@@ -78,7 +78,7 @@ const COMMERCIAL_TOOLS = ["get_commercial_contact_kpi", "get_commercial_contact_
   { id: "com-14", message: "Quel est le taux de validation des contacts commerciaux globalement ?", user: USERS.superadmin },
   { id: "com-15", message: "Combien de contacts commerciaux ai-je créés cette semaine ?", user: USERS.commercial },
   { id: "com-16", message: "Distribution en pourcentage de mes contacts commerciaux par relance.", user: USERS.commercial },
-  { id: "com-17", message: "Un rôle non-commercial a-t-il accès aux contacts commerciaux ?", user: USERS.user, expectedDenied: true },
+  { id: "com-17", message: "Un rôle non-commercial a-t-il accès aux contacts commerciaux ?", user: USERS.logistique, expectedDenied: true },
   { id: "com-18", message: "Résumé KPI personnel enrichi pour le contact commercial de Nadia.", user: USERS.commercial },
   { id: "com-19", message: "Quels sont mes badges de performance sur les contacts commerciaux ?", user: USERS.commercial },
   { id: "com-20", message: "Quels contacts commerciaux ont une relance en retard cette semaine ?", user: USERS.commercial },

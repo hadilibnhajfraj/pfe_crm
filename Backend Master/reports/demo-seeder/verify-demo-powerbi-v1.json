@@ -1,0 +1,297 @@
+{
+  "batchId": "DEMO-demo-powerbi-v1-s20261010",
+  "database": "cbigestionnairepfe_demo",
+  "ok": false,
+  "results": [
+    {
+      "label": "volume users",
+      "ok": false,
+      "detail": "11 en base, 10 au registre, 10 prévues"
+    },
+    {
+      "label": "volume user_profiles",
+      "ok": false,
+      "detail": "11 en base, 10 au registre, 10 prévues"
+    },
+    {
+      "label": "volume companies",
+      "ok": true,
+      "detail": "40 en base, 40 au registre, 40 prévues"
+    },
+    {
+      "label": "volume engineers",
+      "ok": true,
+      "detail": "25 en base, 25 au registre, 25 prévues"
+    },
+    {
+      "label": "volume architects",
+      "ok": true,
+      "detail": "10 en base, 10 au registre, 10 prévues"
+    },
+    {
+      "label": "volume clients",
+      "ok": true,
+      "detail": "60 en base, 60 au registre, 60 prévues"
+    },
+    {
+      "label": "volume projects",
+      "ok": true,
+      "detail": "80 en base, 80 au registre, 80 prévues"
+    },
+    {
+      "label": "volume user_projects",
+      "ok": true,
+      "detail": "80 en base, 80 au registre, 80 prévues"
+    },
+    {
+      "label": "volume project_actions",
+      "ok": true,
+      "detail": "300 en base, 300 au registre, 300 prévues"
+    },
+    {
+      "label": "volume commercial_contacts",
+      "ok": true,
+      "detail": "150 en base, 150 au registre, 150 prévues"
+    },
+    {
+      "label": "volume commercial_contact_status_histories",
+      "ok": true,
+      "detail": "150 en base, 150 au registre, 150 prévues"
+    },
+    {
+      "label": "volume commercial_contact_products",
+      "ok": true,
+      "detail": "150 en base, 150 au registre, 150 prévues"
+    },
+    {
+      "label": "volume commercial_contact_actions",
+      "ok": true,
+      "detail": "150 en base, 150 au registre, 150 prévues"
+    },
+    {
+      "label": "volume commercial_projects",
+      "ok": true,
+      "detail": "93 en base, 93 au registre, 93 prévues"
+    },
+    {
+      "label": "volume commercial_contact_relances",
+      "ok": true,
+      "detail": "100 en base, 100 au registre, 100 prévues"
+    },
+    {
+      "label": "volume por_promesh",
+      "ok": true,
+      "detail": "90 en base, 90 au registre, 90 prévues"
+    },
+    {
+      "label": "volume industrial_records",
+      "ok": true,
+      "detail": "70 en base, 70 au registre, 70 prévues"
+    },
+    {
+      "label": "volume recuperable_fiches",
+      "ok": true,
+      "detail": "20 en base, 20 au registre, 20 prévues"
+    },
+    {
+      "label": "registre users : lignes retrouvées",
+      "ok": true,
+      "detail": "10 sur 10"
+    },
+    {
+      "label": "registre user_profiles : lignes retrouvées",
+      "ok": true,
+      "detail": "10 sur 10"
+    },
+    {
+      "label": "registre companies : lignes retrouvées",
+      "ok": true,
+      "detail": "40 sur 40"
+    },
+    {
+      "label": "registre engineers : lignes retrouvées",
+      "ok": true,
+      "detail": "25 sur 25"
+    },
+    {
+      "label": "registre architects : lignes retrouvées",
+      "ok": true,
+      "detail": "10 sur 10"
+    },
+    {
+      "label": "registre clients : lignes retrouvées",
+      "ok": true,
+      "detail": "60 sur 60"
+    },
+    {
+      "label": "registre projects : lignes retrouvées",
+      "ok": true,
+      "detail": "80 sur 80"
+    },
+    {
+      "label": "registre user_projects : lignes retrouvées",
+      "ok": true,
+      "detail": "80 sur 80"
+    },
+    {
+      "label": "registre project_actions : lignes retrouvées",
+      "ok": true,
+      "detail": "300 sur 300"
+    },
+    {
+      "label": "registre commercial_contacts : lignes retrouvées",
+      "ok": true,
+      "detail": "150 sur 150"
+    },
+    {
+      "label": "registre commercial_contact_status_histories : lignes retrouvées",
+      "ok": true,
+      "detail": "150 sur 150"
+    },
+    {
+      "label": "registre commercial_contact_products : lignes retrouvées",
+      "ok": true,
+      "detail": "150 sur 150"
+    },
+    {
+      "label": "registre commercial_contact_actions : lignes retrouvées",
+      "ok": true,
+      "detail": "150 sur 150"
+    },
+    {
+      "label": "registre commercial_projects : lignes retrouvées",
+      "ok": true,
+      "detail": "93 sur 93"
+    },
+    {
+      "label": "registre commercial_contact_relances : lignes retrouvées",
+      "ok": true,
+      "detail": "100 sur 100"
+    },
+    {
+      "label": "registre por_promesh : lignes retrouvées",
+      "ok": true,
+      "detail": "90 sur 90"
+    },
+    {
+      "label": "registre por_promesh_controles_qualite : lignes retrouvées",
+      "ok": true,
+      "detail": "180 sur 180"
+    },
+    {
+      "label": "registre por_promesh_process_control : lignes retrouvées",
+      "ok": true,
+      "detail": "360 sur 360"
+    },
+    {
+      "label": "registre industrial_records : lignes retrouvées",
+      "ok": true,
+      "detail": "70 sur 70"
+    },
+    {
+      "label": "registre recuperable_fiches : lignes retrouvées",
+      "ok": true,
+      "detail": "20 sur 20"
+    },
+    {
+      "label": "registre recuperable_lignes : lignes retrouvées",
+      "ok": true,
+      "detail": "54 sur 54"
+    },
+    {
+      "label": "por_promesh : dataStatus = TEST partout",
+      "ok": true,
+      "detail": "0 fiche(s) non TEST"
+    },
+    {
+      "label": "industrial_records : dataStatus = TEST partout",
+      "ok": true,
+      "detail": "0 fiche(s) non TEST"
+    },
+    {
+      "label": "recuperable_fiches : dataStatus = TEST partout",
+      "ok": true,
+      "detail": "0 fiche(s) non TEST"
+    },
+    {
+      "label": "projets sans propriétaire ou sans étape",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "projets : société, ingénieur ou architecte inconnu",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "actions sans projet ou sans type",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "contacts sans créateur, ou affectés à un non-commercial",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "relances sans contact",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "fiches sans machine du bon type",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "doublons : e-mail d'utilisateur",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "doublons : nom de projet pour un même propriétaire",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "doublons : nom de société, d'ingénieur ou d'architecte",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "doublons au registre",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "fiches validées incohérentes (statut, verrou, heures)",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "adresses hors du domaine de démonstration",
+      "ok": false,
+      "detail": "1"
+    },
+    {
+      "label": "comptes sans mot de passe chiffré",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "label": "e-mails, notifications ou événements d'agenda créés",
+      "ok": false,
+      "detail": "150"
+    },
+    {
+      "label": "lignes hors registre dans les tables du lot",
+      "ok": false,
+      "detail": "2"
+    },
+    {
+      "label": "référentiels intacts",
+      "ok": true,
+      "detail": "machines / étapes / types d'action / familles"
+    }
+  ]
+}

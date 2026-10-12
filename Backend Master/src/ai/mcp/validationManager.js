@@ -23,7 +23,11 @@ const envelopeSchema = Joi.object({
 const actingUserSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).required(),
   role: Joi.string().min(1).required(),
-  email: Joi.string().email().optional(),
+  // Forme « x@y » seulement : l'adresse vient du compte déjà authentifié et ne
+  // sert qu'aux règles `allowedEmails`. La validation stricte de Joi refusait
+  // les comptes dont le domaine n'est pas un nom DNS (tiret bas, domaine
+  // interne), et TOUS leurs appels d'outil échouaient.
+  email: Joi.string().max(320).pattern(/^[^\s@]+@[^\s@]+$/).optional(),
 });
 
 // Validates protocol-level shape and per-tool business input. Two distinct

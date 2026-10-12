@@ -1,0 +1,267 @@
+[INFO]  Bootstrapper: Retrieving info from "package.json" file
+[INFO]  Bootstrapper: Platform: win32 x64
+[INFO]  Bootstrapper: Server URL: http://localhost:9001
+[INFO]  Bootstrapper: Using SonarScanner for NPM (@sonar/scan)
+[INFO]  Bootstrapper: Version: 5.0.1
+[INFO]  Bootstrapper: SonarQube server version: 26.9.0
+[INFO]  Bootstrapper: JRE provisioning is supported
+[INFO]  Bootstrapper: No Cache found for JRE
+[INFO]  Bootstrapper: Download starting...
+[INFO]  Bootstrapper: Download complete
+[INFO]  Bootstrapper: Downloaded JRE to C:\Users\bhfha\.sonar\cache\be26677aaa20b39a62edcaab4c8857a8b76673b0f45abc0b6143b142b62717e4\OpenJDK21U-jre_x64_windows_hotspot_21.0.11_10.zip
+[INFO]  Bootstrapper: No Cache found for SonarScanner Engine
+[INFO]  Bootstrapper: Download starting...
+[INFO]  Bootstrapper: Download complete
+[INFO]  Bootstrapper: Downloaded SonarScanner Engine to C:\Users\bhfha\.sonar\cache\51110a516ea671a35bb8b5c1ae441146ba64b960d1ccf121963c95909f9ca778\sonar-scanner-engine-community-13.7.0.4455.jar
+[INFO]  ScannerEngine: Starting SonarScanner Engine...
+[INFO]  ScannerEngine: Java 21.0.11 Eclipse Adoptium (64-bit)
+[INFO]  ScannerEngine: Load global settings
+[INFO]  ScannerEngine: Load global settings (done) | time=143ms
+[INFO]  ScannerEngine: Server id: 147B411E-AaEDusfwi056Mtv0b-YO
+[INFO]  ScannerEngine: Loading required plugins
+[INFO]  ScannerEngine: Load plugins index
+[INFO]  ScannerEngine: Load plugins index (done) | time=33ms
+[INFO]  ScannerEngine: Load/download plugins
+[INFO]  ScannerEngine: Load/download plugins (done) | time=494ms
+[INFO]  ScannerEngine: Process project properties
+[INFO]  ScannerEngine: Process project properties (done) | time=18ms
+[INFO]  ScannerEngine: Project key: crm-probar-backend
+[INFO]  ScannerEngine: Base dir: C:\Users\bhfha\Documents\sj_final_pfe\source code\Backend Master
+[INFO]  ScannerEngine: Working dir: C:\Users\bhfha\Documents\sj_final_pfe\source code\Backend Master\.scannerwork
+[INFO]  ScannerEngine: Load project settings for component key: 'crm-probar-backend'
+[INFO]  ScannerEngine: Load quality profiles
+[INFO]  ScannerEngine: Load quality profiles (done) | time=157ms
+[INFO]  ScannerEngine: Load active rules
+[INFO]  ScannerEngine: Load active rules (done) | time=523ms
+[INFO]  ScannerEngine: Load analysis cache
+[INFO]  ScannerEngine: Load analysis cache (404) | time=9ms
+[INFO]  ScannerEngine: Preprocessing files...
+[INFO]  ScannerEngine: 1 language detected in 895 preprocessed files (done) | time=1650ms
+[INFO]  ScannerEngine: 6 files ignored because of inclusion/exclusion patterns
+[INFO]  ScannerEngine: 4 directories skipped because of exclusion patterns (content not counted)
+[INFO]  ScannerEngine: 0 files ignored because of scm ignore settings
+[INFO]  ScannerEngine: Loading plugins for detected languages
+[INFO]  ScannerEngine: Load/download plugins
+[INFO]  ScannerEngine: Load/download plugins (done) | time=1214ms
+[INFO]  ScannerEngine: Load project repositories
+[INFO]  ScannerEngine: Load project repositories (done) | time=9ms
+[INFO]  ScannerEngine: Indexing files...
+[INFO]  ScannerEngine: Project configuration:
+[INFO]  ScannerEngine:   Excluded sources: src/migrations/**, src/seeders/**, src/scripts/**, src/uploads/**, **/node_modules/**, test/**/*.test.js
+[INFO]  ScannerEngine:   Included tests: test/**/*.test.js
+[INFO]  ScannerEngine: 895 files indexed (done) | time=191ms
+[INFO]  ScannerEngine: Quality profile for js: Sonar way
+[INFO]  ScannerEngine: ------------- Run sensors on module CRM PROBAR - Backend
+[INFO]  ScannerEngine: Load metrics repository
+[INFO]  ScannerEngine: Load metrics repository (done) | time=36ms
+[INFO]  ScannerEngine: Reflections took 139 ms to scan 1 urls, producing 30 keys and 295 values
+[INFO]  ScannerEngine: Sensor IaC YAML File Type Classification Sensor [iac]
+[INFO]  ScannerEngine: Sensor IaC YAML File Type Classification Sensor [iac] (done) | time=16ms
+[INFO]  ScannerEngine: Sensor IaC hadolint report Sensor [iac]
+[INFO]  ScannerEngine: Sensor IaC hadolint report Sensor [iac] (done) | time=1ms
+[INFO]  ScannerEngine: Sensor Java Config Sensor [iac]
+[INFO]  ScannerEngine: There are no files to be analyzed for the Java language
+[INFO]  ScannerEngine: Sensor Java Config Sensor [iac] (done) | time=1ms
+[INFO]  ScannerEngine: Sensor IaC Docker Sensor [iac]
+[INFO]  ScannerEngine: There are no files to be analyzed for the Docker language
+[INFO]  ScannerEngine: Sensor IaC Docker Sensor [iac] (done) | time=8ms
+[INFO]  ScannerEngine: Sensor HTML [web]
+[INFO]  ScannerEngine: Sensor HTML [web] (done) | time=9ms
+[INFO]  ScannerEngine: Sensor JavaScript/TypeScript Coverage [javascript]
+[INFO]  ScannerEngine: Analysing [C:\Users\bhfha\Documents\sj_final_pfe\source code\Backend Master\coverage\lcov.info]
+[WARN]  ScannerEngine: Invalid character encountered in file C:/Users/bhfha/Documents/sj_final_pfe/source code/Backend Master/src/ai/rag/ingestion/bufferLoaders.js at line 138 for encoding UTF-8. Please fix file content or configure the encoding to be used using property 'sonar.sourceEncoding'.
+[INFO]  ScannerEngine: Sensor JavaScript/TypeScript Coverage [javascript] (done) | time=1941ms
+[INFO]  ScannerEngine: Sensor TextAndSecretsSensor [text]
+[INFO]  ScannerEngine: Available processors: 8
+[INFO]  ScannerEngine: Using 8 threads for analysis.
+[INFO]  ScannerEngine: Start fetching files for the text and secrets analysis
+[INFO]  ScannerEngine: Using Git CLI to retrieve dirty files
+[INFO]  ScannerEngine: Retrieving language associated files and files included via "sonar.text.inclusions" that are tracked by git
+[INFO]  ScannerEngine: Starting the text and secrets analysis
+[INFO]  ScannerEngine: 874 source files to be analyzed for the text and secrets analysis
+[INFO]  ScannerEngine: 874/874 source files have been analyzed for the text and secrets analysis
+[INFO]  ScannerEngine: Sensor TextAndSecretsSensor [text] (done) | time=1778ms
+[INFO]  ScannerEngine: ------------- Run sensors on project
+[INFO]  ScannerEngine: Sensor JavaScript/TypeScript/CSS analysis [javascript]
+[INFO]  ScannerEngine: Detected os: Windows 11 arch: amd64 alpine: false. Platform: WIN_X64
+[INFO]  ScannerEngine: Deploy location C:\Users\bhfha\.sonar\js\node-runtime, tagetRuntime: C:\Users\bhfha\.sonar\js\node-runtime\node.exe,  version: C:\Users\bhfha\.sonar\js\node-runtime\version.txt
+[INFO]  ScannerEngine: Using embedded Node.js runtime.
+[INFO]  ScannerEngine: Using Node.js executable: 'C:\Users\bhfha\.sonar\js\node-runtime\node.exe'.
+[INFO]  ScannerEngine: Memory configuration: OS (24267 MB), Node.js (4288 MB).
+[INFO]  ScannerEngine: gRPC analyze-project server listening on 127.0.0.1:54269
+[INFO]  ScannerEngine: Plugin version: [13.8.0.44569]
+[INFO]  ScannerEngine: Found 0 tsconfig.json file(s): []
+[INFO]  ScannerEngine: 874 source files to be analyzed
+[INFO]  ScannerEngine: Analyzing 874 file(s) using default options [lib: lib.esnext.d.ts, lib.dom.d.ts]
+[INFO]  ScannerEngine: Hit the cache for 0 out of 874
+[INFO]  ScannerEngine: Miss the cache for 874 out of 874: ANALYSIS_MODE_INELIGIBLE [874/874]
+[INFO]  ScannerEngine: Sensor JavaScript/TypeScript/CSS analysis [javascript] (done) | time=80960ms
+[INFO]  ScannerEngine: Sensor IaC Project Sensor [iac]
+[INFO]  ScannerEngine: 874/874 source files have been analyzed
+[INFO]  ScannerEngine: Sensor IaC Project Sensor [iac] (done) | time=0ms
+[INFO]  ScannerEngine: Sensor Zero Coverage Sensor
+[INFO]  ScannerEngine: Sensor Zero Coverage Sensor (done) | time=20ms
+[INFO]  ScannerEngine: ------------- Gather SCA dependencies on project
+[INFO]  ScannerEngine: Dependency analysis skipped
+[INFO]  ScannerEngine: SCM Publisher SCM provider for this project is: git
+[INFO]  ScannerEngine: SCM Publisher 874 source files to be analyzed
+[INFO]  ScannerEngine: SCM Publisher 729/874 source files have been analyzed (done) | time=2777ms
+[WARN]  ScannerEngine: Missing blame information for the following files:
+[WARN]  ScannerEngine:   * test/ai.orchestrator.intentDetector.test.js
+[WARN]  ScannerEngine:   * src/services/user.service.js
+[WARN]  ScannerEngine:   * src/modules/recuperables/dto/recuperable.dto.js
+[WARN]  ScannerEngine:   * src/modules/machines/dto/machine.dto.js
+[WARN]  ScannerEngine:   * src/routes/commercial_contacts.routes.js
+[WARN]  ScannerEngine:   * src/models/IndustrialRecord.js
+[WARN]  ScannerEngine:   * test/ai.copilotConfig.httpIntegration.test.js
+[WARN]  ScannerEngine:   * src/ai/vector/inMemoryVectorStore.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.entityExtractor.test.js
+[WARN]  ScannerEngine:   * src/ai/rag/pipeline.js
+[WARN]  ScannerEngine:   * src/ai/rag/errors.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/getMyCommercialContactsTool.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/industrial/getIndustrialStatisticsTool.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.engineers.test.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/index.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/pipeline.js
+[WARN]  ScannerEngine:   * test/ai.agents.commercialAgent.relanceQuery.test.js
+[WARN]  ScannerEngine:   * test/ai.reasoning.capabilityMatrixService.test.js
+[WARN]  ScannerEngine:   * src/modules/machines/validators/machine.validator.js
+[WARN]  ScannerEngine:   * src/models/RecuperableFiche.js
+[WARN]  ScannerEngine:   * src/ai/agents/baseAgent.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/aiManager.js
+[WARN]  ScannerEngine:   * src/ai/language/languageDetector.js
+[WARN]  ScannerEngine:   * src/ai/rag/retrievalService.js
+[WARN]  ScannerEngine:   * src/ai/reasoning/projectStatuses.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.aiManager.capabilityAudit.test.js
+[WARN]  ScannerEngine:   * test/ai.dashboard.analyzers.test.js
+[WARN]  ScannerEngine:   * src/models/Machine.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/capabilityQuestionOverride.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.documentConversation.test.js
+[WARN]  ScannerEngine:   * src/modules/recuperables/validators/recuperable.validator.js
+[WARN]  ScannerEngine:   * test/aiCopilot.documents.http.test.js
+[WARN]  ScannerEngine:   * src/ai/agents/analyticsAgent.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/contextManager.js
+[WARN]  ScannerEngine:   * src/models/CommercialContact.js
+[WARN]  ScannerEngine:   * src/ai/planning/planStep.js
+[WARN]  ScannerEngine:   * src/modules/machines/controllers/machine.controller.js
+[WARN]  ScannerEngine:   * test/utils.machineRef.test.js
+[WARN]  ScannerEngine:   * src/routes/auth.routes.js
+[WARN]  ScannerEngine:   * test/ai.analytics.queryParser.test.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/semanticIntentResolver.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.commercialAgent.relanceQuery.integration.test.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/responseBuilder.js
+[WARN]  ScannerEngine:   * src/modules/ai-copilot/services/copilotDocumentValidation.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/pendingActionStore.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/entityExtractor.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.projectAgent.ownerNameQuery.integration.test.js
+[WARN]  ScannerEngine:   * src/ai/planning/taskPlanner.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/getCommercialContactKpiTool.js
+[WARN]  ScannerEngine:   * src/modules/ai-copilot/services/aiCopilotBridge.service.js
+[WARN]  ScannerEngine:   * src/modules/ai-copilot/controllers/aiCopilot.controller.js
+[WARN]  ScannerEngine:   * test/mfa.disabled.test.js
+[WARN]  ScannerEngine:   * src/ai/langchain/tools/mcpToolAdapter.js
+[WARN]  ScannerEngine:   * src/modules/commercial-contacts/services/commercialContactRelance.service.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/conversationContextResolver.js
+[WARN]  ScannerEngine:   * test/auth.routes.signup.test.js
+[WARN]  ScannerEngine:   * test/machines.routes.test.js
+[WARN]  ScannerEngine:   * src/ai/reasoning/analyticsAnswerBuilder.js
+[WARN]  ScannerEngine:   * test/nfr.crm.test.js
+[WARN]  ScannerEngine:   * test/nfr.workflows.test.js
+[WARN]  ScannerEngine:   * src/modules/ai-copilot/routes/aiCopilot.routes.js
+[WARN]  ScannerEngine:   * src/ai/planning/planExecutor.js
+[WARN]  ScannerEngine:   * src/ai/agents/taskPlannerAgent.js
+[WARN]  ScannerEngine:   * src/modules/industrial-records/dto/industrialRecord.dto.js
+[WARN]  ScannerEngine:   * src/utils/machineRef.js
+[WARN]  ScannerEngine:   * src/ai/rag/ingestion/pdfLoader.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/getCommercialContactStatisticsTool.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.pipeline.test.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/getCommercialContactAnalyticsTool.js
+[WARN]  ScannerEngine:   * src/routes/projects.routes.js
+[WARN]  ScannerEngine:   * src/modules/projects/services/engineerDirectory.service.js
+[WARN]  ScannerEngine:   * src/ai/langchain/prompts/responsePrompts.js
+[WARN]  ScannerEngine:   * src/models/User.js
+[WARN]  ScannerEngine:   * src/modules/machines/routes/machine.routes.js
+[WARN]  ScannerEngine:   * src/ai/rag/userDocumentService.js
+[WARN]  ScannerEngine:   * src/modules/projects/services/projectStatistics.service.js
+[WARN]  ScannerEngine:   * src/app.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/projects/index.js
+[WARN]  ScannerEngine:   * test/mfa.test.js
+[WARN]  ScannerEngine:   * test/rbac.rolesV2.routes.test.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/getPersonalKpiSummaryTool.js
+[WARN]  ScannerEngine:   * src/modules/ai-copilot/socket/aiCopilotSocket.js
+[WARN]  ScannerEngine:   * src/models/associations.js
+[WARN]  ScannerEngine:   * src/ai/analytics/analyticsQueryParser.js
+[WARN]  ScannerEngine:   * test/nfr.rbac.test.js
+[WARN]  ScannerEngine:   * test/ai.agents.manifest.test.js
+[WARN]  ScannerEngine:   * test/models.machineLink.test.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/config.js
+[WARN]  ScannerEngine:   * src/models/helpers/machineLink.js
+[WARN]  ScannerEngine:   * src/modules/commercial-contacts/services/commercialContactStatistics.service.js
+[WARN]  ScannerEngine:   * src/ai/planning/executionContext.js
+[WARN]  ScannerEngine:   * src/constants/commercialRoles.js
+[WARN]  ScannerEngine:   * src/observability/metrics.js
+[WARN]  ScannerEngine:   * src/routes/admin.js
+[WARN]  ScannerEngine:   * test/roles.tokensRoleVersion.test.js
+[WARN]  ScannerEngine:   * test/ai.agents.commercialAgent.adminQueries.test.js
+[WARN]  ScannerEngine:   * src/modules/commercial-contacts/policies/contactAccess.policy.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.multiStepTask.test.js
+[WARN]  ScannerEngine:   * src/ai/rag/ingestion/bufferLoaders.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/projects/getProjectStatisticsTool.js
+[WARN]  ScannerEngine:   * src/constants/roles.js
+[WARN]  ScannerEngine:   * test/migrations.rolesV2.test.js
+[WARN]  ScannerEngine:   * src/middleware/moduleAccessGuard.js
+[WARN]  ScannerEngine:   * src/utils/tokens.js
+[WARN]  ScannerEngine:   * src/modules/industrial-records/services/industrialStatistics.service.js
+[WARN]  ScannerEngine:   * src/models/PorPromesh.js
+[WARN]  ScannerEngine:   * src/middleware/copilotDocumentUpload.middleware.js
+[WARN]  ScannerEngine:   * test/ai.planning.units.test.js
+[WARN]  ScannerEngine:   * test/mfa.dedup.test.js
+[WARN]  ScannerEngine:   * test/nfr.auth.test.js
+[WARN]  ScannerEngine:   * src/ai/agents/projectAgent.js
+[WARN]  ScannerEngine:   * test/commercialContacts.rolesV2.routes.test.js
+[WARN]  ScannerEngine:   * test/recuperables.validator.machines.test.js
+[WARN]  ScannerEngine:   * test/nfr.dataIntegrity.test.js
+[WARN]  ScannerEngine:   * test/ai.mcp.tools.commercialContacts.test.js
+[WARN]  ScannerEngine:   * src/ai/rag/ingestionService.js
+[WARN]  ScannerEngine:   * src/modules/por-promesh/dto/porPromesh.dto.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.semanticIntentResolver.test.js
+[WARN]  ScannerEngine:   * test/ai.rag.userDocuments.test.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.commercialAgent.relanceAction.integration.test.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.contextManager.test.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/industrial/index.js
+[WARN]  ScannerEngine:   * test/auth.resetPassword.test.js
+[WARN]  ScannerEngine:   * src/ai/agents/commercialAgent.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.projectAgent.describeQuery.integration.test.js
+[WARN]  ScannerEngine:   * src/modules/commercial-contacts/routes/commercialContactKpi.routes.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/projects/listEngineersTool.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.naturalConversation.test.js
+[WARN]  ScannerEngine:   * test/nfr.production.test.js
+[WARN]  ScannerEngine:   * src/ai/orchestrator/intentCatalog.js
+[WARN]  ScannerEngine:   * test/ai.analytics.statisticsTools.test.js
+[WARN]  ScannerEngine:   * test/ai.engineerDirectory.service.test.js
+[WARN]  ScannerEngine:   * src/ai/reasoning/taskPlanAnswerBuilder.js
+[WARN]  ScannerEngine:   * src/ai/agents/documentAgent.js
+[WARN]  ScannerEngine:   * src/ai/planning/toolContracts.js
+[WARN]  ScannerEngine:   * test/ai.orchestrator.analytics.test.js
+[WARN]  ScannerEngine:   * test/auth.refresh.roleReload.test.js
+[WARN]  ScannerEngine:   * src/modules/machines/repositories/machine.repository.js
+[WARN]  ScannerEngine:   * src/ai/mcp/tools/commercialContacts/scheduleCommercialContactRelanceTool.js
+[WARN]  ScannerEngine:   * src/ai/planning/confirmationManager.js
+[WARN]  ScannerEngine:   * src/ai/dashboard/salesAnalyzer.js
+[WARN]  ScannerEngine:   * src/modules/machines/services/machine.service.js
+[WARN]  ScannerEngine:   * test/modules.commercialContactRelance.calendarSync.test.js
+[WARN]  ScannerEngine:   * src/middleware/auth.middleware.js
+[WARN]  ScannerEngine:   * src/ai/agents/manifest.js
+[WARN]  ScannerEngine: This may lead to missing/broken features in SonarQube
+[INFO]  ScannerEngine: CPD Executor 72 files had no CPD blocks
+[INFO]  ScannerEngine: CPD Executor Calculating CPD for 551 files
+[INFO]  ScannerEngine: CPD Executor CPD calculation finished (done) | time=475ms
+[INFO]  ScannerEngine: SCM revision ID 'a7de139545926bb9068a9ade7ddacd817918f524'
+[INFO]  ScannerEngine: Analysis report generated in 2467ms, dir size=9.6 MB
+[INFO]  ScannerEngine: Analysis report compressed in 4604ms, zip size=5.4 MB
+[INFO]  ScannerEngine: Analysis report uploaded in 368ms
+[INFO]  ScannerEngine: ANALYSIS SUCCESSFUL, you can find the results at: http://localhost:9001/dashboard?id=crm-probar-backend
+[INFO]  ScannerEngine: Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+[INFO]  ScannerEngine: More about the report processing at http://localhost:9001/api/ce/task?id=3c8c4189-857d-49a5-afde-8857f1cbf570
+[INFO]  ScannerEngine: Analysis total time: 1:46.537 s
+[INFO]  ScannerEngine: SonarScanner Engine completed successfully

@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../db");
+const { attachMachineLink } = require("./helpers/machineLink");
 
 // Table générique partagée par les modules PROBAR, MÉLANGE et MAINTENANCE
 // (pas de schéma métier dédié par module — voir plan UX module industriel).
@@ -15,6 +16,15 @@ const IndustrialRecord = sequelize.define(
     module: { type: DataTypes.ENUM("probar", "melange", "maintenance"), allowNull: false },
 
     machine: { type: DataTypes.STRING(50), allowNull: true },
+    // Lien vers le référentiel `machines`, dérivé de `machine` par le hook
+    // linkMachine (voir models/helpers/machineLink.js) — null pour MÉLANGE
+    // et pour un équipement de maintenance hors référentiel.
+    machineId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "machines", key: "id" },
+      onDelete: "RESTRICT",
+    },
     poste: { type: DataTypes.ENUM("matin", "nuit"), allowNull: true },
     dateFiche: { type: DataTypes.DATEONLY, allowNull: false },
     operateur: { type: DataTypes.STRING(255), allowNull: true },
@@ -41,6 +51,7 @@ const IndustrialRecord = sequelize.define(
     indexes: [
       { fields: ["module"] },
       { fields: ["machine"] },
+      { fields: ["machineId"] },
       { fields: ["dateFiche"] },
       { fields: ["createdBy"] },
       // Couvre WHERE module = ? ORDER BY dateFiche DESC, createdAt DESC
@@ -48,6 +59,13 @@ const IndustrialRecord = sequelize.define(
       { fields: ["module", "dateFiche", "createdAt"], name: "industrial_records_module_datefiche_createdat" },
     ],
   }
+);
+
+// Seules les fiches PROBAR interprètent un numéro seul ("1".."4") comme une
+// machine PROBAR (et l'exigent connue) ; MAINTENANCE n'est reliée que si
+// l'équipement nomme explicitement une machine ("PROMESH — Machine 1").
+attachMachineLink(IndustrialRecord, (record) =>
+  record.module === "probar" ? { defaultType: "PROBAR", strict: true } : { defaultType: null, strict: false }
 );
 
 module.exports = IndustrialRecord;

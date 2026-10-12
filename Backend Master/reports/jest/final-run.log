@@ -1,0 +1,2800 @@
+
+> backend-master@1.0.0 test:coverage
+> jest --runInBand --forceExit --coverage --json --outputFile=reports/jest/jest-results.json
+
+FAIL test/mfa.test.js (57.973 s)
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [2026-10-03T21:45:12.975Z] [INFO] [ai:config] [AI-COPILOT] enabled=true provider=ollama
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      🔥 PROACTIVE AI MONITOR CRON LOADED
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:27:9)
+
+    console.log
+      [proactiveAiMonitor.job] AI_PROACTIVE_MONITORING_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:81:11)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+    console.log
+      [MFA-DIAG] mfaChallengeRequired() ÉCHEC vérification du token {"error":"jwt malformed"}
+
+      at log (src/middleware/mfaChallenge.middleware.js:29:11)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › jamais vérifié → MFA requis, aucune session ouverte, code envoyé par email
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 91 |[39m
+     [90m 92 |[39m   describe([32m"POST /auth/signin — décision MFA"[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 93 |[39m     test([32m"jamais vérifié → MFA requis, aucune session ouverte, code envoyé par email"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m    |[39m     [31m[1m^[22m[39m
+     [90m 94 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"never-verified"[39m)[33m;[39m
+     [90m 95 |[39m       [36mawait[39m createTestUser(email)[33m;[39m
+     [90m 96 |[39m[0m
+
+      at test (test/mfa.test.js:93:5)
+      at describe (test/mfa.test.js:92:3)
+      at Object.describe (test/mfa.test.js:79:1)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › connexion récente, aucun changement de contexte → pas de MFA
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 105 |[39m     })[33m;[39m
+     [90m 106 |[39m
+    [31m[1m>[22m[39m[90m 107 |[39m     test([32m"connexion récente, aucun changement de contexte → pas de MFA"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m     [31m[1m^[22m[39m
+     [90m 108 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"recent"[39m)[33m;[39m
+     [90m 109 |[39m       [36mawait[39m createTestUser(email[33m,[39m { mfaLastVerifiedAt[33m:[39m [36mnew[39m [33mDate[39m() })[33m;[39m
+     [90m 110 |[39m[0m
+
+      at test (test/mfa.test.js:107:5)
+      at describe (test/mfa.test.js:92:3)
+      at Object.describe (test/mfa.test.js:79:1)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › changement d'appareil force un MFA même si récemment vérifié
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 117 |[39m     })[33m;[39m
+     [90m 118 |[39m
+    [31m[1m>[22m[39m[90m 119 |[39m     test([32m"changement d'appareil force un MFA même si récemment vérifié"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m     [31m[1m^[22m[39m
+     [90m 120 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"new-device"[39m)[33m;[39m
+     [90m 121 |[39m       [36mawait[39m createTestUser(email[33m,[39m { mfaLastVerifiedAt[33m:[39m [36mnew[39m [33mDate[39m()[33m,[39m lastLoginDeviceId[33m:[39m [32m"device-old"[39m })[33m;[39m
+     [90m 122 |[39m[0m
+
+      at test (test/mfa.test.js:119:5)
+      at describe (test/mfa.test.js:92:3)
+      at Object.describe (test/mfa.test.js:79:1)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › changement d'IP force un MFA même si récemment vérifié
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    [0m [90m 130 |[39m
+     [90m 131 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-8"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 132 |[39m       expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                    [31m[1m^[22m[39m
+     [90m 133 |[39m     })[33m;[39m
+     [90m 134 |[39m
+     [90m 135 |[39m     test([32m"rôle admin : fenêtre de 24h (30h d'ancienneté = MFA requis, contrairement à un utilisateur standard)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/mfa.test.js:132:36)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › rôle admin : fenêtre de 24h (30h d'ancienneté = MFA requis, contrairement à un utilisateur standard)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    [0m [90m 142 |[39m
+     [90m 143 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-10"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 144 |[39m       expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                    [31m[1m^[22m[39m
+     [90m 145 |[39m     })[33m;[39m
+     [90m 146 |[39m
+     [90m 147 |[39m     test([32m"30h d'ancienneté pour un utilisateur standard → pas encore de MFA (fenêtre 3 jours)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/mfa.test.js:144:36)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › 30h d'ancienneté pour un utilisateur standard → pas encore de MFA (fenêtre 3 jours)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: undefined
+
+    [0m [90m 154 |[39m
+     [90m 155 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-10b"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 156 |[39m       expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m     |[39m                                    [31m[1m^[22m[39m
+     [90m 157 |[39m     })[33m;[39m
+     [90m 158 |[39m   })[33m;[39m
+     [90m 159 |[39m[0m
+
+      at Object.toBe (test/mfa.test.js:156:36)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › code correct → session ouverte, mfaLastVerifiedAt et contexte mis à jour
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:166:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › code incorrect → 400, compteur de tentatives décrémenté
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:184:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › 5 tentatives incorrectes → max_attempts, puis même le bon code est refusé
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:198:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › code expiré → rejeté avec reason=expired
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:214:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/resend › renvoie un nouveau challengeToken et un nouveau code — l'ancien code cesse de fonctionner
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:235:22)
+
+  ● MFA (multi-factor authentication) › Faire confiance à cet appareil pendant 30 jours › un appareil de confiance saute le MFA même si mfaLastVerifiedAt est périmé
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:266:19)
+
+  ● MFA (multi-factor authentication) › Faire confiance à cet appareil pendant 30 jours › un device token présenté pour un AUTRE deviceId est ignoré (MFA toujours requis)
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:294:19)
+
+  ● MFA (multi-factor authentication) › Compatibilité avec le flux Forgot Password / EmailQueue › un reset password réussi révoque la confiance MFA (mfaLastVerifiedAt + appareils de confiance)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: undefined
+
+    [0m [90m 308 |[39m       [90m// Sanity check : sans reset, pas de MFA requis.[39m
+     [90m 309 |[39m       [36mconst[39m before [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-11"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 310 |[39m       expect(before[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m     |[39m                                       [31m[1m^[22m[39m
+     [90m 311 |[39m
+     [90m 312 |[39m       [36mconst[39m { token[33m,[39m tokenHash } [33m=[39m generateResetToken()[33m;[39m
+     [90m 313 |[39m       [36mawait[39m user[33m.[39mupdate({ resetPasswordTokenHash[33m:[39m tokenHash[33m,[39m resetPasswordExpiresAt[33m:[39m [36mnew[39m [33mDate[39m([33mDate[39m[33m.[39mnow() [33m+[39m [35m60000[39m) })[33m;[39m[0m
+
+      at Object.toBe (test/mfa.test.js:310:39)
+
+FAIL test/mfa.dedup.test.js (54.978 s)
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [2026-10-03T21:46:11.290Z] [INFO] [ai:config] [AI-COPILOT] enabled=true provider=ollama
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      🔥 PROACTIVE AI MONITOR CRON LOADED
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:27:9)
+
+    console.log
+      [proactiveAiMonitor.job] AI_PROACTIVE_MONITORING_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:81:11)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+    console.log
+      [MFA-DIAG] mfaChallengeRequired() challengeToken manquant {}
+
+      at log (src/middleware/mfaChallenge.middleware.js:29:11)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › double-clic sur 'Se connecter' → un seul email envoyé, un seul OTP créé
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 69 |[39m   })[33m;[39m
+     [90m 70 |[39m
+    [31m[1m>[22m[39m[90m 71 |[39m   test([32m"double-clic sur 'Se connecter' → un seul email envoyé, un seul OTP créé"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 72 |[39m     [36mconst[39m email [33m=[39m emailFor([32m"double-click"[39m)[33m;[39m
+     [90m 73 |[39m     [36mconst[39m user [33m=[39m [36mawait[39m createTestUser(email)[33m;[39m
+     [90m 74 |[39m[0m
+
+      at test (test/mfa.dedup.test.js:71:3)
+      at Object.describe (test/mfa.dedup.test.js:58:1)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › 5 requêtes simultanées → un seul OTP créé, un seul email envoyé
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    [0m [90m  96 |[39m     ])[33m;[39m
+     [90m  97 |[39m
+    [31m[1m>[22m[39m[90m  98 |[39m     expect(results[33m.[39mevery((r) [33m=>[39m r[33m.[39mbody[33m.[39mmfaRequired [33m===[39m [36mtrue[39m))[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                                               [31m[1m^[22m[39m
+     [90m  99 |[39m     expect([36mawait[39m countOtpRows(user[33m.[39mid))[33m.[39mtoBe([35m1[39m)[33m;[39m
+     [90m 100 |[39m     expect(sendMail)[33m.[39mtoHaveBeenCalledTimes([35m1[39m)[33m;[39m
+     [90m 101 |[39m   }[33m,[39m [35m20000[39m)[33m;[39m[0m
+
+      at Object.toBe (test/mfa.dedup.test.js:98:63)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › OTP encore actif (>30s restantes) → signin répété ne renvoie pas d'email
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+
+    [0m [90m 106 |[39m
+     [90m 107 |[39m     [36mawait[39m signin(email[33m,[39m [32m"device-2"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 108 |[39m     expect(sendMail)[33m.[39mtoHaveBeenCalledTimes([35m1[39m)[33m;[39m
+     [90m     |[39m                      [31m[1m^[22m[39m
+     [90m 109 |[39m
+     [90m 110 |[39m     [36mconst[39m res2 [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-2"[39m)[33m;[39m
+     [90m 111 |[39m     expect(res2[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m[0m
+
+      at Object.toHaveBeenCalledTimes (test/mfa.dedup.test.js:108:22)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › un job EmailQueue déjà actif pour cet utilisateur → aucun nouveau job ni OTP créé
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    [0m [90m 137 |[39m     [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-3"[39m)[33m;[39m
+     [90m 138 |[39m
+    [31m[1m>[22m[39m[90m 139 |[39m     expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                  [31m[1m^[22m[39m
+     [90m 140 |[39m     expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch([35m/déjà été envoyé/[39m)[33m;[39m
+     [90m 141 |[39m     expect(sendMail)[33m.[39mnot[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 142 |[39m     expect([36mawait[39m countOtpRows(user[33m.[39mid))[33m.[39mtoBe([35m0[39m)[33m;[39m [90m// aucun OTP créé tant que le job existant est actif[39m[0m
+
+      at Object.toBe (test/mfa.dedup.test.js:139:34)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › POST /auth/mfa/resend › avant 60s depuis le dernier envoi → HTTP 429
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 147 |[39m
+     [90m 148 |[39m   describe([32m"POST /auth/mfa/resend"[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 149 |[39m     test([32m"avant 60s depuis le dernier envoi → HTTP 429"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m     [31m[1m^[22m[39m
+     [90m 150 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"resend-too-soon"[39m)[33m;[39m
+     [90m 151 |[39m       [36mawait[39m createTestUser(email)[33m;[39m
+     [90m 152 |[39m[0m
+
+      at test (test/mfa.dedup.test.js:149:5)
+      at describe (test/mfa.dedup.test.js:148:3)
+      at Object.describe (test/mfa.dedup.test.js:58:1)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › POST /auth/mfa/resend › après 60s depuis le dernier envoi → nouvel email envoyé
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+
+    [0m [90m 169 |[39m
+     [90m 170 |[39m       [36mconst[39m res1 [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-5"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 171 |[39m       expect(sendMail)[33m.[39mtoHaveBeenCalledTimes([35m1[39m)[33m;[39m
+     [90m     |[39m                        [31m[1m^[22m[39m
+     [90m 172 |[39m
+     [90m 173 |[39m       [90m// Simule l'écoulement du cooldown de 60s sans attendre réellement.[39m
+     [90m 174 |[39m       [36mawait[39m user[33m.[39mupdate({ mfaLastSentAt[33m:[39m [36mnew[39m [33mDate[39m([33mDate[39m[33m.[39mnow() [33m-[39m [35m61[39m [33m*[39m [35m1000[39m) })[33m;[39m[0m
+
+      at Object.toHaveBeenCalledTimes (test/mfa.dedup.test.js:171:24)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › validation MFA réussie → otpHash/expiresAt effacés, job EmailQueue résiduel annulé
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 189 |[39m
+     [90m 190 |[39m     [36mconst[39m res1 [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-6"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 191 |[39m     [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m     |[39m                                                                         [31m[1m^[22m[39m
+     [90m 192 |[39m     [36mconst[39m otp [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[[35m1[39m][33m;[39m
+     [90m 193 |[39m
+     [90m 194 |[39m     [90m// Simule un job encore RETRYING au moment de la validation (ex: le[39m[0m
+
+      at Object.<anonymous> (test/mfa.dedup.test.js:191:73)
+
+FAIL test/ai.orchestrator.porPromeshAgent.integration.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.log
+      [2026-10-03T21:47:10.438Z] [INFO] [ai:mcp:tool-loader] registered tool "list_users"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.447Z] [INFO] [ai:mcp:tool-loader] registered tool "list_users_by_role"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.449Z] [INFO] [ai:mcp:tool-loader] registered tool "list_commercial_candidates"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.450Z] [INFO] [ai:mcp:tool-loader] registered tool "set_user_active"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.451Z] [INFO] [ai:mcp:tool-loader] registered tool "set_user_role"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.452Z] [INFO] [ai:mcp:tool-loader] registered tool "get_my_profile"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.456Z] [INFO] [ai:mcp:tool-loader] registered tool "update_my_profile"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.457Z] [INFO] [ai:mcp:tool-loader] registered tool "get_user_profile"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.459Z] [INFO] [ai:mcp:tool-loader] registered tool "update_user_profile"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.462Z] [INFO] [ai:mcp:tool-loader] registered tool "list_my_notifications"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.463Z] [INFO] [ai:mcp:tool-loader] registered tool "mark_all_notifications_read"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.465Z] [INFO] [ai:mcp:tool-loader] registered tool "mark_notification_read"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.466Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_notification"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.468Z] [INFO] [ai:mcp:tool-loader] registered tool "send_notification_email"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.469Z] [INFO] [ai:mcp:tool-loader] registered tool "list_pipeline_stages"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.470Z] [INFO] [ai:mcp:tool-loader] registered tool "get_pipeline_stage"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.473Z] [INFO] [ai:mcp:tool-loader] registered tool "create_pipeline_stage"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.475Z] [INFO] [ai:mcp:tool-loader] registered tool "update_pipeline_stage"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.476Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_pipeline_stage"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.483Z] [INFO] [ai:mcp:tool-loader] registered tool "reorder_pipeline_stages"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.486Z] [INFO] [ai:mcp:tool-loader] registered tool "list_projects"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.488Z] [INFO] [ai:mcp:tool-loader] registered tool "move_project_stage"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.490Z] [INFO] [ai:mcp:tool-loader] registered tool "assign_project_owner"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.493Z] [INFO] [ai:mcp:tool-loader] registered tool "get_project_statistics"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.495Z] [INFO] [ai:mcp:tool-loader] registered tool "list_engineers"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.497Z] [INFO] [ai:mcp:tool-loader] registered tool "create_project_action"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.498Z] [INFO] [ai:mcp:tool-loader] registered tool "get_commercial_contact_kpi"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.499Z] [INFO] [ai:mcp:tool-loader] registered tool "get_commercial_contact_analytics"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.501Z] [INFO] [ai:mcp:tool-loader] registered tool "get_commercial_personal_kpi_summary"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.503Z] [INFO] [ai:mcp:tool-loader] registered tool "get_my_commercial_contacts"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.506Z] [INFO] [ai:mcp:tool-loader] registered tool "schedule_commercial_contact_relance"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.508Z] [INFO] [ai:mcp:tool-loader] registered tool "get_commercial_contact_statistics"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.510Z] [INFO] [ai:mcp:tool-loader] registered tool "create_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.512Z] [INFO] [ai:mcp:tool-loader] registered tool "accept_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.513Z] [INFO] [ai:mcp:tool-loader] registered tool "reject_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.516Z] [INFO] [ai:mcp:tool-loader] registered tool "assign_maintenance_technician"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.518Z] [INFO] [ai:mcp:tool-loader] registered tool "start_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.522Z] [INFO] [ai:mcp:tool-loader] registered tool "complete_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.524Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.525Z] [INFO] [ai:mcp:tool-loader] registered tool "get_maintenance_stats"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.526Z] [INFO] [ai:mcp:tool-loader] registered tool "list_my_maintenance_requests"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.528Z] [INFO] [ai:mcp:tool-loader] registered tool "list_all_maintenance_requests"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.529Z] [INFO] [ai:mcp:tool-loader] registered tool "get_maintenance_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.531Z] [INFO] [ai:mcp:tool-loader] registered tool "list_maintenance_technicians"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.533Z] [INFO] [ai:mcp:tool-loader] registered tool "add_maintenance_comment"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.535Z] [INFO] [ai:mcp:tool-loader] registered tool "list_maintenance_comments"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.537Z] [INFO] [ai:mcp:tool-loader] registered tool "get_maintenance_history"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.546Z] [INFO] [ai:mcp:tool-loader] registered tool "create_industrial_record"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.548Z] [INFO] [ai:mcp:tool-loader] registered tool "list_industrial_records"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.550Z] [INFO] [ai:mcp:tool-loader] registered tool "get_industrial_record"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.554Z] [INFO] [ai:mcp:tool-loader] registered tool "update_industrial_record"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.556Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_industrial_record"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.559Z] [INFO] [ai:mcp:tool-loader] registered tool "get_industrial_statistics"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.562Z] [INFO] [ai:mcp:tool-loader] registered tool "create_por_promesh"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.564Z] [INFO] [ai:mcp:tool-loader] registered tool "create_or_open_por_promesh_draft"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.565Z] [INFO] [ai:mcp:tool-loader] registered tool "list_por_promesh_operators"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.568Z] [INFO] [ai:mcp:tool-loader] registered tool "list_por_promesh"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.571Z] [INFO] [ai:mcp:tool-loader] registered tool "get_por_promesh_dashboard"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.573Z] [INFO] [ai:mcp:tool-loader] registered tool "get_por_promesh_stats"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.574Z] [INFO] [ai:mcp:tool-loader] registered tool "get_por_promesh"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.579Z] [INFO] [ai:mcp:tool-loader] registered tool "update_por_promesh"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.580Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_por_promesh"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.582Z] [INFO] [ai:mcp:tool-loader] registered tool "validate_por_promesh"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.583Z] [INFO] [ai:mcp:tool-loader] registered tool "get_dashboard_kpis"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.585Z] [INFO] [ai:mcp:tool-loader] registered tool "get_legacy_dashboard_kpis"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.586Z] [INFO] [ai:mcp:tool-loader] registered tool "get_professional_dashboard"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.587Z] [INFO] [ai:mcp:tool-loader] registered tool "get_user_dashboard"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.589Z] [INFO] [ai:mcp:tool-loader] registered tool "list_hr_requests"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.590Z] [INFO] [ai:mcp:tool-loader] registered tool "get_hr_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.599Z] [INFO] [ai:mcp:tool-loader] registered tool "create_hr_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.601Z] [INFO] [ai:mcp:tool-loader] registered tool "accept_hr_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.603Z] [INFO] [ai:mcp:tool-loader] registered tool "reject_hr_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.606Z] [INFO] [ai:mcp:tool-loader] registered tool "mark_hr_request_processed"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.607Z] [INFO] [ai:mcp:tool-loader] registered tool "add_hr_request_comment"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.609Z] [INFO] [ai:mcp:tool-loader] registered tool "get_hr_request_history"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.610Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_hr_request"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.610Z] [INFO] [ai:mcp:tool-loader] registered tool "get_calendar_status"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.612Z] [INFO] [ai:mcp:tool-loader] registered tool "create_calendar_event"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.614Z] [INFO] [ai:mcp:tool-loader] registered tool "update_calendar_event"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:47:10.616Z] [INFO] [ai:mcp:tool-loader] registered tool "delete_calendar_event"
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.warn
+      [2026-10-03T21:47:10.667Z] [WARN] [ai:mcp:permission] denied "list_por_promesh" for role "commercial"
+
+    [0m [90m 14 |[39m
+     [90m 15 |[39m [36mfunction[39m warn(message[33m,[39m [33m...[39margs) {
+    [31m[1m>[22m[39m[90m 16 |[39m   console[33m.[39mwarn([32m`[${timestamp()}] [WARN] ${message}`[39m[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 17 |[39m }
+     [90m 18 |[39m
+     [90m 19 |[39m [36mfunction[39m info(message[33m,[39m [33m...[39margs) {[0m
+
+      at Object.warn (src/utils/logger.js:16:11)
+      at Object.warn (src/ai/utils/logger.js:20:44)
+      at PermissionManager.warn [as assertCanCall] (src/ai/mcp/permissionManager.js:37:12)
+      at assertCanCall (test/ai.orchestrator.porPromeshAgent.integration.test.js:132:38)
+      at Object.<anonymous> (node_modules/expect/build/index.js:1824:9)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:2235:93)
+      at Object.toThrow (test/ai.orchestrator.porPromeshAgent.integration.test.js:132:110)
+
+    console.warn
+      [2026-10-03T21:47:10.731Z] [WARN] [ai:mcp:permission] denied "get_por_promesh" for role "commercial"
+
+    [0m [90m 14 |[39m
+     [90m 15 |[39m [36mfunction[39m warn(message[33m,[39m [33m...[39margs) {
+    [31m[1m>[22m[39m[90m 16 |[39m   console[33m.[39mwarn([32m`[${timestamp()}] [WARN] ${message}`[39m[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 17 |[39m }
+     [90m 18 |[39m
+     [90m 19 |[39m [36mfunction[39m info(message[33m,[39m [33m...[39margs) {[0m
+
+      at Object.warn (src/utils/logger.js:16:11)
+      at Object.warn (src/ai/utils/logger.js:20:44)
+      at PermissionManager.warn [as assertCanCall] (src/ai/mcp/permissionManager.js:37:12)
+      at assertCanCall (test/ai.orchestrator.porPromeshAgent.integration.test.js:133:38)
+      at Object.<anonymous> (node_modules/expect/build/index.js:1824:9)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:2235:93)
+      at Object.toThrow (test/ai.orchestrator.porPromeshAgent.integration.test.js:133:109)
+
+    console.warn
+      [2026-10-03T21:47:10.733Z] [WARN] [ai:mcp:permission] denied "list_por_promesh" for role "user"
+
+    [0m [90m 14 |[39m
+     [90m 15 |[39m [36mfunction[39m warn(message[33m,[39m [33m...[39margs) {
+    [31m[1m>[22m[39m[90m 16 |[39m   console[33m.[39mwarn([32m`[${timestamp()}] [WARN] ${message}`[39m[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 17 |[39m }
+     [90m 18 |[39m
+     [90m 19 |[39m [36mfunction[39m info(message[33m,[39m [33m...[39margs) {[0m
+
+      at Object.warn (src/utils/logger.js:16:11)
+      at Object.warn (src/ai/utils/logger.js:20:44)
+      at PermissionManager.warn [as assertCanCall] (src/ai/mcp/permissionManager.js:37:12)
+      at assertCanCall (test/ai.orchestrator.porPromeshAgent.integration.test.js:132:38)
+      at Object.<anonymous> (node_modules/expect/build/index.js:1824:9)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:2235:93)
+      at Object.toThrow (test/ai.orchestrator.porPromeshAgent.integration.test.js:132:110)
+
+    console.warn
+      [2026-10-03T21:47:10.735Z] [WARN] [ai:mcp:permission] denied "get_por_promesh" for role "user"
+
+    [0m [90m 14 |[39m
+     [90m 15 |[39m [36mfunction[39m warn(message[33m,[39m [33m...[39margs) {
+    [31m[1m>[22m[39m[90m 16 |[39m   console[33m.[39mwarn([32m`[${timestamp()}] [WARN] ${message}`[39m[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 17 |[39m }
+     [90m 18 |[39m
+     [90m 19 |[39m [36mfunction[39m info(message[33m,[39m [33m...[39margs) {[0m
+
+      at Object.warn (src/utils/logger.js:16:11)
+      at Object.warn (src/ai/utils/logger.js:20:44)
+      at PermissionManager.warn [as assertCanCall] (src/ai/mcp/permissionManager.js:37:12)
+      at assertCanCall (test/ai.orchestrator.porPromeshAgent.integration.test.js:133:38)
+      at Object.<anonymous> (node_modules/expect/build/index.js:1824:9)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:2235:93)
+      at Object.toThrow (test/ai.orchestrator.porPromeshAgent.integration.test.js:133:109)
+
+    console.warn
+      [2026-10-03T21:47:10.736Z] [WARN] [ai:mcp:permission] denied "delete_por_promesh" for role "responsable_logistique_achat"
+
+    [0m [90m 14 |[39m
+     [90m 15 |[39m [36mfunction[39m warn(message[33m,[39m [33m...[39margs) {
+    [31m[1m>[22m[39m[90m 16 |[39m   console[33m.[39mwarn([32m`[${timestamp()}] [WARN] ${message}`[39m[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 17 |[39m }
+     [90m 18 |[39m
+     [90m 19 |[39m [36mfunction[39m info(message[33m,[39m [33m...[39margs) {[0m
+
+      at Object.warn (src/utils/logger.js:16:11)
+      at Object.warn (src/ai/utils/logger.js:20:44)
+      at PermissionManager.warn [as assertCanCall] (src/ai/mcp/permissionManager.js:37:12)
+      at assertCanCall (test/ai.orchestrator.porPromeshAgent.integration.test.js:139:36)
+      at Object.<anonymous> (node_modules/expect/build/index.js:1824:9)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:2235:93)
+      at Object.toThrow (test/ai.orchestrator.porPromeshAgent.integration.test.js:139:103)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+  ● PARTIE B — exécution réelle contre la VRAIE base › get_por_promesh(RLA, SA PROPRE fiche réelle) : succès
+
+    PorPromesh introuvable
+
+
+  ● PARTIE B — exécution réelle contre la VRAIE base › TEST FUITE — RLA (owner-scoped) ne peut PAS lire la fiche réelle d'un AUTRE utilisateur réel (superadmin)
+
+    expect(received).rejects.toMatchObject(expected)
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "status": 403,
+    +   "status": 404,
+      }
+
+    [0m [90m 155 |[39m     [36mawait[39m expect(
+     [90m 156 |[39m       callTool([32m"get_por_promesh"[39m[33m,[39m { id[33m:[39m [33mREAL_SUPERADMIN_FICHE_ID[39m }[33m,[39m { id[33m:[39m [33mREAL_RLA_ID[39m[33m,[39m role[33m:[39m [32m"responsable_logistique_achat"[39m })
+    [31m[1m>[22m[39m[90m 157 |[39m     )[33m.[39mrejects[33m.[39mtoMatchObject({ status[33m:[39m [35m403[39m })[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 158 |[39m     [36mawait[39m expect(
+     [90m 159 |[39m       callTool([32m"update_por_promesh"[39m[33m,[39m { id[33m:[39m [33mREAL_SUPERADMIN_FICHE_ID[39m[33m,[39m machine[33m:[39m [32m"X"[39m }[33m,[39m { id[33m:[39m [33mREAL_RLA_ID[39m[33m,[39m role[33m:[39m [32m"responsable_logistique_achat"[39m })
+     [90m 160 |[39m     )[33m.[39mrejects[33m.[39mtoMatchObject({ status[33m:[39m [35m403[39m })[33m;[39m[0m
+
+      at Object.toMatchObject (node_modules/expect/build/index.js:2155:20)
+      at Object.toMatchObject (test/ai.orchestrator.porPromeshAgent.integration.test.js:157:15)
+
+  ● PARTIE B — exécution réelle contre la VRAIE base › un admin-tier (jamais owner-scoped) PEUT lire la fiche réelle de N'IMPORTE QUEL utilisateur — visibilité transverse attendue, pas une fuite
+
+    PorPromesh introuvable
+
+
+FAIL test/nfr.dataIntegrity.test.js (12.812 s)
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [2026-10-03T21:47:12.679Z] [INFO] [ai:config] [AI-COPILOT] enabled=true provider=ollama
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      🚀 CRM Scheduler started
+
+      at Object.log (src/services/scheduler.js:10:9)
+
+    console.log
+      [scheduler] AUTO_EMAIL_JOBS_ENABLED=false — relance cron NOT scheduled.
+
+      at Object.log (src/services/scheduler.js:17:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.log
+      [checkProjects] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/checkProjects.js:19:11)
+
+    console.log
+      [CRON] AUTO_ARCHIVE_ENABLED = false
+
+      at Object.log (src/cron/projectCron.js:22:9)
+
+    console.log
+      [projectCron] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/projectCron.js:199:11)
+
+    console.log
+      🔥 FOLLOWUP CRON LOADED
+
+      at Object.log (src/cron/followup.job.js:23:9)
+
+    console.log
+      [followup.job] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/followup.job.js:432:11)
+
+    console.log
+      🔥 GOOGLE CALENDAR CHANNEL RENEWAL CRON LOADED
+
+      at Object.log (src/cron/googleCalendarChannelRenewal.job.js:13:9)
+
+    console.log
+      [googleCalendarChannelRenewal.job] AUTO_EMAIL_JOBS_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/googleCalendarChannelRenewal.job.js:29:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      🔥 PROACTIVE AI MONITOR CRON LOADED
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:27:9)
+
+    console.log
+      [proactiveAiMonitor.job] AI_PROACTIVE_MONITORING_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:81:11)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › project_actions.createdBy → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › projects.engineerId → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › projects.architectId → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › commercial_contact_actions.createdBy → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Cohérence des données existantes › tout contact affecté l'est à un utilisateur de rôle commercial
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 485
+
+    [0m [90m 327 |[39m         [32m`SELECT count(*) FROM commercial_contacts c JOIN users u ON u.id = c."commercialId" WHERE u.role <> 'commercial'`[39m
+     [90m 328 |[39m       )
+    [31m[1m>[22m[39m[90m 329 |[39m     )[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 330 |[39m   })[33m;[39m
+     [90m 331 |[39m
+     [90m 332 |[39m   test([32m"tout contact affecté porte l'auteur et la date de l'affectation"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:329:7)
+
+  ● Cohérence des données existantes › tout contact affecté porte l'auteur et la date de l'affectation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 485
+
+    [0m [90m 335 |[39m         [32m`SELECT count(*) FROM commercial_contacts WHERE "commercialId" IS NOT NULL AND ("assignedBy" IS NULL OR "assignedAt" IS NULL)`[39m
+     [90m 336 |[39m       )
+    [31m[1m>[22m[39m[90m 337 |[39m     )[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 338 |[39m   })[33m;[39m
+     [90m 339 |[39m
+     [90m 340 |[39m   test([32m"toute fiche rattachée à une machine référence une machine de la bonne famille (POR → PROMESH)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:337:7)
+
+  ● Cohérence des données existantes › la contrainte d'unicité users.email n'est déclarée qu'une seule fois
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 723
+
+    [0m [90m 355 |[39m     expect(
+     [90m 356 |[39m       [36mawait[39m scalar([32m`SELECT count(*) FROM pg_constraint WHERE conrelid = 'users'::regclass AND contype = 'u'`[39m)
+    [31m[1m>[22m[39m[90m 357 |[39m     )[33m.[39mtoBe([35m1[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 358 |[39m   })[33m;[39m
+     [90m 359 |[39m })[33m;[39m
+     [90m 360 |[39m[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:357:7)
+
+FAIL test/notification.service.dbRegression.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+  ● TEST 2/3 — les Tools ne plantent plus sur 'Notification undefined', lecture réelle possible › listMyNotifications() sur un VRAI utilisateur retourne de vraies données, aucune exception
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+    [0m [90m 36 |[39m     expect(result[33m.[39mitems)[33m.[39mtoBeDefined()[33m;[39m
+     [90m 37 |[39m     expect([36mtypeof[39m result[33m.[39mtotal)[33m.[39mtoBe([32m"number"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 38 |[39m     expect(result[33m.[39mtotal)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m [90m// ce compte a de vraies notifications (vérifié avant ce test)[39m
+     [90m    |[39m                          [31m[1m^[22m[39m
+     [90m 39 |[39m   }[33m,[39m [35m30000[39m)[33m;[39m
+     [90m 40 |[39m
+     [90m 41 |[39m   test([32m"markOneRead()/deleteNotification() atteignent bien Notification.findOne/.destroy (jamais 'Cannot read properties of undefined') — id inexistant, donc AUCUNE ligne réelle modifiée"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBeGreaterThan (test/notification.service.dbRegression.test.js:38:26)
+
+  ● TEST 5 — un utilisateur A ne peut pas récupérer les notifications de B › listMyNotifications(A) ne contient jamais une notification de B, et vice versa
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+    [0m [90m 68 |[39m     expect(resultB[33m.[39mitems[33m.[39msome((n) [33m=>[39m n[33m.[39muserId [33m===[39m [33mUSER_A[39m))[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m 69 |[39m     [90m// Preuve positive que ce ne sont pas deux listes vides par coïncidence :[39m
+    [31m[1m>[22m[39m[90m 70 |[39m     expect(resultA[33m.[39mtotal)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 71 |[39m     expect(resultB[33m.[39mtotal)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m 72 |[39m   }[33m,[39m [35m30000[39m)[33m;[39m
+     [90m 73 |[39m })[33m;[39m[0m
+
+      at Object.toBeGreaterThan (test/notification.service.dbRegression.test.js:70:27)
+
+FAIL test/dashboard.service.getUserKPIs.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      USER_ID 516f6dca-7a6f-43cb-b527-5c5652e3e03f
+
+      at log (src/modules/dashboard/services/dashboard.service.js:217:11)
+
+    console.log
+      DB_HEALTH total=17 active=17 archived=0 null=0
+
+      at log (src/modules/dashboard/services/dashboard.service.js:239:11)
+
+    console.log
+      PROJECTS_FOUND 17
+
+      at log (src/modules/dashboard/services/dashboard.service.js:292:11)
+
+    console.log
+      VALIDATIONS_FOUND 0
+
+      at log (src/modules/dashboard/services/dashboard.service.js:293:11)
+
+    console.log
+      SURFACE_TOTAL 25000
+
+      at log (src/modules/dashboard/services/dashboard.service.js:294:11)
+
+    console.log
+      RELANCES_FOUND 0 | today: 0 | week: 0 | late: 6
+
+      at log (src/modules/dashboard/services/dashboard.service.js:337:11)
+
+    console.log
+      [KPI USER] monthlyEvolution = 3 months
+
+      at log (src/modules/dashboard/services/dashboard.service.js:435:11)
+
+  ● dashboard.service.js::getKPIByRole (role="user") — real database regression › resolves for a real non-admin user without throwing (the exact bug: 'object is not iterable')
+
+
+
+    [0m [90m 33 |[39m describe([32m"dashboard.service.js::getKPIByRole (role=\"user\") — real database regression"[39m[33m,[39m () [33m=>[39m {
+     [90m 34 |[39m   test([32m"resolves for a real non-admin user without throwing (the exact bug: 'object is not iterable')"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 35 |[39m     [36mconst[39m anyUser [33m=[39m [36mawait[39m [33mUser[39m[33m.[39mfindOne({ where[33m:[39m { role[33m:[39m [32m"user"[39m }[33m,[39m order[33m:[39m [[[32m"createdAt"[39m[33m,[39m [32m"ASC"[39m]] })[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 36 |[39m     [36mif[39m ([33m![39manyUser) [36mreturn[39m[33m;[39m [90m// no role="user" fixture in this environment — schema-level intent still documented above[39m
+     [90m 37 |[39m
+     [90m 38 |[39m     [36mconst[39m result [33m=[39m [36mawait[39m getKPIByRole(anyUser[33m.[39mid[33m,[39m [32m"user"[39m)[33m;[39m[0m
+
+      at Query.run (node_modules/sequelize/src/dialects/postgres/query.js:76:25)
+      at node_modules/sequelize/src/sequelize.js:650:28
+      at PostgresQueryInterface.select (node_modules/sequelize/src/dialects/abstract/query-interface.js:1001:12)
+      at Function.findAll (node_modules/sequelize/src/model.js:1824:21)
+      at Function.findOne (node_modules/sequelize/src/model.js:1998:12)
+      at Object.<anonymous> (test/dashboard.service.getUserKPIs.test.js:35:21)
+
+FAIL test/auth.resetPassword.test.js (25.205 s)
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (37) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      [2026-10-03T21:48:23.759Z] [INFO] [ai:config] [AI-COPILOT] enabled=true provider=ollama
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      ARCHIVE ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:345:9)
+
+    console.log
+      MAINTENANCE REQUEST ASSOCIATIONS LOADED
+
+      at Object.log (src/models/associations.js:369:9)
+
+    console.log
+      [dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      🔥 PROACTIVE AI MONITOR CRON LOADED
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:27:9)
+
+    console.log
+      [proactiveAiMonitor.job] AI_PROACTIVE_MONITORING_ENABLED=false — cron NOT scheduled.
+
+      at Object.log (src/cron/proactiveAiMonitor.job.js:81:11)
+
+    console.error
+      ❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+    console.log
+      [2026-10-03T21:48:30.533Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'a8ada875-763f-4696-8efc-d565343d9d08',
+        email: 'reset-test-existing-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.554Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'a8ada875-763f-4696-8efc-d565343d9d08',
+        expiresAt: '2026-10-03T22:03:30.554Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.569Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'a8ada875-763f-4696-8efc-d565343d9d08' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.570Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-existing-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.578Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: 'c3f65a14-208a-46df-9af8-0470f433a441',
+        email: 'reset-test-existing-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:30.578Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.598Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: 'c3f65a14-208a-46df-9af8-0470f433a441',
+        email: 'reset-test-existing-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.599Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-existing-1791064109658@example.com',
+        jobId: 'c3f65a14-208a-46df-9af8-0470f433a441',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.630Z] [INFO] FORGOT_PASSWORD: user not found {
+        email: 'reset-test-does-not-exist-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.972Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.976Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        expiresAt: '2026-10-03T22:03:30.976Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.990Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.990Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-ratelimit-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.994Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '8b0d2e24-ce0b-4f15-975b-2ecb0cb9ad46',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:30.994Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.997Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '8b0d2e24-ce0b-4f15-975b-2ecb0cb9ad46',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:30.997Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-ratelimit-1791064109658@example.com',
+        jobId: '8b0d2e24-ce0b-4f15-975b-2ecb0cb9ad46',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.013Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.016Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        expiresAt: '2026-10-03T22:03:31.016Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.023Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.023Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-ratelimit-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.027Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: 'e6aa54eb-02c5-42de-9e5c-69640301684a',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:31.027Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.030Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: 'e6aa54eb-02c5-42de-9e5c-69640301684a',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.030Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-ratelimit-1791064109658@example.com',
+        jobId: 'e6aa54eb-02c5-42de-9e5c-69640301684a',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.048Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.050Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        expiresAt: '2026-10-03T22:03:31.050Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.057Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.058Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-ratelimit-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.060Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '6112c22d-b3bb-4a85-a234-59836a49adb5',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:31.060Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.063Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '6112c22d-b3bb-4a85-a234-59836a49adb5',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.063Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-ratelimit-1791064109658@example.com',
+        jobId: '6112c22d-b3bb-4a85-a234-59836a49adb5',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.077Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'da892052-9f8f-43fc-83d0-9fa12a6aa77b',
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.080Z] [INFO] FORGOT_PASSWORD: rate limited (3/h/email) {
+        email: 'reset-test-ratelimit-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1',
+        recentCount: 3
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.450Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'ad719b38-58d4-4288-ad87-20b30fb8603e',
+        email: 'reset-test-regenerate-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.452Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'ad719b38-58d4-4288-ad87-20b30fb8603e',
+        expiresAt: '2026-10-03T22:03:31.452Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.459Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'ad719b38-58d4-4288-ad87-20b30fb8603e' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.459Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-regenerate-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.462Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: 'b23c70ba-24b1-4001-a6a3-b4f682c658c2',
+        email: 'reset-test-regenerate-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:31.462Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.464Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: 'b23c70ba-24b1-4001-a6a3-b4f682c658c2',
+        email: 'reset-test-regenerate-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.464Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-regenerate-1791064109658@example.com',
+        jobId: 'b23c70ba-24b1-4001-a6a3-b4f682c658c2',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.482Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'ad719b38-58d4-4288-ad87-20b30fb8603e',
+        email: 'reset-test-regenerate-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.484Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'ad719b38-58d4-4288-ad87-20b30fb8603e',
+        expiresAt: '2026-10-03T22:03:31.484Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.492Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'ad719b38-58d4-4288-ad87-20b30fb8603e' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.492Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-regenerate-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.495Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '223156f9-20e0-4c67-b612-c7adea8e67ae',
+        email: 'reset-test-regenerate-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:31.495Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.497Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '223156f9-20e0-4c67-b612-c7adea8e67ae',
+        email: 'reset-test-regenerate-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.498Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-regenerate-1791064109658@example.com',
+        jobId: '223156f9-20e0-4c67-b612-c7adea8e67ae',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.904Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: '6137b80b-2dcc-45b3-8920-f238a71ff464',
+        email: 'reset-test-invalidtoken-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.906Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: '6137b80b-2dcc-45b3-8920-f238a71ff464',
+        expiresAt: '2026-10-03T22:03:31.906Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.911Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: '6137b80b-2dcc-45b3-8920-f238a71ff464' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.912Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-invalidtoken-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.915Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '8114e72a-eab7-4036-9962-b5ad85eaaf52',
+        email: 'reset-test-invalidtoken-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:31.915Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.917Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '8114e72a-eab7-4036-9962-b5ad85eaaf52',
+        email: 'reset-test-invalidtoken-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:31.917Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-invalidtoken-1791064109658@example.com',
+        jobId: '8114e72a-eab7-4036-9962-b5ad85eaaf52',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.308Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'fb6038f4-f1da-497e-bb77-c2d96cfcc2cc',
+        email: 'reset-test-expired-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.310Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'fb6038f4-f1da-497e-bb77-c2d96cfcc2cc',
+        expiresAt: '2026-10-03T22:03:32.310Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.317Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'fb6038f4-f1da-497e-bb77-c2d96cfcc2cc' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.317Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-expired-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.322Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: 'ca27a919-9834-4d4f-8082-45213201c908',
+        email: 'reset-test-expired-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:32.322Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.325Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: 'ca27a919-9834-4d4f-8082-45213201c908',
+        email: 'reset-test-expired-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.325Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-expired-1791064109658@example.com',
+        jobId: 'ca27a919-9834-4d4f-8082-45213201c908',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.799Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: '76191700-d974-4918-b15c-c1c2cf24115a',
+        email: 'reset-test-boundary-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.801Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: '76191700-d974-4918-b15c-c1c2cf24115a',
+        expiresAt: '2026-10-03T22:03:32.801Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.896Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: '76191700-d974-4918-b15c-c1c2cf24115a' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.897Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-boundary-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:32.954Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '9c752ee2-ef86-4d53-8ae8-c25a7189b70b',
+        email: 'reset-test-boundary-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:32.954Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:33.029Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '9c752ee2-ef86-4d53-8ae8-c25a7189b70b',
+        email: 'reset-test-boundary-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:33.029Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-boundary-1791064109658@example.com',
+        jobId: '9c752ee2-ef86-4d53-8ae8-c25a7189b70b',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.152Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'f3c24a69-c262-48f8-9105-83715d3da7ee',
+        email: 'reset-test-weakpw-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.155Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'f3c24a69-c262-48f8-9105-83715d3da7ee',
+        expiresAt: '2026-10-03T22:03:34.155Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.208Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'f3c24a69-c262-48f8-9105-83715d3da7ee' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.208Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-weakpw-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.365Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '3bd38c74-4e48-4783-bd3d-501231d39bc6',
+        email: 'reset-test-weakpw-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:34.365Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.491Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '3bd38c74-4e48-4783-bd3d-501231d39bc6',
+        email: 'reset-test-weakpw-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:34.492Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-weakpw-1791064109658@example.com',
+        jobId: '3bd38c74-4e48-4783-bd3d-501231d39bc6',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.123Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: '7ad640ce-bf13-43ad-8a84-800766c557d7',
+        email: 'reset-test-success-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.125Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: '7ad640ce-bf13-43ad-8a84-800766c557d7',
+        expiresAt: '2026-10-03T22:03:36.125Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.427Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: '7ad640ce-bf13-43ad-8a84-800766c557d7' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.428Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-success-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.626Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: 'cc5e0113-a361-47b0-aa77-9ea0121ae61c',
+        email: 'reset-test-success-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:36.626Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.783Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: 'cc5e0113-a361-47b0-aa77-9ea0121ae61c',
+        email: 'reset-test-success-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:36.783Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-success-1791064109658@example.com',
+        jobId: 'cc5e0113-a361-47b0-aa77-9ea0121ae61c',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:40.443Z] [INFO] FORGOT_PASSWORD: user found {
+        userId: 'ca51ec15-32b3-49cf-93e7-e816b8a394ea',
+        email: 'reset-test-reuse-1791064109658@example.com',
+        ip: '::ffff:127.0.0.1'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:40.450Z] [INFO] FORGOT_PASSWORD: token generated {
+        userId: 'ca51ec15-32b3-49cf-93e7-e816b8a394ea',
+        expiresAt: '2026-10-03T22:03:40.450Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:40.612Z] [INFO] FORGOT_PASSWORD: token saved to DB { userId: 'ca51ec15-32b3-49cf-93e7-e816b8a394ea' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:40.613Z] [INFO] FORGOT_PASSWORD: starting email send { to: 'reset-test-reuse-1791064109658@example.com' }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:40.806Z] [INFO] EMAIL_QUEUE: tentative d'envoi {
+        jobId: '745b2bfa-e819-4c9d-afb7-6397ea7d8960',
+        email: 'reset-test-reuse-1791064109658@example.com',
+        attempt: 1,
+        maxAttempts: 5,
+        date: '2026-10-03T21:48:40.806Z'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:41.003Z] [INFO] EMAIL_QUEUE: envoi réussi {
+        jobId: '745b2bfa-e819-4c9d-afb7-6397ea7d8960',
+        email: 'reset-test-reuse-1791064109658@example.com',
+        attempt: 1,
+        messageId: 'test'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+    console.log
+      [2026-10-03T21:48:41.004Z] [INFO] FORGOT_PASSWORD: email queue status {
+        to: 'reset-test-reuse-1791064109658@example.com',
+        jobId: '745b2bfa-e819-4c9d-afb7-6397ea7d8960',
+        status: 'SENT'
+      }
+
+      at Object.log [as info] (src/utils/logger.js:20:11)
+
+
+
+  ● Test suite failed to run
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 71 |[39m
+     [90m 72 |[39m describe([32m"Réinitialisation de mot de passe"[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 73 |[39m   afterAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 74 |[39m     [36mawait[39m [33mPasswordResetLog[39m[33m.[39mdestroy({ where[33m:[39m { email[33m:[39m createdEmails } })[33m;[39m
+     [90m 75 |[39m     [36mawait[39m [33mUser[39m[33m.[39mdestroy({ where[33m:[39m { email[33m:[39m createdEmails } })[33m;[39m
+     [90m 76 |[39m     [36mawait[39m sequelize[33m.[39mclose()[33m;[39m[0m
+
+      at afterAll (test/auth.resetPassword.test.js:73:3)
+      at Object.describe (test/auth.resetPassword.test.js:72:1)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env : connect ECONNREFUSED 127.0.0.1:2525".
+
+    [0m [90m 21 |[39m transporter[33m.[39mverify((err) [33m=>[39m {
+     [90m 22 |[39m   [36mif[39m (err) {
+    [31m[1m>[22m[39m[90m 23 |[39m     console[33m.[39merror([32m"❌ [SMTP verify] ÉCHEC — vérifiez EMAIL_HOST/EMAIL_PORT/EMAIL_USER/EMAIL_PASS dans .env :"[39m[33m,[39m err[33m.[39mmessage)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 24 |[39m   } [36melse[39m {
+     [90m 25 |[39m     console[33m.[39mlog([32m`✅ [SMTP verify] OK — ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT} (user=${process.env.EMAIL_USER})`[39m)[33m;[39m
+     [90m 26 |[39m   }[0m
+
+      at console.error (node_modules/@jest/console/build/index.js:124:10)
+      at error (src/services/email.service.js:23:13)
+      at SMTPConnection.<anonymous> (node_modules/nodemailer/lib/smtp-transport/index.js:352:24)
+      at SMTPConnection._onError (node_modules/nodemailer/lib/smtp-connection/index.js:804:14)
+      at Socket.SMTPConnection._onSocketError (node_modules/nodemailer/lib/smtp-connection/index.js:196:45)
+
+Error: Error: Invalid XRef stream header
+Error: Error: Invalid XRef stream header
+
+=============================== Coverage summary ===============================
+Statements   : 66.34% ( 12476/18804 )
+Branches     : 52.25% ( 6569/12572 )
+Functions    : 68.68% ( 2180/3174 )
+Lines        : 67.25% ( 11495/17092 )
+================================================================================
+
+Summary of all failing tests
+FAIL test/mfa.test.js (57.973 s)
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › jamais vérifié → MFA requis, aucune session ouverte, code envoyé par email
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 91 |[39m
+     [90m 92 |[39m   describe([32m"POST /auth/signin — décision MFA"[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 93 |[39m     test([32m"jamais vérifié → MFA requis, aucune session ouverte, code envoyé par email"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m    |[39m     [31m[1m^[22m[39m
+     [90m 94 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"never-verified"[39m)[33m;[39m
+     [90m 95 |[39m       [36mawait[39m createTestUser(email)[33m;[39m
+     [90m 96 |[39m[0m
+
+      at test (test/mfa.test.js:93:5)
+      at describe (test/mfa.test.js:92:3)
+      at Object.describe (test/mfa.test.js:79:1)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › connexion récente, aucun changement de contexte → pas de MFA
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 105 |[39m     })[33m;[39m
+     [90m 106 |[39m
+    [31m[1m>[22m[39m[90m 107 |[39m     test([32m"connexion récente, aucun changement de contexte → pas de MFA"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m     [31m[1m^[22m[39m
+     [90m 108 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"recent"[39m)[33m;[39m
+     [90m 109 |[39m       [36mawait[39m createTestUser(email[33m,[39m { mfaLastVerifiedAt[33m:[39m [36mnew[39m [33mDate[39m() })[33m;[39m
+     [90m 110 |[39m[0m
+
+      at test (test/mfa.test.js:107:5)
+      at describe (test/mfa.test.js:92:3)
+      at Object.describe (test/mfa.test.js:79:1)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › changement d'appareil force un MFA même si récemment vérifié
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 117 |[39m     })[33m;[39m
+     [90m 118 |[39m
+    [31m[1m>[22m[39m[90m 119 |[39m     test([32m"changement d'appareil force un MFA même si récemment vérifié"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m     [31m[1m^[22m[39m
+     [90m 120 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"new-device"[39m)[33m;[39m
+     [90m 121 |[39m       [36mawait[39m createTestUser(email[33m,[39m { mfaLastVerifiedAt[33m:[39m [36mnew[39m [33mDate[39m()[33m,[39m lastLoginDeviceId[33m:[39m [32m"device-old"[39m })[33m;[39m
+     [90m 122 |[39m[0m
+
+      at test (test/mfa.test.js:119:5)
+      at describe (test/mfa.test.js:92:3)
+      at Object.describe (test/mfa.test.js:79:1)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › changement d'IP force un MFA même si récemment vérifié
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    [0m [90m 130 |[39m
+     [90m 131 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-8"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 132 |[39m       expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                    [31m[1m^[22m[39m
+     [90m 133 |[39m     })[33m;[39m
+     [90m 134 |[39m
+     [90m 135 |[39m     test([32m"rôle admin : fenêtre de 24h (30h d'ancienneté = MFA requis, contrairement à un utilisateur standard)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/mfa.test.js:132:36)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › rôle admin : fenêtre de 24h (30h d'ancienneté = MFA requis, contrairement à un utilisateur standard)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    [0m [90m 142 |[39m
+     [90m 143 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-10"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 144 |[39m       expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                    [31m[1m^[22m[39m
+     [90m 145 |[39m     })[33m;[39m
+     [90m 146 |[39m
+     [90m 147 |[39m     test([32m"30h d'ancienneté pour un utilisateur standard → pas encore de MFA (fenêtre 3 jours)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/mfa.test.js:144:36)
+
+  ● MFA (multi-factor authentication) › POST /auth/signin — décision MFA › 30h d'ancienneté pour un utilisateur standard → pas encore de MFA (fenêtre 3 jours)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: undefined
+
+    [0m [90m 154 |[39m
+     [90m 155 |[39m       [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-10b"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 156 |[39m       expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m     |[39m                                    [31m[1m^[22m[39m
+     [90m 157 |[39m     })[33m;[39m
+     [90m 158 |[39m   })[33m;[39m
+     [90m 159 |[39m[0m
+
+      at Object.toBe (test/mfa.test.js:156:36)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › code correct → session ouverte, mfaLastVerifiedAt et contexte mis à jour
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:166:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › code incorrect → 400, compteur de tentatives décrémenté
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:184:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › 5 tentatives incorrectes → max_attempts, puis même le bon code est refusé
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:198:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/verify › code expiré → rejeté avec reason=expired
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:214:19)
+
+  ● MFA (multi-factor authentication) › POST /auth/mfa/resend › renvoie un nouveau challengeToken et un nouveau code — l'ancien code cesse de fonctionner
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:235:22)
+
+  ● MFA (multi-factor authentication) › Faire confiance à cet appareil pendant 30 jours › un appareil de confiance saute le MFA même si mfaLastVerifiedAt est périmé
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:266:19)
+
+  ● MFA (multi-factor authentication) › Faire confiance à cet appareil pendant 30 jours › un device token présenté pour un AUTRE deviceId est ignoré (MFA toujours requis)
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 62 |[39m [90m// (mock) — même esprit que lastEmailToken() dans auth.resetPassword.test.js.[39m
+     [90m 63 |[39m [36mfunction[39m lastOtpCode() {
+    [31m[1m>[22m[39m[90m 64 |[39m   [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m    |[39m                                                                       [31m[1m^[22m[39m
+     [90m 65 |[39m   [36mconst[39m match [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[33m;[39m
+     [90m 66 |[39m   [36mreturn[39m match [33m?[39m match[[35m1[39m] [33m:[39m [36mnull[39m[33m;[39m
+     [90m 67 |[39m }[0m
+
+      at lastOtpCode (test/mfa.test.js:64:71)
+      at Object.lastOtpCode (test/mfa.test.js:294:19)
+
+  ● MFA (multi-factor authentication) › Compatibilité avec le flux Forgot Password / EmailQueue › un reset password réussi révoque la confiance MFA (mfaLastVerifiedAt + appareils de confiance)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: undefined
+
+    [0m [90m 308 |[39m       [90m// Sanity check : sans reset, pas de MFA requis.[39m
+     [90m 309 |[39m       [36mconst[39m before [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-11"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 310 |[39m       expect(before[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m     |[39m                                       [31m[1m^[22m[39m
+     [90m 311 |[39m
+     [90m 312 |[39m       [36mconst[39m { token[33m,[39m tokenHash } [33m=[39m generateResetToken()[33m;[39m
+     [90m 313 |[39m       [36mawait[39m user[33m.[39mupdate({ resetPasswordTokenHash[33m:[39m tokenHash[33m,[39m resetPasswordExpiresAt[33m:[39m [36mnew[39m [33mDate[39m([33mDate[39m[33m.[39mnow() [33m+[39m [35m60000[39m) })[33m;[39m[0m
+
+      at Object.toBe (test/mfa.test.js:310:39)
+
+FAIL test/mfa.dedup.test.js (54.978 s)
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › double-clic sur 'Se connecter' → un seul email envoyé, un seul OTP créé
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 69 |[39m   })[33m;[39m
+     [90m 70 |[39m
+    [31m[1m>[22m[39m[90m 71 |[39m   test([32m"double-clic sur 'Se connecter' → un seul email envoyé, un seul OTP créé"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 72 |[39m     [36mconst[39m email [33m=[39m emailFor([32m"double-click"[39m)[33m;[39m
+     [90m 73 |[39m     [36mconst[39m user [33m=[39m [36mawait[39m createTestUser(email)[33m;[39m
+     [90m 74 |[39m[0m
+
+      at test (test/mfa.dedup.test.js:71:3)
+      at Object.describe (test/mfa.dedup.test.js:58:1)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › 5 requêtes simultanées → un seul OTP créé, un seul email envoyé
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    [0m [90m  96 |[39m     ])[33m;[39m
+     [90m  97 |[39m
+    [31m[1m>[22m[39m[90m  98 |[39m     expect(results[33m.[39mevery((r) [33m=>[39m r[33m.[39mbody[33m.[39mmfaRequired [33m===[39m [36mtrue[39m))[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                                               [31m[1m^[22m[39m
+     [90m  99 |[39m     expect([36mawait[39m countOtpRows(user[33m.[39mid))[33m.[39mtoBe([35m1[39m)[33m;[39m
+     [90m 100 |[39m     expect(sendMail)[33m.[39mtoHaveBeenCalledTimes([35m1[39m)[33m;[39m
+     [90m 101 |[39m   }[33m,[39m [35m20000[39m)[33m;[39m[0m
+
+      at Object.toBe (test/mfa.dedup.test.js:98:63)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › OTP encore actif (>30s restantes) → signin répété ne renvoie pas d'email
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+
+    [0m [90m 106 |[39m
+     [90m 107 |[39m     [36mawait[39m signin(email[33m,[39m [32m"device-2"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 108 |[39m     expect(sendMail)[33m.[39mtoHaveBeenCalledTimes([35m1[39m)[33m;[39m
+     [90m     |[39m                      [31m[1m^[22m[39m
+     [90m 109 |[39m
+     [90m 110 |[39m     [36mconst[39m res2 [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-2"[39m)[33m;[39m
+     [90m 111 |[39m     expect(res2[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m[0m
+
+      at Object.toHaveBeenCalledTimes (test/mfa.dedup.test.js:108:22)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › un job EmailQueue déjà actif pour cet utilisateur → aucun nouveau job ni OTP créé
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    [0m [90m 137 |[39m     [36mconst[39m res [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-3"[39m)[33m;[39m
+     [90m 138 |[39m
+    [31m[1m>[22m[39m[90m 139 |[39m     expect(res[33m.[39mbody[33m.[39mmfaRequired)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+     [90m     |[39m                                  [31m[1m^[22m[39m
+     [90m 140 |[39m     expect(res[33m.[39mbody[33m.[39mmessage)[33m.[39mtoMatch([35m/déjà été envoyé/[39m)[33m;[39m
+     [90m 141 |[39m     expect(sendMail)[33m.[39mnot[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 142 |[39m     expect([36mawait[39m countOtpRows(user[33m.[39mid))[33m.[39mtoBe([35m0[39m)[33m;[39m [90m// aucun OTP créé tant que le job existant est actif[39m[0m
+
+      at Object.toBe (test/mfa.dedup.test.js:139:34)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › POST /auth/mfa/resend › avant 60s depuis le dernier envoi → HTTP 429
+
+    thrown: "Exceeded timeout of 5000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 147 |[39m
+     [90m 148 |[39m   describe([32m"POST /auth/mfa/resend"[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 149 |[39m     test([32m"avant 60s depuis le dernier envoi → HTTP 429"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m     [31m[1m^[22m[39m
+     [90m 150 |[39m       [36mconst[39m email [33m=[39m emailFor([32m"resend-too-soon"[39m)[33m;[39m
+     [90m 151 |[39m       [36mawait[39m createTestUser(email)[33m;[39m
+     [90m 152 |[39m[0m
+
+      at test (test/mfa.dedup.test.js:149:5)
+      at describe (test/mfa.dedup.test.js:148:3)
+      at Object.describe (test/mfa.dedup.test.js:58:1)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › POST /auth/mfa/resend › après 60s depuis le dernier envoi → nouvel email envoyé
+
+    expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+
+    [0m [90m 169 |[39m
+     [90m 170 |[39m       [36mconst[39m res1 [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-5"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 171 |[39m       expect(sendMail)[33m.[39mtoHaveBeenCalledTimes([35m1[39m)[33m;[39m
+     [90m     |[39m                        [31m[1m^[22m[39m
+     [90m 172 |[39m
+     [90m 173 |[39m       [90m// Simule l'écoulement du cooldown de 60s sans attendre réellement.[39m
+     [90m 174 |[39m       [36mawait[39m user[33m.[39mupdate({ mfaLastSentAt[33m:[39m [36mnew[39m [33mDate[39m([33mDate[39m[33m.[39mnow() [33m-[39m [35m61[39m [33m*[39m [35m1000[39m) })[33m;[39m[0m
+
+      at Object.toHaveBeenCalledTimes (test/mfa.dedup.test.js:171:24)
+
+  ● MFA — anti-doublon (double-clic, concurrence, cooldown) › validation MFA réussie → otpHash/expiresAt effacés, job EmailQueue résiduel annulé
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 189 |[39m
+     [90m 190 |[39m     [36mconst[39m res1 [33m=[39m [36mawait[39m signin(email[33m,[39m [32m"device-6"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 191 |[39m     [36mconst[39m lastCall [33m=[39m sendMail[33m.[39mmock[33m.[39mcalls[sendMail[33m.[39mmock[33m.[39mcalls[33m.[39mlength [33m-[39m [35m1[39m][[35m0[39m][33m;[39m
+     [90m     |[39m                                                                         [31m[1m^[22m[39m
+     [90m 192 |[39m     [36mconst[39m otp [33m=[39m lastCall[33m.[39mhtml[33m.[39mmatch([35m/>(\d{6})<\/span>/[39m)[[35m1[39m][33m;[39m
+     [90m 193 |[39m
+     [90m 194 |[39m     [90m// Simule un job encore RETRYING au moment de la validation (ex: le[39m[0m
+
+      at Object.<anonymous> (test/mfa.dedup.test.js:191:73)
+
+FAIL test/ai.orchestrator.porPromeshAgent.integration.test.js
+  ● PARTIE B — exécution réelle contre la VRAIE base › get_por_promesh(RLA, SA PROPRE fiche réelle) : succès
+
+    PorPromesh introuvable
+
+
+  ● PARTIE B — exécution réelle contre la VRAIE base › TEST FUITE — RLA (owner-scoped) ne peut PAS lire la fiche réelle d'un AUTRE utilisateur réel (superadmin)
+
+    expect(received).rejects.toMatchObject(expected)
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "status": 403,
+    +   "status": 404,
+      }
+
+    [0m [90m 155 |[39m     [36mawait[39m expect(
+     [90m 156 |[39m       callTool([32m"get_por_promesh"[39m[33m,[39m { id[33m:[39m [33mREAL_SUPERADMIN_FICHE_ID[39m }[33m,[39m { id[33m:[39m [33mREAL_RLA_ID[39m[33m,[39m role[33m:[39m [32m"responsable_logistique_achat"[39m })
+    [31m[1m>[22m[39m[90m 157 |[39m     )[33m.[39mrejects[33m.[39mtoMatchObject({ status[33m:[39m [35m403[39m })[33m;[39m
+     [90m     |[39m               [31m[1m^[22m[39m
+     [90m 158 |[39m     [36mawait[39m expect(
+     [90m 159 |[39m       callTool([32m"update_por_promesh"[39m[33m,[39m { id[33m:[39m [33mREAL_SUPERADMIN_FICHE_ID[39m[33m,[39m machine[33m:[39m [32m"X"[39m }[33m,[39m { id[33m:[39m [33mREAL_RLA_ID[39m[33m,[39m role[33m:[39m [32m"responsable_logistique_achat"[39m })
+     [90m 160 |[39m     )[33m.[39mrejects[33m.[39mtoMatchObject({ status[33m:[39m [35m403[39m })[33m;[39m[0m
+
+      at Object.toMatchObject (node_modules/expect/build/index.js:2155:20)
+      at Object.toMatchObject (test/ai.orchestrator.porPromeshAgent.integration.test.js:157:15)
+
+  ● PARTIE B — exécution réelle contre la VRAIE base › un admin-tier (jamais owner-scoped) PEUT lire la fiche réelle de N'IMPORTE QUEL utilisateur — visibilité transverse attendue, pas une fuite
+
+    PorPromesh introuvable
+
+
+FAIL test/nfr.dataIntegrity.test.js (12.812 s)
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › project_actions.createdBy → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › projects.engineerId → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › projects.architectId → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Clés étrangères : une référence vers un enregistrement inexistant est refusée › commercial_contact_actions.createdBy → violation de clé étrangère
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "23503"
+    Received: null
+
+    [0m [90m 127 |[39m       { nil[33m:[39m [33mNIL[39m }
+     [90m 128 |[39m     )[33m;[39m
+    [31m[1m>[22m[39m[90m 129 |[39m     expect(code)[33m.[39mtoBe([33mFK_VIOLATION[39m)[33m;[39m
+     [90m     |[39m                  [31m[1m^[22m[39m
+     [90m 130 |[39m   })[33m;[39m
+     [90m 131 |[39m })[33m;[39m
+     [90m 132 |[39m[0m
+
+      at toBe (test/nfr.dataIntegrity.test.js:129:18)
+
+  ● Cohérence des données existantes › tout contact affecté l'est à un utilisateur de rôle commercial
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 485
+
+    [0m [90m 327 |[39m         [32m`SELECT count(*) FROM commercial_contacts c JOIN users u ON u.id = c."commercialId" WHERE u.role <> 'commercial'`[39m
+     [90m 328 |[39m       )
+    [31m[1m>[22m[39m[90m 329 |[39m     )[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 330 |[39m   })[33m;[39m
+     [90m 331 |[39m
+     [90m 332 |[39m   test([32m"tout contact affecté porte l'auteur et la date de l'affectation"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:329:7)
+
+  ● Cohérence des données existantes › tout contact affecté porte l'auteur et la date de l'affectation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 485
+
+    [0m [90m 335 |[39m         [32m`SELECT count(*) FROM commercial_contacts WHERE "commercialId" IS NOT NULL AND ("assignedBy" IS NULL OR "assignedAt" IS NULL)`[39m
+     [90m 336 |[39m       )
+    [31m[1m>[22m[39m[90m 337 |[39m     )[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 338 |[39m   })[33m;[39m
+     [90m 339 |[39m
+     [90m 340 |[39m   test([32m"toute fiche rattachée à une machine référence une machine de la bonne famille (POR → PROMESH)"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:337:7)
+
+  ● Cohérence des données existantes › la contrainte d'unicité users.email n'est déclarée qu'une seule fois
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 723
+
+    [0m [90m 355 |[39m     expect(
+     [90m 356 |[39m       [36mawait[39m scalar([32m`SELECT count(*) FROM pg_constraint WHERE conrelid = 'users'::regclass AND contype = 'u'`[39m)
+    [31m[1m>[22m[39m[90m 357 |[39m     )[33m.[39mtoBe([35m1[39m)[33m;[39m
+     [90m     |[39m       [31m[1m^[22m[39m
+     [90m 358 |[39m   })[33m;[39m
+     [90m 359 |[39m })[33m;[39m
+     [90m 360 |[39m[0m
+
+      at Object.toBe (test/nfr.dataIntegrity.test.js:357:7)
+
+FAIL test/notification.service.dbRegression.test.js
+  ● TEST 2/3 — les Tools ne plantent plus sur 'Notification undefined', lecture réelle possible › listMyNotifications() sur un VRAI utilisateur retourne de vraies données, aucune exception
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+    [0m [90m 36 |[39m     expect(result[33m.[39mitems)[33m.[39mtoBeDefined()[33m;[39m
+     [90m 37 |[39m     expect([36mtypeof[39m result[33m.[39mtotal)[33m.[39mtoBe([32m"number"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 38 |[39m     expect(result[33m.[39mtotal)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m [90m// ce compte a de vraies notifications (vérifié avant ce test)[39m
+     [90m    |[39m                          [31m[1m^[22m[39m
+     [90m 39 |[39m   }[33m,[39m [35m30000[39m)[33m;[39m
+     [90m 40 |[39m
+     [90m 41 |[39m   test([32m"markOneRead()/deleteNotification() atteignent bien Notification.findOne/.destroy (jamais 'Cannot read properties of undefined') — id inexistant, donc AUCUNE ligne réelle modifiée"[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.toBeGreaterThan (test/notification.service.dbRegression.test.js:38:26)
+
+  ● TEST 5 — un utilisateur A ne peut pas récupérer les notifications de B › listMyNotifications(A) ne contient jamais une notification de B, et vice versa
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+    [0m [90m 68 |[39m     expect(resultB[33m.[39mitems[33m.[39msome((n) [33m=>[39m n[33m.[39muserId [33m===[39m [33mUSER_A[39m))[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m 69 |[39m     [90m// Preuve positive que ce ne sont pas deux listes vides par coïncidence :[39m
+    [31m[1m>[22m[39m[90m 70 |[39m     expect(resultA[33m.[39mtotal)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 71 |[39m     expect(resultB[33m.[39mtotal)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m 72 |[39m   }[33m,[39m [35m30000[39m)[33m;[39m
+     [90m 73 |[39m })[33m;[39m[0m
+
+      at Object.toBeGreaterThan (test/notification.service.dbRegression.test.js:70:27)
+
+FAIL test/dashboard.service.getUserKPIs.test.js
+  ● dashboard.service.js::getKPIByRole (role="user") — real database regression › resolves for a real non-admin user without throwing (the exact bug: 'object is not iterable')
+
+
+
+    [0m [90m 33 |[39m describe([32m"dashboard.service.js::getKPIByRole (role=\"user\") — real database regression"[39m[33m,[39m () [33m=>[39m {
+     [90m 34 |[39m   test([32m"resolves for a real non-admin user without throwing (the exact bug: 'object is not iterable')"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 35 |[39m     [36mconst[39m anyUser [33m=[39m [36mawait[39m [33mUser[39m[33m.[39mfindOne({ where[33m:[39m { role[33m:[39m [32m"user"[39m }[33m,[39m order[33m:[39m [[[32m"createdAt"[39m[33m,[39m [32m"ASC"[39m]] })[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 36 |[39m     [36mif[39m ([33m![39manyUser) [36mreturn[39m[33m;[39m [90m// no role="user" fixture in this environment — schema-level intent still documented above[39m
+     [90m 37 |[39m
+     [90m 38 |[39m     [36mconst[39m result [33m=[39m [36mawait[39m getKPIByRole(anyUser[33m.[39mid[33m,[39m [32m"user"[39m)[33m;[39m[0m
+
+      at Query.run (node_modules/sequelize/src/dialects/postgres/query.js:76:25)
+      at node_modules/sequelize/src/sequelize.js:650:28
+      at PostgresQueryInterface.select (node_modules/sequelize/src/dialects/abstract/query-interface.js:1001:12)
+      at Function.findAll (node_modules/sequelize/src/model.js:1824:21)
+      at Function.findOne (node_modules/sequelize/src/model.js:1998:12)
+      at Object.<anonymous> (test/dashboard.service.getUserKPIs.test.js:35:21)
+
+FAIL test/auth.resetPassword.test.js (25.205 s)
+
+
+  ● Test suite failed to run
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 71 |[39m
+     [90m 72 |[39m describe([32m"Réinitialisation de mot de passe"[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 73 |[39m   afterAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 74 |[39m     [36mawait[39m [33mPasswordResetLog[39m[33m.[39mdestroy({ where[33m:[39m { email[33m:[39m createdEmails } })[33m;[39m
+     [90m 75 |[39m     [36mawait[39m [33mUser[39m[33m.[39mdestroy({ where[33m:[39m { email[33m:[39m createdEmails } })[33m;[39m
+     [90m 76 |[39m     [36mawait[39m sequelize[33m.[39mclose()[33m;[39m[0m
+
+      at afterAll (test/auth.resetPassword.test.js:73:3)
+      at Object.describe (test/auth.resetPassword.test.js:72:1)
+
+
+Test Suites: 7 failed, 244 passed, 251 total
+Tests:       34 failed, 7213 passed, 7247 total
+Snapshots:   0 total
+Time:        478.207 s, estimated 564 s
+Ran all test suites.
+Test results written to: reports\jest\jest-results.json
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
+exit=1

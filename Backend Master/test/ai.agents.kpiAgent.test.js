@@ -157,7 +157,66 @@ describe("KpiAgent — alertes réelles du tableau de bord professionnel (meille
     const result = await agent.execute({ intent: { name: "dashboard" }, message: "Mon tableau de bord.", user: USER, conversationId: null });
 
     expect(result.answer).toContain("### Résultat");
+    // L'outil réservé aux administrateurs n'est plus appelé pour un autre rôle
+    // (le serveur le refuserait) : aucune erreur, aucune trace de refus.
+    expect(proTool.invoke).not.toHaveBeenCalled();
+    expect(result.toolSteps.some((s) => s.tool === "get_professional_dashboard")).toBe(false);
+  });
+
+  test("administrateur : un échec de get_professional_dashboard dégrade seulement les alertes", async () => {
+    const dashboardTool = jsonTool("get_dashboard_kpis", ADMIN_DASHBOARD);
+    const proTool = failingTool("get_professional_dashboard", "connection terminated");
+    const agent = createKpiAgent({ chatModel: chatModelReturning({}), tools: [dashboardTool, proTool], workflowEngine: new LangChainWorkflowEngine() });
+    const result = await agent.execute({ intent: { name: "dashboard" }, message: "Mon tableau de bord.", user: ADMIN, conversationId: null });
+    expect(result.answer).toContain("### Résultat");
     expect(result.toolSteps.some((s) => s.tool === "get_professional_dashboard" && String(s.output).includes("Error"))).toBe(true);
+  });
+
+  describe("responsable logistique : tableau de bord INDUSTRIEL, jamais le tableau commercial", () => {
+    const LOGISTIQUE = { id: "u3", role: "responsable_logistique_achat" };
+    const promesh = () => jsonTool("get_por_promesh_dashboard", { fichesCount: 4, fichesValidees: 3, fichesBrouillon: 1, productionTotale: 120.5, nonConformites: 1, operateursPresents: 2 });
+    const records = () => jsonTool("list_industrial_records", { data: [{ module: "probar" }, { module: "probar" }, { module: "melange" }], total: 3 });
+
+    test("« tableau de bord » → indicateurs PROMESH et fiches industrielles ; aucun outil commercial ni réservé n'est appelé", async () => {
+      const commercial = jsonTool("get_dashboard_kpis", USER_DASHBOARD);
+      const user = jsonTool("get_user_dashboard", {});
+      const pro = failingTool("get_professional_dashboard", 'Role "responsable_logistique_achat" is not allowed to call tool "get_professional_dashboard".');
+      const p = promesh();
+      const r = records();
+      const agent = createKpiAgent({ chatModel: chatModelReturning({}), tools: [commercial, user, pro, p, r], workflowEngine: new LangChainWorkflowEngine() });
+      const result = await agent.execute({ intent: { name: "dashboard" }, message: "donne-moi le tableau de bord", user: LOGISTIQUE, conversationId: null });
+
+      expect(result.answer).toContain("📊 TABLEAU DE BORD INDUSTRIEL");
+      expect(result.answer).toContain("• Fiches : 4 (3 validée(s), 1 en brouillon)");
+      expect(result.answer).toContain("• Production totale : 120.5 m²");
+      expect(result.answer).toContain("Fiches industrielles : 3");
+      expect(result.answer).toContain("• PROBAR : 2");
+      expect(result.answer).toContain("• Maintenance : 0");
+      expect(result.answer).not.toMatch(/not allowed|projets personnels|### Résultat/);
+      expect(pro.invoke).not.toHaveBeenCalled();
+      expect(commercial.invoke).not.toHaveBeenCalled();
+      expect(user.invoke).not.toHaveBeenCalled();
+      expect(result.toolSteps.map((s) => s.tool)).toEqual(["get_por_promesh_dashboard", "list_industrial_records"]);
+    });
+
+    test("un outil industriel en échec : dit comme un échec, l'autre partie reste affichée", async () => {
+      const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const agent = createKpiAgent({ chatModel: chatModelReturning({}), tools: [failingTool("get_por_promesh_dashboard", "connection terminated"), records()], workflowEngine: new LangChainWorkflowEngine() });
+      const result = await agent.execute({ intent: { name: "dashboard" }, message: "tableau de bord", user: LOGISTIQUE, conversationId: null });
+      spy.mockRestore();
+      expect(result.answer).toContain("Fiches PROMESH : les indicateurs n'ont pas pu être récupérés (ce n'est pas un résultat égal à zéro).");
+      expect(result.answer).toContain("Fiches industrielles : 3");
+      expect(result.answer).not.toContain("connection terminated");
+    });
+
+    test("les rôles commerciaux gardent leur tableau de bord habituel", async () => {
+      const commercial = jsonTool("get_dashboard_kpis", USER_DASHBOARD);
+      const p = promesh();
+      const agent = createKpiAgent({ chatModel: chatModelReturning({}), tools: [commercial, p], workflowEngine: new LangChainWorkflowEngine() });
+      const result = await agent.execute({ intent: { name: "dashboard" }, message: "tableau de bord", user: { id: "u9", role: "commercial" }, conversationId: null });
+      expect(result.answer).toContain("### Résultat");
+      expect(p.invoke).not.toHaveBeenCalled();
+    });
   });
 
   test("aucune alerte : le dit explicitement plutôt que de laisser la section vide", async () => {

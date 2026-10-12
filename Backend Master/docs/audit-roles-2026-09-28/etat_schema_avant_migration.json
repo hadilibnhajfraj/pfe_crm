@@ -1,0 +1,161 @@
+{
+  "capturedAt": "2026-09-28T14:33:22.657Z",
+  "enum_users_role": [
+    {
+      "enumlabel": "user",
+      "enumsortorder": 1
+    },
+    {
+      "enumlabel": "commercial",
+      "enumsortorder": 2
+    },
+    {
+      "enumlabel": "accueil",
+      "enumsortorder": 3
+    },
+    {
+      "enumlabel": "admin",
+      "enumsortorder": 4
+    },
+    {
+      "enumlabel": "superadmin",
+      "enumsortorder": 5
+    },
+    {
+      "enumlabel": "responsable_logistique_achat",
+      "enumsortorder": 6
+    },
+    {
+      "enumlabel": "superadmin2",
+      "enumsortorder": 7
+    }
+  ],
+  "users_role_default": "'user'::enum_users_role",
+  "users_par_role": [
+    {
+      "role": "accueil",
+      "n": 1
+    },
+    {
+      "role": "commercial",
+      "n": 2
+    },
+    {
+      "role": "responsable_logistique_achat",
+      "n": 1
+    },
+    {
+      "role": "superadmin",
+      "n": 2
+    },
+    {
+      "role": "superadmin2",
+      "n": 1
+    },
+    {
+      "role": "user",
+      "n": 64
+    }
+  ],
+  "contacts": 485,
+  "projects": 253,
+  "sequelizeMeta_appliquees": [
+    "001-create-pipeline-stages.js",
+    "002-create-project-action-types.js",
+    "003-create-project-activities.js",
+    "004-alter-projects-add-pipeline-cols.js",
+    "005-alter-project-actions-add-action-type.js",
+    "006-backfill-project-stages.js",
+    "20260526133859-create-companies.js",
+    "20260526133915-add-engineerId-to-projects.js",
+    "20260526134011-add-engineerId-to-projects.js",
+    "20260526134020-create-companies.js",
+    "20260526134301-add-architectId-to-projects.js",
+    "20260526134628-add-companyId-to-projects.js",
+    "20260526134816-create-engineers.js",
+    "20260526134932-recreate-engineerId-uuid.js",
+    "20260526135033-create-architects.js",
+    "20260526140000-add-annule-to-statut-enum.js",
+    "20260526140100-add-unique-index-project-actions.js",
+    "20260526140200-add-indexes-projects.js",
+    "20260526150000-backfill-owner-id.js",
+    "20260526160000-add-priority-to-projects.js",
+    "20260527000200-fix-project-actions-unique-index.js",
+    "20260527000300-change-statut-to-varchar.js",
+    "20260527001000-add-archive-reason-relance-date-iscustom.js",
+    "20260529000100-create-archive-requests.js",
+    "20260529000200-notifications-type-to-varchar.js",
+    "20260530000100-backfill-archive-request-admin.js",
+    "20260622090000-add-responsable-logistique-achat-to-users-role-enum.js",
+    "20260622110000-create-por-promesh.js",
+    "20260622110100-create-por-promesh-child-tables.js",
+    "20260622110200-create-por-promesh-attachments.js",
+    "20260622120000-add-por-promesh-process-control-fields.js",
+    "20260622120100-create-por-promesh-process-control.js",
+    "20260622130000-restructure-por-promesh-process-control.js",
+    "20260623100000-add-por-promesh-plan-process-fields.js",
+    "20260623100100-rename-controle-qualite-heure-to-hauteur.js",
+    "20260623110000-add-por-promesh-status-lock-fields.js",
+    "20260624120000-add-machine-poste-to-por-promesh.js",
+    "20260624120100-create-industrial-records.js",
+    "20260624130000-create-por-promesh-non-conformites.js",
+    "20260625090000-make-por-promesh-date-heure-nullable.js",
+    "20260625090100-add-por-promesh-operator-workflow-fields.js",
+    "20260626100000-drop-obsolete-por-promesh-fields.js",
+    "20260627090000-add-por-promesh-poste-status-indexes.js",
+    "20260628090000-add-por-promesh-sequence-number.js",
+    "20260628100000-add-por-promesh-justification-fields.js",
+    "20260706000001-add-melange-data-to-industrial-records.js",
+    "20260707000001-add-hr-fields-to-user-profiles.js",
+    "20260707000002-create-hr-requests.js",
+    "20260708000001-create-recuperable-fiches.js",
+    "20260708000002-create-recuperable-lignes.js",
+    "20260709000001-restructure-recuperables-fixed-diametres.js",
+    "20260710000001-add-composite-index-industrial-records.js",
+    "20260713105217-add-superadmin2-to-users-role-enum.js",
+    "20260713141251-add-commercial-and-automation-fields-to-relances.js",
+    "20260717120000-create-google-calendar-accounts.js",
+    "20260717120100-add-google-and-error-fields-to-relances.js",
+    "20260718090000-add-commercial-id-to-commercial-contacts.js",
+    "20260718090100-backfill-commercial-id-from-created-by.js",
+    "20260719090000-create-commercial-contact-status-histories.js",
+    "20260720090000-add-type-to-commercial-contact-status-histories.js",
+    "20260721000100-add-type-archive-requests.js",
+    "20260721090000-promesh-controle-machine-fields.js",
+    "20260722000100-add-approval-audit-archive-requests.js",
+    "20260722090000-promesh-controle-qualite-fields.js",
+    "20260723000100-create-maintenance-activities.js",
+    "20260723090000-promesh-remove-hauteur-field.js",
+    "20260724000100-create-maintenance-requests.js",
+    "20260724000400-add-maintenance-request-id-to-notifications.js",
+    "20260724000500-backfill-legacy-maintenance-industrial-records.js",
+    "20260725000100-add-en-cours-to-maintenance-requests-statut-enum.js",
+    "20260725000200-add-assignment-and-start-audit-to-maintenance-requests.js",
+    "20260726000100-add-traitee-to-hr-requests-statut-enum.js",
+    "20260726000200-add-review-workflow-to-hr-requests.js",
+    "20260726000300-create-hr-request-activities.js",
+    "20260726000400-add-hr-request-id-to-notifications.js",
+    "20260727000100-add-product-family-diameter-to-projects.js",
+    "20260727000200-add-calendar-sync-to-project-actions.js",
+    "20260727000300-add-end-priority-to-tasks.js",
+    "20260727000400-add-watch-channel-to-google-calendar-accounts.js",
+    "20260727000500-add-action-id-to-notifications.js",
+    "20260728000100-add-event-link-calendar-id-to-project-actions.js",
+    "20260728000200-fix-project-actions-type-action-legacy-enum.js",
+    "20260728000300-create-calendar-event-syncs.js",
+    "20260728000400-add-task-id-to-calendar-event-syncs.js",
+    "20260729000100-add-refresh-token-hash-to-users.js",
+    "20260729000200-add-reset-password-fields-to-users.js",
+    "20260729000300-create-password-reset-logs.js",
+    "20260729000400-create-email-queue.js",
+    "20260729000500-add-mfa-fields-to-users.js",
+    "20260729000600-create-mfa-otps.js",
+    "20260729000700-create-trusted-devices.js",
+    "20260729000800-create-mfa-attempt-logs.js",
+    "20260729000900-add-mfa-last-sent-at-to-users.js",
+    "20260729001000-add-userid-to-email-queue.js",
+    "20260729001100-add-cancelled-to-email-queue-status-enum.js",
+    "20260729001200-make-mfa-otp-hash-and-expiry-nullable.js",
+    "20260807090000-add-date-expiration-to-project-devis.js"
+  ]
+}

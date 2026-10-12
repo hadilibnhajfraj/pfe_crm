@@ -1,0 +1,68 @@
+{
+  "collectedAt": "2026-10-05T20:01:24.673Z",
+  "window": "20m",
+  "prometheus": "http://localhost:9090",
+  "targets": [
+    {
+      "job": "crm-probar-backend",
+      "health": "up",
+      "scrapeUrl": "http://host.docker.internal:4100/metrics",
+      "lastScrape": "2026-10-05T20:01:22.941242502Z",
+      "lastError": ""
+    },
+    {
+      "job": "postgres",
+      "health": "up",
+      "scrapeUrl": "http://postgres-exporter:9187/metrics",
+      "lastScrape": "2026-10-05T20:01:16.056981194Z",
+      "lastError": ""
+    }
+  ],
+  "note": "Valeurs observées sur la fenêtre de collecte uniquement (trafic de test Newman + k6). Ce n'est PAS une mesure historique de disponibilité.",
+  "metrics": {
+    "seriesCount": 271,
+    "requestsInWindow": 3247.2909,
+    "requestsPerSecAvg": 2.7061,
+    "avgResponseTimeSeconds": 0.096,
+    "p95Seconds": 0.3945,
+    "p99Seconds": 0.939,
+    "requestsByStatusClass": {
+      "2xx": 3238,
+      "3xx": 0,
+      "4xx": 9,
+      "5xx": 0
+    },
+    "http5xxInWindow": 0,
+    "nodeCpuPctOfOneCoreAvg": 16.3596,
+    "nodeCpuPctOfOneCoreMax": 64.8575,
+    "nodeRssMbNow": 271.3164,
+    "nodeRssMbMax": 552.7852,
+    "targetUpNow": 1,
+    "scrapeSuccessRatioInWindow": 0.9647,
+    "databaseUpGauge": 1,
+    "postgresConnections": 2,
+    "postgresCommitsPerSecAvg": 9.7925,
+    "top5RoutesByRequests": [
+      {
+        "route": "/health",
+        "requests": 295
+      },
+      {
+        "route": "/commercial-contacts/",
+        "requests": 294
+      },
+      {
+        "route": "/machines/",
+        "requests": 294
+      },
+      {
+        "route": "/industrial-records/",
+        "requests": 293
+      },
+      {
+        "route": "/por-promesh/",
+        "requests": 293
+      }
+    ]
+  }
+}

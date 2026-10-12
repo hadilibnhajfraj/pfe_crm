@@ -59,10 +59,11 @@ const TOOL_PERMISSIONS = {
   // ── projectActions ── (voir AUTOMATION_WORKFLOWS.md)
   create_project_action: OPEN,
 
-  // ── commercialContacts ──
-  get_commercial_contact_kpi: { requiredRoles: ["commercial", ...ADMIN_TIER_ROLES], allowedEmails: [] },
-  get_commercial_contact_analytics: { requiredRoles: ["commercial", ...ADMIN_TIER_ROLES], allowedEmails: [] },
-  get_commercial_personal_kpi_summary: { requiredRoles: ["commercial", ...ADMIN_TIER_ROLES], allowedEmails: [] },
+  // ── commercialContacts ── (vocabulaire des rôles v2 : ancien "commercial"
+  // = commercial_sedentaire, voir src/constants/roles.js)
+  get_commercial_contact_kpi: { requiredRoles: ["commercial_sedentaire", ...ADMIN_TIER_ROLES], allowedEmails: [] },
+  get_commercial_contact_analytics: { requiredRoles: ["commercial_sedentaire", ...ADMIN_TIER_ROLES], allowedEmails: [] },
+  get_commercial_personal_kpi_summary: { requiredRoles: ["commercial_sedentaire", ...ADMIN_TIER_ROLES], allowedEmails: [] },
 
   // ── maintenance ──
   create_maintenance_request: OPEN,

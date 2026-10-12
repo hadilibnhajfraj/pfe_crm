@@ -45,7 +45,9 @@ function createMcpToolAdapter({ mcpServer, toolDescriptor, actingUser }) {
 
       if (response.error) {
         logger.warn(`tool "${toolDescriptor.name}" failed: ${response.error.message}`);
-        throw new Error(response.error.message);
+        // Le code JSON-RPC (ex. PERMISSION_DENIED) est conservé : le
+        // TaskPlanner distingue ainsi un refus RBAC d'une panne.
+        throw Object.assign(new Error(response.error.message), { code: response.error.code });
       }
 
       const [content] = (response.result && response.result.content) || [];

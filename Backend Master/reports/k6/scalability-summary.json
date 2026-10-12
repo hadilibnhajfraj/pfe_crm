@@ -1,0 +1,410 @@
+[
+  {
+    "vus": 10,
+    "requests": 4085,
+    "reqPerSec": 52.22,
+    "iterations": 371,
+    "avgMs": 76,
+    "medMs": 35.3,
+    "minMs": 0.5,
+    "maxMs": 806.1,
+    "p90Ms": 178.3,
+    "p95Ms": 322,
+    "p99Ms": 597.6,
+    "errorRatePct": 0,
+    "checksOkPct": 100,
+    "thresholds": {
+      "http_req_failed": {
+        "rate<0.01": "tenu"
+      },
+      "http_req_duration": {
+        "avg<2000": "tenu",
+        "p(95)<2000": "tenu"
+      }
+    },
+    "systemCpuAvgPct": 28.8,
+    "systemCpuMaxPct": 50,
+    "nodeCpuAvgPctOfOneCore": 64.9,
+    "nodeCpuMaxPctOfOneCore": 106.7,
+    "nodeRssAvgMb": 359,
+    "nodeRssMaxMb": 361,
+    "eventLoopLagP99MaxMs": 222.3,
+    "pgTxPerSecAvg": 157.8,
+    "pgConnectionsMax": 11,
+    "pgActiveMax": 2,
+    "endpoints": {
+      "maintenance": {
+        "avg": 30.9,
+        "p95": 52.1,
+        "p99": 109.2,
+        "max": 181.9
+      },
+      "hr_requests": {
+        "avg": 33.7,
+        "p95": 59,
+        "p99": 106.7,
+        "max": 198.7
+      },
+      "contacts": {
+        "avg": 198.3,
+        "p95": 461.9,
+        "p99": 517,
+        "max": 575
+      },
+      "por_promesh": {
+        "avg": 39.7,
+        "p95": 69.6,
+        "p99": 125,
+        "max": 158.3
+      },
+      "machines": {
+        "avg": 19.1,
+        "p95": 40.8,
+        "p99": 68.9,
+        "max": 368.9
+      },
+      "projects": {
+        "avg": 90.5,
+        "p95": 213.5,
+        "p99": 319.6,
+        "max": 588.1
+      },
+      "notifications": {
+        "avg": 28.4,
+        "p95": 67.1,
+        "p99": 148.2,
+        "max": 274.5
+      },
+      "health": {
+        "avg": 52.1,
+        "p95": 131.2,
+        "p99": 154.6,
+        "max": 349.7
+      },
+      "dashboard_user": {
+        "avg": 142.2,
+        "p95": 412.7,
+        "p99": 467.2,
+        "max": 520.6
+      },
+      "industrial_records": {
+        "avg": 30.8,
+        "p95": 55.6,
+        "p99": 144.5,
+        "max": 177.5
+      },
+      "dashboard_kpis": {
+        "avg": 164.2,
+        "p95": 633,
+        "p99": 697.5,
+        "max": 806.1
+      }
+    }
+  },
+  {
+    "vus": 25,
+    "requests": 5900,
+    "reqPerSec": 75.46,
+    "iterations": 536,
+    "avgMs": 199.8,
+    "medMs": 81.4,
+    "minMs": 0.3,
+    "maxMs": 4666.8,
+    "p90Ms": 526,
+    "p95Ms": 804.8,
+    "p99Ms": 1504.6,
+    "errorRatePct": 0,
+    "checksOkPct": 100,
+    "thresholds": {
+      "http_req_failed": {
+        "rate<0.01": "tenu"
+      },
+      "http_req_duration": {
+        "avg<2000": "tenu",
+        "p(95)<2000": "tenu"
+      }
+    },
+    "systemCpuAvgPct": 39.8,
+    "systemCpuMaxPct": 61.8,
+    "nodeCpuAvgPctOfOneCore": 96.5,
+    "nodeCpuMaxPctOfOneCore": 213.4,
+    "nodeRssAvgMb": 359.6,
+    "nodeRssMaxMb": 362,
+    "eventLoopLagP99MaxMs": 1476.4,
+    "pgTxPerSecAvg": 226.8,
+    "pgConnectionsMax": 11,
+    "pgActiveMax": 5,
+    "endpoints": {
+      "maintenance": {
+        "avg": 69.4,
+        "p95": 109.7,
+        "p99": 146.7,
+        "max": 1266.7
+      },
+      "machines": {
+        "avg": 52.1,
+        "p95": 108,
+        "p99": 184.6,
+        "max": 383
+      },
+      "projects": {
+        "avg": 346.9,
+        "p95": 995.7,
+        "p99": 1250.6,
+        "max": 3290.4
+      },
+      "contacts": {
+        "avg": 427,
+        "p95": 1051,
+        "p99": 2868.1,
+        "max": 3252.9
+      },
+      "hr_requests": {
+        "avg": 76.4,
+        "p95": 135.3,
+        "p99": 324.5,
+        "max": 794.7
+      },
+      "dashboard_user": {
+        "avg": 345.1,
+        "p95": 949.1,
+        "p99": 1948.2,
+        "max": 2991.4
+      },
+      "dashboard_kpis": {
+        "avg": 530.4,
+        "p95": 1577.1,
+        "p99": 1692.4,
+        "max": 4666.8
+      },
+      "por_promesh": {
+        "avg": 80.5,
+        "p95": 134.8,
+        "p99": 212.2,
+        "max": 664.8
+      },
+      "industrial_records": {
+        "avg": 70,
+        "p95": 122,
+        "p99": 349.9,
+        "max": 931.5
+      },
+      "health": {
+        "avg": 114.6,
+        "p95": 319.7,
+        "p99": 765.5,
+        "max": 1210.8
+      },
+      "notifications": {
+        "avg": 82,
+        "p95": 152.2,
+        "p99": 694.4,
+        "max": 1152.7
+      }
+    }
+  },
+  {
+    "vus": 50,
+    "requests": 7550,
+    "reqPerSec": 96.49,
+    "iterations": 686,
+    "avgMs": 366.7,
+    "medMs": 167.4,
+    "minMs": 0.6,
+    "maxMs": 3751.7,
+    "p90Ms": 931.9,
+    "p95Ms": 1398.9,
+    "p99Ms": 2549.7,
+    "errorRatePct": 0,
+    "checksOkPct": 100,
+    "thresholds": {
+      "http_req_failed": {
+        "rate<0.01": "tenu"
+      },
+      "http_req_duration": {
+        "avg<2000": "tenu",
+        "p(95)<2000": "tenu"
+      }
+    },
+    "systemCpuAvgPct": 41.8,
+    "systemCpuMaxPct": 69.9,
+    "nodeCpuAvgPctOfOneCore": 106.1,
+    "nodeCpuMaxPctOfOneCore": 151.7,
+    "nodeRssAvgMb": 538.5,
+    "nodeRssMaxMb": 584,
+    "eventLoopLagP99MaxMs": 737.1,
+    "pgTxPerSecAvg": 284.9,
+    "pgConnectionsMax": 11,
+    "pgActiveMax": 11,
+    "endpoints": {
+      "maintenance": {
+        "avg": 154.1,
+        "p95": 305.2,
+        "p99": 723.7,
+        "max": 1433
+      },
+      "dashboard_user": {
+        "avg": 443.8,
+        "p95": 1356.4,
+        "p99": 1861.4,
+        "max": 2198.2
+      },
+      "industrial_records": {
+        "avg": 154.1,
+        "p95": 327.4,
+        "p99": 620.1,
+        "max": 1378.6
+      },
+      "machines": {
+        "avg": 125.9,
+        "p95": 284.6,
+        "p99": 708,
+        "max": 1859
+      },
+      "projects": {
+        "avg": 632.8,
+        "p95": 1839.4,
+        "p99": 2140,
+        "max": 2968.4
+      },
+      "por_promesh": {
+        "avg": 168.1,
+        "p95": 333,
+        "p99": 695.9,
+        "max": 1266.3
+      },
+      "health": {
+        "avg": 210,
+        "p95": 558.9,
+        "p99": 1558.1,
+        "max": 2169
+      },
+      "dashboard_kpis": {
+        "avg": 1248.4,
+        "p95": 2927.3,
+        "p99": 3495,
+        "max": 3751.7
+      },
+      "contacts": {
+        "avg": 514.1,
+        "p95": 1420.2,
+        "p99": 1962.2,
+        "max": 2270.3
+      },
+      "hr_requests": {
+        "avg": 154.6,
+        "p95": 317.7,
+        "p99": 516,
+        "max": 952.9
+      },
+      "notifications": {
+        "avg": 226.8,
+        "p95": 542.4,
+        "p99": 1094.3,
+        "max": 1779.9
+      }
+    }
+  },
+  {
+    "vus": 100,
+    "requests": 8100,
+    "reqPerSec": 97.22,
+    "iterations": 723,
+    "avgMs": 837.3,
+    "medMs": 369.4,
+    "minMs": 1.6,
+    "maxMs": 7804.2,
+    "p90Ms": 2000.6,
+    "p95Ms": 3358.6,
+    "p99Ms": 6090.2,
+    "errorRatePct": 0,
+    "checksOkPct": 100,
+    "thresholds": {
+      "http_req_failed": {
+        "rate<0.01": "tenu"
+      },
+      "http_req_duration": {
+        "p(95)<2000": "non tenu",
+        "avg<2000": "tenu"
+      }
+    },
+    "systemCpuAvgPct": 42.5,
+    "systemCpuMaxPct": 78.5,
+    "nodeCpuAvgPctOfOneCore": 123.5,
+    "nodeCpuMaxPctOfOneCore": 276.9,
+    "nodeRssAvgMb": 347.8,
+    "nodeRssMaxMb": 360,
+    "eventLoopLagP99MaxMs": 2583.7,
+    "pgTxPerSecAvg": 304.3,
+    "pgConnectionsMax": 11,
+    "pgActiveMax": 10,
+    "endpoints": {
+      "hr_requests": {
+        "avg": 352.1,
+        "p95": 742.3,
+        "p99": 1020.4,
+        "max": 1937.6
+      },
+      "maintenance": {
+        "avg": 301.3,
+        "p95": 608.5,
+        "p99": 1076.9,
+        "max": 2498.4
+      },
+      "notifications": {
+        "avg": 438.1,
+        "p95": 1044.9,
+        "p99": 1714,
+        "max": 3688.5
+      },
+      "industrial_records": {
+        "avg": 294.4,
+        "p95": 523,
+        "p99": 859.1,
+        "max": 1735.6
+      },
+      "dashboard_kpis": {
+        "avg": 2837.9,
+        "p95": 6592.8,
+        "p99": 7491,
+        "max": 7804.2
+      },
+      "machines": {
+        "avg": 248.4,
+        "p95": 523.2,
+        "p99": 848.2,
+        "max": 3529.8
+      },
+      "contacts": {
+        "avg": 1349,
+        "p95": 3915.2,
+        "p99": 4946.9,
+        "max": 5297.4
+      },
+      "projects": {
+        "avg": 1249.7,
+        "p95": 2358.6,
+        "p99": 3694.1,
+        "max": 5338.1
+      },
+      "por_promesh": {
+        "avg": 306.4,
+        "p95": 511,
+        "p99": 844.5,
+        "max": 1406.5
+      },
+      "health": {
+        "avg": 595.1,
+        "p95": 1006.9,
+        "p99": 1783.3,
+        "max": 5174.4
+      },
+      "dashboard_user": {
+        "avg": 1238.7,
+        "p95": 3645.5,
+        "p99": 4826.8,
+        "max": 5208.2
+      }
+    }
+  }
+]

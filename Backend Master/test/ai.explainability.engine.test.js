@@ -112,7 +112,9 @@ describe("Explainability Engine — ProjectAgent (raisonnement métier réel)", 
     const tool = listProjectsTool([project()]);
     const { manager } = buildManager({ tools: [tool] });
 
-    const response = await manager.handleMessage({ message: "Montre-moi les projets.", user: USER, conversationId: "c2" });
+    // Question précise sur un projet : « Montre-moi les projets. » est désormais
+    // une liste simple, servie sans modèle.
+    const response = await manager.handleMessage({ message: "Quelle est l'étape actuelle du projet Sfax ?", user: USER, conversationId: "c2" });
 
     expect(response.explainability.businessRules).toEqual([]);
     expect(response.explainability.toolsCalled).toEqual([]); // la chaîne factice (chatModel "final_answer") n'appelle aucun Tool réel

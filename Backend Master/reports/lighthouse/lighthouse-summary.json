@@ -1,0 +1,102 @@
+{
+  "desktop": {
+    "url": "http://localhost:5180/#/authentication/signin",
+    "lighthouseVersion": "12.8.2",
+    "fetchTimes": [
+      "2026-10-05T16:30:40.278Z",
+      "2026-10-05T16:31:02.485Z",
+      "2026-10-05T16:31:24.132Z"
+    ],
+    "runs": 3,
+    "performance": {
+      "median": 74,
+      "all": [
+        74,
+        66,
+        76
+      ]
+    },
+    "accessibility": {
+      "median": 92,
+      "all": [
+        92,
+        92,
+        92
+      ]
+    },
+    "bestPractices": {
+      "median": 81,
+      "all": [
+        81,
+        81,
+        81
+      ]
+    },
+    "seo": {
+      "median": 91,
+      "all": [
+        91,
+        91,
+        91
+      ]
+    },
+    "fcpMs": 680,
+    "lcpMs": 680,
+    "tbtMs": 387,
+    "cls": 0,
+    "speedIndexMs": 3570,
+    "totalByteWeightKb": 9851,
+    "emulation": "desktop",
+    "throttling": "simulate"
+  },
+  "mobile": {
+    "url": "http://localhost:5180/#/authentication/signin",
+    "lighthouseVersion": "12.8.2",
+    "fetchTimes": [
+      "2026-10-05T16:31:45.799Z",
+      "2026-10-05T16:32:07.467Z",
+      "2026-10-05T16:32:28.764Z"
+    ],
+    "runs": 3,
+    "performance": {
+      "median": 0,
+      "all": [
+        0,
+        0,
+        0
+      ]
+    },
+    "accessibility": {
+      "median": 92,
+      "all": [
+        92,
+        92,
+        92
+      ]
+    },
+    "bestPractices": {
+      "median": 82,
+      "all": [
+        82,
+        82,
+        82
+      ]
+    },
+    "seo": {
+      "median": 91,
+      "all": [
+        91,
+        91,
+        91
+      ]
+    },
+    "fcpMs": 15184,
+    "lcpMs": null,
+    "tbtMs": null,
+    "cls": 0,
+    "speedIndexMs": 15184,
+    "totalByteWeightKb": 9851,
+    "emulation": "mobile",
+    "throttling": "simulate"
+  }
+}

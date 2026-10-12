@@ -48,6 +48,20 @@ describe("ValidationManager.validateActingUser", () => {
     expect(() => vm.validateActingUser({ id: "not-a-uuid", role: "commercial" })).toThrow(McpError);
   });
 
+  // Le compte est déjà authentifié : seule la forme « x@y » est exigée. La
+  // validation stricte refusait un domaine non DNS et bloquait tous les outils.
+  test("accepts an account e-mail whose domain is not a valid DNS name", () => {
+    const user = { id: "11111111-1111-4111-8111-111111111111", role: "commercial" };
+    expect(() => vm.validateActingUser({ ...user, email: "demo.commercial01@cbi_tunisia.com" })).not.toThrow();
+    expect(() => vm.validateActingUser({ ...user, email: "agent@intranet" })).not.toThrow();
+  });
+
+  test("rejects an e-mail that is not of the form x@y", () => {
+    const user = { id: "11111111-1111-4111-8111-111111111111", role: "commercial" };
+    expect(() => vm.validateActingUser({ ...user, email: "pas une adresse" })).toThrow(McpError);
+    expect(() => vm.validateActingUser({ ...user, email: "a@b c" })).toThrow(McpError);
+  });
+
   test("rejects an actingUser missing role", () => {
     expect(() => vm.validateActingUser({ id: "11111111-1111-4111-8111-111111111111" })).toThrow(McpError);
   });

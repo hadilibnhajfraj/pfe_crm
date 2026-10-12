@@ -39,7 +39,7 @@ function createGetPersonalKpiSummaryTool() {
     name: "get_commercial_personal_kpi_summary",
     description: "Résumé KPI personnel enrichi (taux de validation, distributions) pour l'utilisateur courant ou un commercial nommé.",
     inputSchema: Joi.object({ commercialName: Joi.string().max(120).optional() }),
-    requiredRoles: ["commercial", "admin", "superadmin", "superadmin2"],
+    requiredRoles: ["commercial_sedentaire", "admin", "superadmin", "superadmin2"],
     run: async (input, { actingUser }) => {
       const scopedInput = scopeInputForActingUser(input, actingUser);
       return kpiService.getPersonalKPISummary(actingUser.id, scopedInput.commercialName || null);
