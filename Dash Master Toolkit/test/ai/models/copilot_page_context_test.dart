@@ -27,12 +27,13 @@ void main() {
           'tauxReussite': '72',
           'surface': '450',
         },
+        'entity': 'project', // Phase 1 : type d'entité canonique
       });
     });
 
     test('des champs optionnels absents ne créent jamais une entrée avec une valeur null/vide', () {
       final ctx = CopilotPageContext.project(name: 'Villa Sfax');
-      expect(ctx.toJson(), {'screen': 'project', 'label': 'Villa Sfax'});
+      expect(ctx.toJson(), {'screen': 'project', 'label': 'Villa Sfax', 'entity': 'project'});
     });
   });
 
@@ -55,6 +56,7 @@ void main() {
           'nombreRelances': 3,
           'derniereRelance': '2026-01-15',
         },
+        'entity': 'commercial_contact',
       });
     });
 

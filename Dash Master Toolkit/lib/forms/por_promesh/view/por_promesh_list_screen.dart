@@ -25,6 +25,8 @@ import 'package:dash_master_toolkit/route/my_route.dart';
 import 'package:dash_master_toolkit/forms/view/pipeline_theme.dart';
 import 'package:dash_master_toolkit/forms/view/widgets/crm_widgets.dart';
 import 'package:dash_master_toolkit/forms/industrial/theme/industrial_theme.dart';
+import 'package:dash_master_toolkit/forms/industrial/service/machine_catalog.dart';
+import 'package:provider/provider.dart';
 
 import '../model/por_promesh_model.dart';
 import '../model/poste_dashboard_stats.dart';
@@ -43,13 +45,13 @@ const _kDateRanges = <(String?, String)>[
   ('month', 'Ce mois'),
 ];
 
-const _kMachines = <(String?, String)>[
-  (null, 'Toutes les machines'),
-  ('1', 'Machine 1'),
-  ('2', 'Machine 2'),
-  ('3', 'Machine 3'),
-  ('4', 'Machine 4'),
-];
+// Filtre machine : machines PROMESH du référentiel (MachineCatalog, GET
+// /machines) — y compris désactivées, pour retrouver leurs anciennes fiches.
+// Plus de liste fixe 1..4 : PROMESH-05 apparaît dès sa création.
+List<(String?, String)> get _kMachines => [
+      (null, 'Toutes les machines'),
+      for (final m in MachineCatalog.instance.ofType('PROMESH')) ('${m.numero}', m.code),
+    ];
 
 const _kPostes = <(String?, String)>[
   (null, 'Tous les postes'),
@@ -126,14 +128,16 @@ class _PorPromeshListScreenState extends State<PorPromeshListScreen> {
   // KPI globaux (toutes machines/tous postes) — `fetchDashboard()` sans
   // machine/poste agrège déjà l'ensemble des fiches côté backend
   // (`buildWhere` ne filtre que si le paramètre est fourni). "Machines
-  // actives" : 4 machines seulement, 4 appels légers supplémentaires en
-  // parallèle plutôt qu'un nouvel endpoint backend.
+  // actives" : un appel léger par machine PROMESH active du référentiel
+  // (MachineCatalog), en parallèle, plutôt qu'un nouvel endpoint backend.
   Future<void> _loadStats() async {
     setState(() => _loadingStats = true);
     try {
+      await MachineCatalog.instance.ensureLoaded();
+      final numeros = MachineCatalog.instance.ofType('PROMESH', activeOnly: true).map((m) => '${m.numero}');
       final results = await Future.wait([
         PorPromeshService.instance.fetchDashboard(),
-        for (final m in ['1', '2', '3', '4']) PorPromeshService.instance.fetchDashboard(machine: m),
+        for (final m in numeros) PorPromeshService.instance.fetchDashboard(machine: m),
       ]);
       if (!mounted) return;
       final perMachine = results.sublist(1);
@@ -276,6 +280,8 @@ class _PorPromeshListScreenState extends State<PorPromeshListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Reconstruit le filtre Machine dès que le catalogue est (re)chargé.
+    context.watch<MachineCatalog>();
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 700;
     final crossAxisCount = screenWidth >= 1100 ? 4 : (screenWidth >= 700 ? 2 : 1);

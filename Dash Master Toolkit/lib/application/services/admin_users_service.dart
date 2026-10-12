@@ -31,6 +31,21 @@ class AdminUsersService {
     }
   }
 
+  // PUT /admin/users/:id/role — superadmin / superadmin2 uniquement (backend).
+  // Le rôle doit être l'un des 7 rôles réels (lib/utils/user_roles.dart). Il
+  // prend effet à la prochaine connexion (ou au prochain refresh) de
+  // l'utilisateur concerné.
+  Future<void> setRole(String userId, String role) async {
+    try {
+      await ApiClient.instance.dio.put(
+        '/admin/users/$userId/role',
+        data: {'role': role},
+      );
+    } on DioException catch (e) {
+      throw Exception(_dioMessage(e));
+    }
+  }
+
   // ✅ ADMIN: count projects per user
   // GET /projects/admin/users-projects-count
   Future<List<Map<String, dynamic>>> fetchUsersProjectsCount() async {

@@ -17,6 +17,8 @@ import 'package:dash_master_toolkit/route/my_route.dart';
 import 'package:dash_master_toolkit/forms/view/pipeline_theme.dart';
 import 'package:dash_master_toolkit/forms/industrial/theme/industrial_theme.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
+import 'package:dash_master_toolkit/forms/industrial/service/machine_catalog.dart';
+import 'package:provider/provider.dart';
 import 'package:dash_master_toolkit/localization/app_localizations.dart';
 
 import '../theme/recuperable_theme.dart';
@@ -44,7 +46,9 @@ class _RecuperableFicheScreenState extends State<RecuperableFicheScreen> {
   final _dateCtrl = TextEditingController(text: DateFormat('dd/MM/yyyy').format(DateTime.now()));
   DateTime _date = DateTime.now();
   String _module = kRecuperableModules.first;
-  String _machine = kRecuperableMachines.first;
+  // Numéro de la machine ("1", "5"…) — choisi parmi les machines ACTIVES du
+  // référentiel (MachineCatalog, GET /machines) du type = _module.
+  String _machine = '';
   String _ligne = kRecuperableLignes.first;
   String _poste = kRecuperablePostes.first.$1;
 
@@ -131,6 +135,12 @@ class _RecuperableFicheScreenState extends State<RecuperableFicheScreen> {
   }
 
   Future<void> _save({bool silent = false}) async {
+    if (_machine.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aucune machine active pour ce module — ajoutez-en une dans Production > Machines.')),
+      );
+      return;
+    }
     setState(() => _saving = true);
     try {
       final model = RecuperableFicheModel(
@@ -297,7 +307,11 @@ class _RecuperableFicheScreenState extends State<RecuperableFicheScreen> {
       return [
         wrap(_lockedTile(Icons.event_outlined, 'Date', _dateCtrl.text)),
         wrap(_lockedTile(Icons.category_outlined, 'Module', _module)),
-        wrap(_lockedTile(Icons.precision_manufacturing_outlined, 'Machine', '${AppLocalizations.of(context).translate('Machine')} $_machine')),
+        wrap(_lockedTile(
+            Icons.precision_manufacturing_outlined,
+            'Machine',
+            MachineCatalog.instance.find(_module, int.tryParse(_machine) ?? 0)?.code ??
+                '${AppLocalizations.of(context).translate('Machine')} $_machine')),
         wrap(_lockedTile(Icons.linear_scale_rounded, 'Ligne', _ligne)),
         wrap(_lockedTile(Icons.schedule_rounded, 'Poste',
             AppLocalizations.of(context).translate(kRecuperablePostes.firstWhere((p) => p.$1 == _poste).$2))),
@@ -305,10 +319,27 @@ class _RecuperableFicheScreenState extends State<RecuperableFicheScreen> {
       ];
     }
 
+    // Machines ACTIVES du type = module (référentiel, plus de liste fixe 1..4).
+    final catalog = context.watch<MachineCatalog>();
+    if (!catalog.isLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => catalog.ensureLoaded());
+    }
+    final machines = catalog.ofType(_module, activeOnly: true);
+    final machineOptions = machines.map((m) => '${m.numero}').toList();
+    if (!machineOptions.contains(_machine)) {
+      _machine = machineOptions.isNotEmpty ? machineOptions.first : '';
+    }
+    String machineLabel(String numero) =>
+        machines.firstWhere((m) => '${m.numero}' == numero).code;
+
     return [
       wrap(_dateField()),
       wrap(_choiceField('Module', kRecuperableModules, _module, (v) => setState(() => _module = v))),
-      wrap(_choiceField('Machine', kRecuperableMachines, _machine, (v) => setState(() => _machine = v), prefix: 'Machine ')),
+      wrap(machineOptions.isEmpty
+          ? _lockedTile(Icons.precision_manufacturing_outlined, 'Machine',
+              catalog.isLoaded ? 'Aucune machine active' : 'Chargement…')
+          : _choiceField('Machine', machineOptions, _machine, (v) => setState(() => _machine = v),
+              labelOf: machineLabel)),
       wrap(_choiceField('Ligne', kRecuperableLignes, _ligne, (v) => setState(() => _ligne = v))),
       wrap(_choiceField('Poste', kRecuperablePostes.map((p) => p.$1).toList(), _poste, (v) => setState(() => _poste = v),
           labelOf: (v) => kRecuperablePostes.firstWhere((p) => p.$1 == v).$2)),

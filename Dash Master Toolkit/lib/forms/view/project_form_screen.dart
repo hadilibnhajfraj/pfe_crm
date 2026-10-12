@@ -153,6 +153,8 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
   // (dashboard/client/industriel).
   void _updateCopilotContext() {
     CopilotContextController.to.setContext(CopilotPageContext.project(
+      // Phase 1 : id de la fiche ouverte (« celui-ci ») — jamais une autorisation côté backend.
+      projectId: _projectId,
       name: c.nomProjet.text.trim().isEmpty ? 'Projet sans nom' : c.nomProjet.text.trim(),
       client: c.entreprise.text.trim(),
       productFamily: c.productFamily.value,

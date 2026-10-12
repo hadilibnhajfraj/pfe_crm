@@ -511,6 +511,7 @@
   "KPI Commercial Contacts": "KPI Contacts Commerciaux",
   "KPI Projets CRM": "KPI Projets CRM",
   "Dashboard Industriel": "Tableau de bord industriel",
+  "Dashboard Production": "Dashboard Production",
   "Accueil": "Accueil",
   "Commercial Contacts": "Contacts Commerciaux",
   "Commercial Profile": "Profil Commercial",
@@ -1053,5 +1054,13 @@
   "Sep": "Sep",
   "Oct": "Oct",
   "Nov": "Nov",
-  "Déc": "Déc"
+  "Déc": "Déc",
+  "Fiche déjà existante pour ce poste": "Fiche déjà existante pour ce poste",
+  "fiche existe déjà pour cette machine, ce poste et cette date.": "fiche existe déjà pour cette machine, ce poste et cette date.",
+  "fiches existent déjà pour cette machine, ce poste et cette date.": "fiches existent déjà pour cette machine, ce poste et cette date.",
+  "Brouillon vide": "Brouillon vide",
+  "Vous pouvez créer une fiche supplémentaire. Aucune fiche existante ne sera modifiée.": "Vous pouvez créer une fiche supplémentaire. Aucune fiche existante ne sera modifiée.",
+  "Reprendre le brouillon vide": "Reprendre le brouillon vide",
+  "Reprendre le brouillon en cours": "Reprendre le brouillon en cours",
+  "Créer une nouvelle fiche": "Créer une nouvelle fiche"
 }

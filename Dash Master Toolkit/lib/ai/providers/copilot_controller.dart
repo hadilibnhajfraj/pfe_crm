@@ -1,8 +1,8 @@
 // lib/ai/providers/copilot_controller.dart
 //
 // L'état vivant d'UNE conversation avec le Copilot — messages, streaming,
-// indicateur de frappe, copier/régénérer/stop, pièces jointes
-// (architecture), automatisations en attente de confirmation. Pattern GetX
+// indicateur de frappe, copier/régénérer/stop, documents joints (Phase 2,
+// envoyés à POST /ai-copilot/documents), automatisations en attente de confirmation. Pattern GetX
 // dominant de ce projet (GetxController + .obs + Get.put/Get.find), voir
 // lib/providers/archive_request_provider.dart pour le même pattern déjà en
 // place. Préfère le WebSocket quand connecté (typing + révélation en
@@ -24,6 +24,7 @@ import '../models/copilot_message.dart';
 import '../models/copilot_suggestion.dart';
 import '../services/copilot_api_service.dart';
 import '../services/copilot_socket_service.dart';
+import '../utils/copilot_loading_phase.dart';
 import 'copilot_context_controller.dart';
 
 class CopilotController extends GetxController {
@@ -55,6 +56,13 @@ class CopilotController extends GetxController {
   final isTyping = false.obs;
   final conversationId = RxnString();
   final attachments = <CopilotAttachment>[].obs;
+
+  /// Ce que le Copilot est en train de faire pendant l'attente (voir
+  /// utils/copilot_loading_phase.dart) — déduit du message envoyé.
+  final loadingPhase = CopilotLoadingPhase.crm.obs;
+
+  // Un document a-t-il déjà été joint dans CETTE conversation ?
+  bool _conversationHasDocuments = false;
   final inputCtrl = TextEditingController();
 
   bool _socketWired = false;
@@ -154,13 +162,21 @@ class CopilotController extends GetxController {
   Future<void> send([String? overrideText]) async {
     final text = (overrideText ?? inputCtrl.text).trim();
     if (text.isEmpty || isSending.value) return;
+    if (attachments.any((a) => a.isUploading)) {
+      Fluttertoast.showToast(msg: "Patientez : le document est encore en cours d'analyse.");
+      return;
+    }
+
+    // Seuls les documents effectivement indexés partent avec le message ;
+    // le backend les garde ensuite comme documents actifs de la conversation.
+    final documentIds = attachments.where((a) => a.isReady).map((a) => a.documentId!).toList();
 
     messages.add(CopilotMessage.user(text));
     if (overrideText == null) inputCtrl.clear();
     attachments.clear();
     messages.refresh();
 
-    await _runAssistantTurn(text);
+    await _runAssistantTurn(text, documentIds: documentIds);
   }
 
   /// Reprend le dernier message utilisateur et redemande une réponse,
@@ -217,27 +233,38 @@ class CopilotController extends GetxController {
   // cache : si l'utilisateur change d'écran EN PLEIN MILIEU d'une
   // conversation (ex. quitte la fiche projet pendant que le Copilot
   // répond), le tour SUIVANT doit refléter le nouvel écran, pas l'ancien.
-  Future<void> _runAssistantTurn(String userText) async {
+  Future<void> _runAssistantTurn(String userText, {List<String> documentIds = const []}) async {
     messages.add(CopilotMessage.pendingAssistant());
     isSending.value = true;
     isTyping.value = true;
     _turnStopped = false;
     messages.refresh();
 
+    if (documentIds.isNotEmpty) _conversationHasDocuments = true;
+    loadingPhase.value = inferCopilotLoadingPhase(userText, hasDocuments: documentIds.isNotEmpty, conversationHasDocuments: _conversationHasDocuments);
+
     final pageContext = _context.current.value?.toJson();
+    // `null` plutôt qu'une liste vide : contrat d'appel inchangé sans document.
+    final ids = documentIds.isEmpty ? null : documentIds;
 
     if (_socket.isConnected) {
-      _socket.send(message: userText, conversationId: conversationId.value, pageContext: pageContext);
+      _socket.send(message: userText, conversationId: conversationId.value, pageContext: pageContext, documentIds: ids);
       return; // les handlers onTyping/onChunk/onComplete/onError font le reste
     }
 
-    await _sendViaRest(userText, pageContext);
+    await _sendViaRest(userText, pageContext, ids);
   }
 
-  Future<void> _sendViaRest(String text, Map<String, dynamic>? pageContext) async {
+  Future<void> _sendViaRest(String text, Map<String, dynamic>? pageContext, [List<String>? documentIds]) async {
     _cancelToken = CancelToken();
     try {
-      final response = await _api.sendMessage(message: text, conversationId: conversationId.value, cancelToken: _cancelToken, pageContext: pageContext);
+      final response = await _api.sendMessage(
+        message: text,
+        conversationId: conversationId.value,
+        cancelToken: _cancelToken,
+        pageContext: pageContext,
+        documentIds: documentIds,
+      );
       if (_turnStopped) return; // stopGenerating() a déjà finalisé l'affichage
       conversationId.value = response.conversationId ?? conversationId.value;
       final msg = _currentAssistantMessage();
@@ -283,6 +310,7 @@ class CopilotController extends GetxController {
     conversationId.value = null;
     messages.clear();
     attachments.clear();
+    _conversationHasDocuments = false;
   }
 
   Future<void> loadConversation(String id) async {
@@ -311,6 +339,77 @@ class CopilotController extends GetxController {
     return _api.fetchReportPdfBytes(content: message.text);
   }
 
+  /// Phase 2 — valide puis envoie un fichier choisi par l'utilisateur. La
+  /// puce passe par « envoi… » puis « prêt » (documentId reçu) ou « erreur »
+  /// (message du backend ou de la validation locale). Retourne le message
+  /// d'erreur, ou `null` en cas de succès.
+  Future<String?> uploadAttachment(CopilotAttachment attachment, Uint8List bytes) async {
+    if (attachments.length >= CopilotAttachmentRules.maxAttachmentsPerMessage) {
+      return 'Cinq documents au maximum par message.';
+    }
+    final invalid = CopilotAttachmentRules.validate(fileName: attachment.fileName, sizeBytes: bytes.isEmpty ? attachment.sizeBytes : bytes.length);
+    if (invalid != null || bytes.isEmpty) {
+      final message = invalid ?? 'Impossible de lire ce fichier.';
+      attachments.add(attachment.asError(message));
+      return message;
+    }
+
+    attachments.add(attachment);
+    try {
+      final uploaded = await _api.uploadDocument(
+        bytes: bytes,
+        fileName: attachment.fileName,
+        onSendProgress: (sent, total) => _updateProgress(attachment.id, sent, total),
+      );
+      _replaceAttachment(attachment.id, (a) => a.asReady(uploaded.documentId), orphanDocumentId: uploaded.documentId);
+      return null;
+    } catch (e) {
+      final message = e is CopilotForbiddenException || e is CopilotNotConfiguredException ? _friendlyError(e) : _uploadError(e);
+      _replaceAttachment(attachment.id, (a) => a.asError(message));
+      return message;
+    }
+  }
+
+  // L'utilisateur a pu retirer la puce pendant l'envoi : le document déjà
+  // indexé côté serveur est alors supprimé plutôt que laissé orphelin.
+  void _replaceAttachment(String id, CopilotAttachment Function(CopilotAttachment) update, {String? orphanDocumentId}) {
+    final index = attachments.indexWhere((a) => a.id == id);
+    if (index < 0) {
+      if (orphanDocumentId != null) _deleteQuietly(orphanDocumentId);
+      return;
+    }
+    attachments[index] = update(attachments[index]);
+  }
+
+  // Rafraîchi par pas de 2 % au plus : une mise à jour par paquet réseau
+  // reconstruirait la barre de saisie des centaines de fois par seconde.
+  void _updateProgress(String id, int sent, int total) {
+    if (total <= 0) return;
+    final index = attachments.indexWhere((a) => a.id == id);
+    if (index < 0 || !attachments[index].isUploading) return;
+    final value = sent / total;
+    final previous = attachments[index].progress ?? 0;
+    if (value < 1 && value - previous < 0.02) return;
+    attachments[index] = attachments[index].withProgress(value);
+  }
+
+  String _uploadError(Object e) {
+    final text = e.toString().replaceFirst('Exception: ', '').trim();
+    return text.isEmpty ? "L'envoi du document a échoué." : text;
+  }
+
+  void _deleteQuietly(String documentId) {
+    _api.deleteDocument(documentId).catchError((_) {});
+  }
+
   void addAttachment(CopilotAttachment attachment) => attachments.add(attachment);
-  void removeAttachment(String id) => attachments.removeWhere((a) => a.id == id);
+
+  /// Retire la puce ; si le document était déjà indexé et pas encore envoyé,
+  /// il est aussi supprimé côté serveur (rien ne reste inutilement en mémoire).
+  void removeAttachment(String id) {
+    final index = attachments.indexWhere((a) => a.id == id);
+    if (index < 0) return;
+    final removed = attachments.removeAt(index);
+    if (removed.isReady) _deleteQuietly(removed.documentId!);
+  }
 }

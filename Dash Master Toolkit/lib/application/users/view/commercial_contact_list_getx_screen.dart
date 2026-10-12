@@ -415,11 +415,10 @@ Future<void> _loadContacts({
   bool get _isFollowupAutomationActor =>
       (AuthService().userEmail ?? '').toLowerCase().trim() == _kFollowupAutomationEmail;
 
-  // Rôles autorisés à voir/utiliser l'action admin "Affecter des contacts" —
-  // même périmètre que PRIVILEGED_ROLES côté backend
-  // (commercial_contacts.routes.js).
-  bool get _isPrivilegedRole => const ['admin', 'superadmin', 'superadmin2']
-      .contains((AuthService().userRole ?? '').toLowerCase().trim());
+  // Rôles autorisés à voir/utiliser l'action "Affecter des contacts" (règle
+  // B) — commercial_sedentaire + administrateurs, même périmètre que
+  // ASSIGN_ACTOR_ROLES côté backend (commercial_contacts.routes.js).
+  bool get _isPrivilegedRole => AuthService().canAssignContacts;
 
   Future<List<CommercialUserOption>> _loadCommercialUsers() async {
     try {
@@ -2286,6 +2285,7 @@ if (saved == true) {
           // dans cette liste ; effacé quand l'utilisateur revient (le
           // Future de Navigator.push se résout à la fermeture de l'écran).
           CopilotContextController.to.setContext(CopilotPageContext.client(
+            contactId: contact.id,
             name: '${contact.nom} ${contact.prenom}'.trim(),
             pipelineStage: contact.pipelineStage,
             projectNames: contact.projects.map((p) => p.nomProjet ?? '').where((n) => n.isNotEmpty).toList(),
@@ -2545,8 +2545,8 @@ Widget _buildSearchBar() {
     // cas précis a son propre message, distinct d'une recherche trop
     // restrictive, pour ne jamais laisser croire à un bug de filtrage.
     if (_contacts.isEmpty) {
-      final isCommercialRole =
-          (AuthService().userRole ?? '').toLowerCase().trim() == 'commercial';
+      // Rôle au périmètre restreint (règle A) : commercial terrain.
+      final isCommercialRole = AuthService().isCommercial;
       final hasActiveFilters = _searchController.text.trim().isNotEmpty ||
           selectedUser != null ||
           selectedType != null;
@@ -2556,7 +2556,7 @@ Widget _buildSearchBar() {
           ? 'Aucun contact ne vous est actuellement affecté.'
           : 'No commercial contacts found.';
       final subtitle = noAssignmentForCommercial
-          ? "Un administrateur doit d'abord vous assigner des contacts commerciaux."
+          ? "Un commercial sédentaire ou un administrateur doit d'abord vous affecter des contacts commerciaux."
           : 'Essayez de modifier vos critères de recherche ou réinitialisez les filtres.';
 
       return ListView(

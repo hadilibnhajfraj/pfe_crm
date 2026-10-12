@@ -1,6 +1,8 @@
 // Teste CopilotApiService contre un Dio MOCKÉ (mocktail) — jamais un vrai
 // appel réseau. Utilise le seam de test CopilotApiService.withDio(dio),
 // voir lib/ai/services/copilot_api_service.dart.
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -322,6 +324,72 @@ void main() {
         api.getConversationHistory('not-mine'),
         throwsA(predicate((e) => e is Exception && e.toString().contains('Conversation not found.'))),
       );
+    });
+  });
+
+  // Phase 2 — documents joints au Copilot.
+  group('documents — POST/DELETE /ai-copilot/documents et documentIds', () {
+    test('sendMessage : documentIds présents dans le corps quand fournis, absents sinon (contrat inchangé)', () async {
+      when(() => dio.post('/ai-copilot/chat', data: any(named: 'data'))).thenAnswer(
+        (_) async => Response(requestOptions: _reqOptions('/ai-copilot/chat'), statusCode: 200, data: {'data': {'mode': 'agent'}}),
+      );
+
+      await api.sendMessage(message: 'Résume ce fichier.', documentIds: ['d1', 'd2']);
+      await api.sendMessage(message: 'Bonjour', documentIds: const []);
+
+      final calls = verify(() => dio.post('/ai-copilot/chat', data: captureAny(named: 'data'))).captured;
+      expect((calls[0] as Map)['documentIds'], ['d1', 'd2']);
+      expect((calls[1] as Map).containsKey('documentIds'), isFalse);
+    });
+
+    test('uploadDocument : multipart champ « file » avec le nom du fichier ; renvoie les métadonnées', () async {
+      when(() => dio.post('/ai-copilot/documents', data: any(named: 'data'))).thenAnswer(
+        (_) async => Response(
+          requestOptions: _reqOptions('/ai-copilot/documents'),
+          statusCode: 201,
+          data: {
+            'success': true,
+            'data': {'documentId': 'doc-1', 'filename': 'rapport.pdf', 'sourceType': 'pdf', 'pageCount': 3, 'chunkCount': 7},
+          },
+        ),
+      );
+
+      final uploaded = await api.uploadDocument(bytes: Uint8List.fromList([1, 2, 3]), fileName: 'rapport.pdf');
+
+      expect(uploaded.documentId, 'doc-1');
+      expect(uploaded.pageCount, 3);
+      expect(uploaded.chunkCount, 7);
+      final form = verify(() => dio.post('/ai-copilot/documents', data: captureAny(named: 'data'))).captured.single as FormData;
+      expect(form.files, hasLength(1));
+      expect(form.files.single.key, 'file');
+      expect(form.files.single.value.filename, 'rapport.pdf');
+      expect(form.files.single.value.length, 3);
+    });
+
+    test('uploadDocument : un refus du backend (400/413) remonte avec son message', () async {
+      when(() => dio.post('/ai-copilot/documents', data: any(named: 'data'))).thenThrow(
+        DioException(
+          requestOptions: _reqOptions('/ai-copilot/documents'),
+          response: Response(
+            requestOptions: _reqOptions('/ai-copilot/documents'),
+            statusCode: 413,
+            data: {'success': false, 'reason': 'DOCUMENT_TOO_LARGE', 'message': 'Fichier trop volumineux (10 Mo maximum).'},
+          ),
+        ),
+      );
+
+      await expectLater(
+        api.uploadDocument(bytes: Uint8List(1), fileName: 'gros.pdf'),
+        throwsA(predicate((e) => e is Exception && e.toString().contains('10 Mo maximum'))),
+      );
+    });
+
+    test('deleteDocument : DELETE avec identifiant encodé (jamais de chemin arbitraire)', () async {
+      when(() => dio.delete(any())).thenAnswer((_) async => Response(requestOptions: _reqOptions('/'), statusCode: 200, data: {'success': true}));
+
+      await api.deleteDocument('../x y');
+
+      verify(() => dio.delete('/ai-copilot/documents/..%2Fx%20y')).called(1);
     });
   });
 }

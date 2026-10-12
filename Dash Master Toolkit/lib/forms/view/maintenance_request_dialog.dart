@@ -6,12 +6,12 @@ import 'package:get/get.dart';
 import 'package:dash_master_toolkit/forms/view/pipeline_theme.dart';
 import 'package:dash_master_toolkit/providers/maintenance_request_provider.dart';
 import 'package:dash_master_toolkit/services/maintenance_request_service.dart';
+import 'package:dash_master_toolkit/forms/industrial/service/machine_catalog.dart';
+import 'package:provider/provider.dart';
 
-const _equipements = [
-  'PROMESH — Machine 1', 'PROMESH — Machine 2', 'PROMESH — Machine 3', 'PROMESH — Machine 4',
-  'PROBAR — Machine 1', 'PROBAR — Machine 2', 'PROBAR — Machine 3', 'PROBAR — Machine 4',
-  'Mélangeur', 'Autre équipement',
-];
+// Équipements : machines ACTIVES du référentiel (MachineCatalog, GET
+// /machines) + équipements hors référentiel — plus de liste fixe 1..4.
+List<String> get _equipements => MachineCatalog.instance.maintenanceEquipements();
 
 Future<void> showMaintenanceRequestDialog(BuildContext context) {
   return showDialog<void>(
@@ -31,7 +31,7 @@ class _MaintenanceRequestDialogState extends State<_MaintenanceRequestDialog> {
   final _formKey = GlobalKey<FormState>();
   final _typePanne = TextEditingController();
   final _description = TextEditingController();
-  String _equipement = _equipements.first;
+  String _equipement = '';
   String _urgence = 'moyenne';
   final List<MaintenancePhotoFile> _photos = [];
 
@@ -73,6 +73,14 @@ class _MaintenanceRequestDialogState extends State<_MaintenanceRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // Liste d'équipements issue du référentiel : chargée au besoin, et
+    // reconstruite dès que le catalogue est disponible.
+    final catalog = context.watch<MachineCatalog>();
+    if (!catalog.isLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => catalog.ensureLoaded());
+    }
+    if (!_equipements.contains(_equipement)) _equipement = _equipements.first;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(

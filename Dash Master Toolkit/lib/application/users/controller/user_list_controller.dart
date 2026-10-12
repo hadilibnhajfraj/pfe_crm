@@ -4,6 +4,7 @@ import 'package:dash_master_toolkit/application/services/admin_users_service.dar
 import 'package:dash_master_toolkit/application/common/safe_snack.dart';
 import 'package:dash_master_toolkit/application/users/users_imports.dart';
 import '../model/user_model.dart';
+import 'package:dash_master_toolkit/utils/user_roles.dart';
 
 class UserListController extends GetxController {
   TextEditingController searchController = TextEditingController();
@@ -33,7 +34,8 @@ class UserListController extends GetxController {
       final List<UserModel> mapped = list.map<UserModel>((u) {
         final id = (u['id'] ?? '').toString();
         final email = (u['email'] ?? '').toString();
-        final role = (u['role'] ?? 'user').toString();
+        // Vocabulaire des rôles v2 : rôle par défaut "commercial" (plus "user").
+        final role = (u['role'] ?? 'commercial').toString();
         final isActive = (u['isActive'] ?? false) == true;
 
         final name = email.contains('@') ? email.split('@').first : email;
@@ -42,7 +44,8 @@ class UserListController extends GetxController {
         return UserModel(
           id: id,
           name: name.isEmpty ? 'User' : name,
-          designation: role,
+          role: role,
+          designation: userRoleLabel(role),
           department: "$projectsCount projets",
           email: email,
           phone: "Voir",
@@ -97,6 +100,34 @@ class UserListController extends GetxController {
       }
 
       SafeSnack.show("Success", "User updated");
+    } catch (e) {
+      SafeSnack.show(
+        "Error",
+        e.toString().replaceFirst('Exception: ', ''),
+        isError: true,
+      );
+    }
+  }
+
+  // Règle E : attribution d'un des 7 rôles réels (ex. commercial_sedentaire
+  // lors de l'activation d'un compte inscrit comme "commercial").
+  Future<void> changeRole(UserModel user, String newRole) async {
+    if (newRole == user.role) return;
+    try {
+      await AdminUsersService.instance.setRole(user.id, newRole);
+
+      final idx = users.indexWhere((x) => x.id == user.id);
+      if (idx != -1) {
+        users[idx] = users[idx].copyWith(
+          role: newRole,
+          designation: userRoleLabel(newRole),
+        );
+      }
+
+      SafeSnack.show(
+        "Success",
+        "Rôle mis à jour : ${userRoleLabel(newRole)} (effectif à la prochaine connexion)",
+      );
     } catch (e) {
       SafeSnack.show(
         "Error",

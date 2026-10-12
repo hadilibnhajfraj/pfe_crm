@@ -7,6 +7,10 @@ class UserModel {
   final String phone;
   final String status;
 
+  // Rôle brut (users.role, vocabulaire v2) — `designation` en porte le
+  // libellé lisible pour l'affichage.
+  final String role;
+
   // ✅ avatar backend
   final String? avatarUrl;
 
@@ -23,6 +27,7 @@ class UserModel {
     required this.status,
     required this.imageUrl,
     this.avatarUrl,
+    this.role = '',
   });
 
   bool get isActive => status.toLowerCase() == "active";
@@ -41,17 +46,20 @@ class UserModel {
     String? status,
     String? avatarUrl,
     String? imageUrl,
+    String? role,
+    String? designation,
   }) {
     return UserModel(
       id: id,
       name: name,
-      designation: designation,
+      designation: designation ?? this.designation,
       department: department,
       email: email,
       phone: phone,
       status: status ?? this.status,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       imageUrl: imageUrl ?? this.imageUrl,
+      role: role ?? this.role,
     );
   }
 
@@ -66,6 +74,7 @@ class UserModel {
       phone: json["phone"] ?? "",
       status: json["status"] ?? "inactive",
       avatarUrl: json["avatarUrl"],
+      role: (json["role"] ?? "").toString(),
 
       // fallback image
       imageUrl: "assets/images/profile.png",

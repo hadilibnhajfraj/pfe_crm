@@ -47,3 +47,28 @@ List<String> starterSuggestionsFor(CopilotScreenType? screenType) {
       return kDefaultCopilotSuggestions;
   }
 }
+
+/// Suggestions de prompts de l'écran d'accueil du Copilot. `label` est ce
+/// qui est affiché ; `message` est la question réellement envoyée — formulée
+/// pour atteindre l'Agent backend approprié (vérifié contre le détecteur
+/// d'intentions : projects, commercial_contacts, capability_audit).
+enum CopilotQuickPromptAction { send, attachDocument }
+
+class CopilotQuickPrompt {
+  const CopilotQuickPrompt({required this.label, required this.message, this.action = CopilotQuickPromptAction.send});
+
+  final String label;
+  final String message;
+
+  /// `attachDocument` : ouvre le sélecteur de fichier ; `message` est alors
+  /// proposé dans le champ de saisie une fois le document prêt.
+  final CopilotQuickPromptAction action;
+}
+
+const List<CopilotQuickPrompt> kCopilotQuickPrompts = [
+  CopilotQuickPrompt(label: '📊 Analyse mes projets', message: 'Analyse mes projets.'),
+  CopilotQuickPrompt(label: '👥 Montre mes contacts', message: 'Montre mes contacts commerciaux.'),
+  CopilotQuickPrompt(label: '📄 Analyse un document', message: 'Résume ce document.', action: CopilotQuickPromptAction.attachDocument),
+  CopilotQuickPrompt(label: '🔎 Trouve les projets sans relance', message: "Quels projets n'ont pas été relancés depuis 30 jours ?"),
+  CopilotQuickPrompt(label: '🤖 Que peux-tu faire ?', message: 'Quelles sont mes capacités dans le Copilot ?'),
+];

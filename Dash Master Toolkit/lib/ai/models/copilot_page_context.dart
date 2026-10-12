@@ -20,16 +20,27 @@ extension _ScreenTypeName on CopilotScreenType {
 }
 
 class CopilotPageContext {
-  const CopilotPageContext({required this.screenType, required this.label, required this.data});
+  const CopilotPageContext({required this.screenType, required this.label, required this.data, this.entity, this.recordId});
 
   final CopilotScreenType screenType;
   final String label;
   final Map<String, dynamic> data;
 
+  /// Phase 1 (compréhension naturelle) — entité métier affichée
+  /// ('project' | 'commercial_contact' | 'production_record') et identifiant
+  /// de l'enregistrement ouvert : permet au Copilot de comprendre « celui-ci »
+  /// sans que l'utilisateur ne le nomme. Côté backend
+  /// (orchestrator/contextManager.js), recordId n'est JAMAIS une autorisation :
+  /// il est revérifié par un Tool scopé par le RBAC de l'utilisateur.
+  final String? entity;
+  final String? recordId;
+
   Map<String, dynamic> toJson() => {
         'screen': screenType.wireName,
         if (label.isNotEmpty) 'label': label,
         if (data.isNotEmpty) 'data': data,
+        if (entity != null && entity!.isNotEmpty) 'entity': entity,
+        if (recordId != null && recordId!.isNotEmpty) 'recordId': recordId,
       };
 
   /// Fiche projet — voir lib/forms/view/project_form_screen.dart
@@ -44,10 +55,13 @@ class CopilotPageContext {
     String? status,
     String? successRate,
     String? surface,
+    String? projectId,
   }) {
     return CopilotPageContext(
       screenType: CopilotScreenType.project,
       label: name,
+      entity: 'project',
+      recordId: projectId,
       data: {
         if (client != null && client.isNotEmpty) 'client': client,
         if (productFamily != null && productFamily.isNotEmpty) 'famille': productFamily,
@@ -69,10 +83,13 @@ class CopilotPageContext {
     List<String>? projectNames,
     int? relanceCount,
     String? lastRelanceDate,
+    String? contactId,
   }) {
     return CopilotPageContext(
       screenType: CopilotScreenType.client,
       label: name,
+      entity: 'commercial_contact',
+      recordId: contactId,
       data: {
         if (pipelineStage != null && pipelineStage.isNotEmpty) 'pipelineStage': pipelineStage,
         if (projectNames != null && projectNames.isNotEmpty) 'projets': projectNames,
@@ -124,9 +141,12 @@ class CopilotPageContext {
     String? conformite,
     String? nonConformiteDescription,
     String? orderRef,
+    String? recordId,
   }) {
     return CopilotPageContext(
       screenType: CopilotScreenType.industrial,
+      entity: 'production_record',
+      recordId: recordId,
       label: '$family${machine != null ? ' — $machine' : ''}',
       data: {
         'famille': family,

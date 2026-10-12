@@ -80,8 +80,13 @@ import 'package:dash_master_toolkit/application/users/view/commercial_contacts_a
 import 'package:dash_master_toolkit/pages/auth/view/commercial_selection_screen.dart';
 
 import 'package:dash_master_toolkit/forms/industrial/theme/industrial_theme.dart';
-import 'package:dash_master_toolkit/forms/industrial/view/machine_overview_screen.dart';
+import 'package:dash_master_toolkit/forms/production/model/production_models.dart';
+import 'package:dash_master_toolkit/forms/production/view/production_dashboard_screen.dart';
+import 'package:dash_master_toolkit/dashboard/me/me_dashboard_screen.dart';
+import 'package:dash_master_toolkit/forms/production/view/production_fiche_screen.dart';
+import 'package:dash_master_toolkit/forms/production/view/production_line_screen.dart';
 import 'package:dash_master_toolkit/forms/industrial/view/machine_shift_screen.dart';
+import 'package:dash_master_toolkit/forms/industrial/view/machines_screen.dart';
 import 'package:dash_master_toolkit/forms/industrial/view/probar_form_screen.dart';
 import 'package:dash_master_toolkit/forms/industrial/view/melange_form_screen.dart';
 import 'package:dash_master_toolkit/forms/industrial/view/melange/melange_history_screen.dart';
@@ -169,6 +174,16 @@ class MyRoute {
 
   // ── Module industriel — PRODUCTION (PROMESH/PROBAR) / MÉLANGE / MAINTENANCE
   static const productionRoot = '/production';
+  // Dashboard Production (page d'accueil du module) et fiche structurée
+  // d'une production : /production/fiche/<promesh|probar>/<id>.
+  static const productionDashboardScreen = '/production/dashboard';
+  // Tableau de bord personnalisé (GET /dashboard/me) — accessible à tous les rôles.
+  static const meDashboardScreen = '/mon-tableau-de-bord';
+  static const productionFicheRoot = '/production/fiche';
+  // Référentiel Machines PROBAR + PROMESH (règle D) — sous /production pour
+  // hériter de la garde canViewPorPromesh et de l'espace industriel de
+  // responsable_logistique_achat.
+  static const machinesScreen = '/production/machines';
   static const productionPromeshRoot = '/production/promesh';
   static const productionProbarRoot = '/production/probar';
   static const probarFormScreen = '/production/probar/form';
@@ -181,6 +196,8 @@ class MyRoute {
   static const maintenanceHistoriqueScreen = '/maintenance/historique';
   static const industrialRoutePrefixes = [
     porPromeshRoot,
+    // Écran commun à tous les rôles : il reste accessible à ce profil.
+    meDashboardScreen,
     productionRoot,
     melangeRoot,
     maintenanceRoot,
@@ -296,10 +313,12 @@ static const clientsProfileScreen = '/users/client';
             print('[COPILOT-ROUTER] redirect=$porPromeshDashboardScreen (auth route + responsable_logistique_achat)');
             return porPromeshDashboardScreen;
           }
-          if (role == 'commercial') {
+          // Vocabulaire des rôles v2 : l'ancien rôle "commercial" (espace
+          // contacts) est devenu "commercial_sedentaire".
+          if (role == 'commercial_sedentaire') {
             debugPrint('REDIRECTION → $commercialContactsKpiUsers');
             // ignore: avoid_print
-            print('[COPILOT-ROUTER] redirect=$commercialContactsKpiUsers (auth route + commercial)');
+            print('[COPILOT-ROUTER] redirect=$commercialContactsKpiUsers (auth route + commercial_sedentaire)');
             return commercialContactsKpiUsers;
           }
           // ── Dashboard Business Intelligence ─────────────────────────
@@ -829,18 +848,49 @@ GoRoute(
 
           // ── MODULE INDUSTRIEL — PRODUCTION (PROMESH/PROBAR) ──────────────
           GoRoute(
+            path: meDashboardScreen,
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MeDashboardScreen()),
+          ),
+          GoRoute(
             path: productionRoot,
-            redirect: (context, state) =>
-                AuthService().canViewPorPromesh ? null : dashboard,
+            redirect: (context, state) {
+              if (!AuthService().canViewPorPromesh) return dashboard;
+              // « Production » ouvre directement le Dashboard Production.
+              if (state.uri.path == productionRoot) return productionDashboardScreen;
+              return null;
+            },
             routes: [
               GoRoute(
+                path: 'dashboard',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: ProductionDashboardScreen()),
+              ),
+              GoRoute(
+                path: 'fiche/:line/:id',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: ProductionFicheScreen(
+                    key: ValueKey('fiche-${state.pathParameters['id']}'),
+                    line: state.pathParameters['line'] == 'probar' ? 'probar' : 'promesh',
+                    id: state.pathParameters['id'] ?? '',
+                  ),
+                ),
+              ),
+              GoRoute(
+                path: 'machines',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: MachinesScreen()),
+              ),
+              GoRoute(
                 path: 'promesh',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: MachineOverviewScreen(
-                    title: 'PROMESH',
-                    lineRoot: productionPromeshRoot,
-                    color: kPromeshColor,
-                    fetchPromeshStats: true,
+                // Page de la ligne : KPI, machines, filtres et tableau des
+                // fiches (remplace l'ancienne grille « Choisissez une
+                // machine » — les machines restent accessibles depuis la page).
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: ProductionLineScreen(
+                    key: const ValueKey('production-line-promesh'),
+                    line: 'promesh',
+                    initialPeriod: ProductionPeriod.fromQuery(state.uri.queryParameters),
                   ),
                 ),
                 routes: [
@@ -969,11 +1019,11 @@ GoRoute(
               ),
               GoRoute(
                 path: 'probar',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: MachineOverviewScreen(
-                    title: 'PROBAR',
-                    lineRoot: productionProbarRoot,
-                    color: kProbarColor,
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: ProductionLineScreen(
+                    key: const ValueKey('production-line-probar'),
+                    line: 'probar',
+                    initialPeriod: ProductionPeriod.fromQuery(state.uri.queryParameters),
                   ),
                 ),
                 routes: [

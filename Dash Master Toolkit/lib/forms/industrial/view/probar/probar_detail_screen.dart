@@ -105,6 +105,7 @@ class _ProbarDetailScreenState extends State<ProbarDetailScreen> {
         .toList();
 
     CopilotContextController.to.setContext(CopilotPageContext.industrial(
+      recordId: record.id,
       family: 'PROBAR',
       machine: record.machine,
       poste: record.poste,

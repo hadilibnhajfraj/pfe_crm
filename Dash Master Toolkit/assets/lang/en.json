@@ -511,6 +511,7 @@
   "KPI Commercial Contacts": "Commercial Contacts KPI",
   "KPI Projets CRM": "CRM Projects KPI",
   "Dashboard Industriel": "Industrial Dashboard",
+  "Dashboard Production": "Production Dashboard",
   "Accueil": "Home",
   "Commercial Contacts": "Commercial Contacts",
   "Commercial Profile": "Commercial Profile",
@@ -1053,5 +1054,13 @@
   "Sep": "Sep",
   "Oct": "Oct",
   "Nov": "Nov",
-  "Déc": "Dec"
+  "Déc": "Dec",
+  "Fiche déjà existante pour ce poste": "A record already exists for this shift",
+  "fiche existe déjà pour cette machine, ce poste et cette date.": "record already exists for this machine, shift and date.",
+  "fiches existent déjà pour cette machine, ce poste et cette date.": "records already exist for this machine, shift and date.",
+  "Brouillon vide": "Empty draft",
+  "Vous pouvez créer une fiche supplémentaire. Aucune fiche existante ne sera modifiée.": "You can create an additional record. No existing record will be changed.",
+  "Reprendre le brouillon vide": "Resume the empty draft",
+  "Reprendre le brouillon en cours": "Resume the draft in progress",
+  "Créer une nouvelle fiche": "Create a new record"
 }

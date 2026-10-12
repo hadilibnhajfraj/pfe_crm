@@ -40,5 +40,15 @@ abstract class CopilotColors {
   static Color suggestionChipText(bool isDark) => isDark ? colorWhite : colorPrimary300;
 
   static Color errorText(bool isDark) => colorError100;
+
+  // Interface « produit » (tableaux, cartes KPI, états d'erreur/succès,
+  // aperçu de fichiers) — toujours sur la palette existante.
+  static Color errorBackground(bool isDark) => isDark ? colorError300 : colorError0;
+  static Color errorBorder(bool isDark) => isDark ? colorError200 : colorError25;
+  static Color success(bool isDark) => isDark ? colorSuccess50 : colorSuccess200;
+  static Color successBackground(bool isDark) => isDark ? colorSuccess300 : colorSuccess0;
+  static Color warning(bool isDark) => isDark ? colorWarning100 : colorWarning200;
+  static Color tableHeader(bool isDark) => isDark ? colorGrey700 : colorPrimary0;
+  static Color tableStripe(bool isDark) => isDark ? colorGrey800 : colorGrey25;
   static Color citationBackground(bool isDark) => isDark ? colorGrey700 : colorOther0;
 }

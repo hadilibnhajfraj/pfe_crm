@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart' show debugPrint;
 
 import 'package:dash_master_toolkit/providers/api_client.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
+import 'package:dash_master_toolkit/forms/production/view/widgets/existing_fiches_dialog.dart';
 import '../model/por_promesh_model.dart';
 import '../model/poste_dashboard_stats.dart';
 import '../model/poste_charts_data.dart';
@@ -116,6 +117,17 @@ class PorPromeshService {
     };
     final res = await ApiClient.instance.dio.get('$_basePath/stats', queryParameters: params);
     return PosteChartsData.fromJson(_unwrapObject(res.data));
+  }
+
+  /// Fiches déjà présentes aujourd'hui pour la même machine et le même poste
+  /// (GET /por-promesh/existing) — interrogé AVANT la création pour prévenir
+  /// l'utilisateur. Lecture seule : ne crée, ne modifie ni ne supprime rien.
+  /// La date n'est pas envoyée : le serveur prend la sienne, celle-là même
+  /// qu'il inscrira sur la nouvelle fiche.
+  Future<ExistingFiches> fetchExisting({required String machine, required String poste}) async {
+    final res = await ApiClient.instance.dio
+        .get('$_basePath/existing', queryParameters: {'machine': machine, 'poste': poste});
+    return ExistingFiches.fromJson(_unwrapObject(res.data), quantiteKey: 'productionM2');
   }
 
   /// Bouton "Nouvelle fiche" — crée une fiche côté backend (jamais une fiche

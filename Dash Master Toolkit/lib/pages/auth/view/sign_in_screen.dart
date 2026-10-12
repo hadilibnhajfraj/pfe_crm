@@ -133,22 +133,6 @@ class SignInScreenState extends State<SignInScreen> {
                         label: 'Se souvenir de moi',
                       ),
                     ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(0, 0),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      onPressed: () => context.go(MyRoute.forgotPasswordScreen),
-                      child: Text(
-                        'Mot de passe oublié ?',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: colorPrimary100,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
 

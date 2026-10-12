@@ -7,7 +7,8 @@
 // saisis par diamètre. Miroir des DTO backend `recuperable.dto.js`.
 
 const List<String> kRecuperableModules = ['PROBAR', 'PROMESH'];
-const List<String> kRecuperableMachines = ['1', '2', '3', '4'];
+// Plus de liste fixe de machines : l'écran lit les machines ACTIVES du
+// référentiel (MachineCatalog, GET /machines) selon le module.
 const List<String> kRecuperableLignes = ['L1', 'L2', 'L3', 'L4'];
 const List<(String, String)> kRecuperablePostes = [
   ('matin', 'Matin'),

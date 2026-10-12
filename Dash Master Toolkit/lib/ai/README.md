@@ -34,7 +34,7 @@ Le contrat exact (payloads REST, événements WebSocket) est documenté côté b
 Deux fonctionnalités demandées existent comme **contrat + UI**, sans être fonctionnellement complètes, exactement comme leur pendant backend :
 
 - **Bouton vocal** (`widgets/copilot_voice_button.dart`, `services/copilot_voice_service.dart`) : aucun package de reconnaissance vocale (`speech_to_text`/`record`) n'est ajouté — le projet n'en avait aucun, et ça engage des permissions plateforme qui doivent rester un choix produit explicite. `ICopilotVoiceService` définit déjà le contrat ; brancher une vraie implémentation ne touchera aucun widget.
-- **Pièces jointes** (`widgets/copilot_attachment_button.dart`, `services/copilot_attachment_service.dart`) : la sélection LOCALE d'un fichier fonctionne réellement (`file_picker`, déjà une dépendance) ; son envoi au backend ne l'est pas — aucune route `/ai-copilot/*` n'accepte de fichier aujourd'hui. `upload()` lève `UnimplementedError` plutôt que de simuler un succès.
+- **Documents joints** (Phase 2 — `widgets/copilot_attachment_button.dart`, `services/copilot_attachment_service.dart`, `CopilotController.uploadAttachment`) : sélection PDF/DOCX/XLSX/CSV/TXT (10 Mo max., vérifié localement puis par le backend), envoi à `POST /ai-copilot/documents`, puce avec état envoi/prêt/erreur. Seuls les `documentIds` des documents prêts partent avec le message ; retirer une puce prête supprime le document côté serveur.
 
 ## Streaming — ce que c'est vraiment
 
@@ -146,13 +146,33 @@ Une passe de polish transversale, "digne de Microsoft Copilot" — s'appuie sur 
 
 ## Markdown — tableaux, listes, code
 
-**Tableaux/listes/barré/liens automatiques fonctionnent sans configuration** : `flutter_markdown` utilise par défaut `md.ExtensionSet.gitHubFlavored` (vérifié contre le code source du package — `TableSyntax()`/`UnorderedListWithCheckboxSyntax()`/`OrderedListWithCheckboxSyntax()` y sont déjà). Seul le STYLE des tableaux est personnalisé (`MarkdownStyleSheet.tableBorder`/`tableCellsPadding`, voir `copilot_message_bubble.dart`).
+**Listes/barré/liens automatiques fonctionnent sans configuration** : `flutter_markdown` utilise par défaut `md.ExtensionSet.gitHubFlavored`. **Les tableaux** sont extraits AVANT le rendu (`utils/copilot_content_parser.dart::splitCopilotContent`) et rendus par `widgets/copilot_table_view.dart` (en-tête, lignes alternées, défilement horizontal, cellules sélectionnables) : le tableau brut de `flutter_markdown` débordait dans un panneau étroit. Un texte sans tableau reste un seul `MarkdownBody`, rendu identique à avant.
 
 **Blocs de code** (`widgets/copilot_code_block.dart`) : coloration syntaxique réelle via `flutter_highlight`/`highlight` (190 langages déjà enregistrés par défaut, aucune configuration par langage nécessaire), en-tête avec le nom du langage détecté (extrait de la classe `language-xxx` du fenced code block, voir `CopilotCodeBlockBuilder`) et un bouton "Copier" dédié au bloc.
 
 **Piège flutter_markdown résolu** (isolé empiriquement, pas supposé — voir le commentaire de `CopilotCodeBlockBuilder.visitText()`) : dès qu'un `MarkdownElementBuilder` est enregistré pour la balise `pre`, `MarkdownBuilder.visitText()` redirige CHAQUE nœud texte de ce bloc vers ce builder au lieu de son rendu par défaut — et la méthode `visitText()` par défaut de `MarkdownElementBuilder` renvoie `null`, ce qui casse le comptage interne du package (`Failed assertion: '_inlines.isEmpty'`, plante au premier rendu). `CopilotCodeBlockBuilder` surcharge donc `visitText()` pour renvoyer un `SizedBox.shrink()` non-nul — peu importe CE qu'il renvoie, seul le fait qu'il soit non-nul compte, le contenu réel étant de toute façon entièrement reconstruit depuis `element.textContent` (l'AST) dans `visitElementAfter()`.
 
 **Langage non spécifié → `'plaintext'`, jamais `null`** : passer `language: null` à `HighlightView` déclenche une AUTO-DÉTECTION sur les 190 langages enregistrés (`highlight.parse(source, language: null)`), qui a été identifiée comme cause d'un débordement de layout massif en pratique (`RenderFlex overflowed`) sur certaines entrées courtes. `'plaintext'` (langage réellement enregistré, voir `highlight/languages/plaintext.dart`) est utilisé à la place — l'en-tête du bloc affiche quand même "texte" pour l'utilisateur.
+
+## Interface produit (UI v2)
+
+Uniquement côté Flutter — aucun changement de logique backend, aucun nouveau paquet.
+
+| Élément | Où | Remarque |
+|---|---|---|
+| Header | `screens/copilot_panel_body.dart::_Header` | avatar animé pendant une réponse, statut en direct (« Assistant CRM · prêt » ou la phase en cours), onglets Dashboard / Conversation / Historique, **Nouvelle conversation** |
+| Messages | `widgets/copilot_message_bubble.dart` | utilisateur : bulle primaire à droite ; assistant : avatar + « Copilot IA · heure » + carte bordée |
+| Markdown / code / tableaux | `copilot_message_bubble.dart`, `copilot_code_block.dart`, `copilot_table_view.dart` | titres, citations, liens, blocs de code colorés, tableaux défilants |
+| Cartes KPI | `widgets/copilot_kpi_cards.dart` + `extractCopilotKpis` | uniquement les lignes « libellé : nombre » DÉJÀ présentes dans la réponse (≥ 2, ≤ 6, jamais un identifiant) — aucune valeur calculée côté client |
+| Boutons d'action | `copilot_message_actions.dart` (inchangé), `copilot_suggestion_chips.dart` | copier, régénérer, PDF, suggestions |
+| Confirmation | `widgets/copilot_pending_action_card.dart` | objectif, nombre d'actions, liste repliable, « Aucune action n'a encore été exécutée », un seul clic (boutons désactivés ensuite), actionnable seulement sur le dernier message |
+| Fichiers | `widgets/copilot_attachment_preview.dart`, `copilot_input_bar.dart` | badge de type, nom, taille, **progression réelle** (`onSendProgress` de Dio), puis « Analyse du document… », prêt, erreur exacte |
+| Loading intelligent | `widgets/copilot_loading_indicator.dart` + `utils/copilot_loading_phase.dart` | « Recherche dans le CRM… » / « Analyse du document… » / « Préparation de l'action… », déduit du message envoyé (le backend n'émet pas de phase : rien n'est inventé) ; message honnête si la réponse tarde |
+| Erreurs | `copilot_message_bubble.dart::_ErrorContent` | carte d'erreur + « Réessayer » sur la dernière réponse |
+| Suggestions de prompts | `widgets/copilot_empty_state.dart`, `kCopilotQuickPrompts` | 📊 projets, 👥 contacts, 📄 document (ouvre le sélecteur), 🔎 projets sans relance, 🤖 capacités — chaque question vérifiée contre le détecteur d'intentions du backend ; + « Pour cet écran » (Smart Suggestions) |
+| Historique | `copilot_conversation_history_list.dart` (inchangé) | onglet Historique |
+
+Couleurs : uniquement la palette existante (`CopilotColors` construit sur `app_color.dart`, nouveaux jetons `errorBackground`, `success`, `tableHeader`…), police `Styles.fontFamily`.
 
 ## Performance
 

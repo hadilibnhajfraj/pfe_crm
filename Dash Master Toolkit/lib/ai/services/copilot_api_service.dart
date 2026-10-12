@@ -32,6 +32,24 @@ class CopilotForbiddenException implements Exception {
   const CopilotForbiddenException(this.message);
 }
 
+/// Réponse de POST /ai-copilot/documents — métadonnées seulement, jamais le
+/// contenu du document.
+class CopilotUploadedDocument {
+  final String documentId;
+  final String filename;
+  final int? pageCount;
+  final int? chunkCount;
+
+  const CopilotUploadedDocument({required this.documentId, required this.filename, this.pageCount, this.chunkCount});
+
+  factory CopilotUploadedDocument.fromJson(Map<String, dynamic> json) => CopilotUploadedDocument(
+        documentId: (json['documentId'] ?? '').toString(),
+        filename: (json['filename'] ?? '').toString(),
+        pageCount: json['pageCount'] is num ? (json['pageCount'] as num).toInt() : null,
+        chunkCount: json['chunkCount'] is num ? (json['chunkCount'] as num).toInt() : null,
+      );
+}
+
 class CopilotApiService {
   CopilotApiService._() : _injectedDio = null;
 
@@ -60,6 +78,7 @@ class CopilotApiService {
     String? conversationId,
     CancelToken? cancelToken,
     Map<String, dynamic>? pageContext,
+    List<String>? documentIds,
   }) async {
     try {
       final res = await _dio.post(
@@ -68,6 +87,9 @@ class CopilotApiService {
           'message': message,
           if (conversationId != null) 'conversationId': conversationId,
           if (pageContext != null) 'pageContext': pageContext,
+          // Phase 2 — uniquement des identifiants ; le backend revérifie que
+          // chaque document appartient bien à l'utilisateur connecté.
+          if (documentIds != null && documentIds.isNotEmpty) 'documentIds': documentIds,
         },
         cancelToken: cancelToken,
       );
@@ -165,6 +187,34 @@ class CopilotApiService {
         options: Options(responseType: ResponseType.bytes),
       );
       return Uint8List.fromList(res.data ?? const []);
+    } on DioException catch (e) {
+      throw _translate(e);
+    }
+  }
+
+  /// Phase 2 — POST /ai-copilot/documents (multipart, champ `file`) : le
+  /// backend valide (format, signature, 10 Mo), extrait, découpe et indexe le
+  /// document dans le RAG, puis renvoie ses métadonnées. Le type MIME n'est
+  /// pas imposé ici : le navigateur ne le connaît pas toujours, le backend se
+  /// fie à la signature réelle du fichier.
+  ///
+  /// `onSendProgress` : progression réelle de l'envoi (Dio), pour la barre
+  /// de progression de l'aperçu du fichier.
+  Future<CopilotUploadedDocument> uploadDocument({required Uint8List bytes, required String fileName, ProgressCallback? onSendProgress}) async {
+    try {
+      final form = FormData.fromMap({'file': MultipartFile.fromBytes(bytes, filename: fileName)});
+      final res = await _dio.post('/ai-copilot/documents', data: form, onSendProgress: onSendProgress);
+      return CopilotUploadedDocument.fromJson(_unwrap(res.data));
+    } on DioException catch (e) {
+      throw _translate(e);
+    }
+  }
+
+  /// Phase 2 — DELETE /ai-copilot/documents/:id (retire le document de
+  /// l'index ; 404 s'il n'existe plus ou n'est pas le nôtre).
+  Future<void> deleteDocument(String documentId) async {
+    try {
+      await _dio.delete('/ai-copilot/documents/${Uri.encodeComponent(documentId)}');
     } on DioException catch (e) {
       throw _translate(e);
     }

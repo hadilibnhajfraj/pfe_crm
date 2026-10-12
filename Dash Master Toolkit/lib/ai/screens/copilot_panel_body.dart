@@ -17,6 +17,7 @@ import '../providers/proactive_alerts_controller.dart';
 import 'copilot_dashboard_view.dart';
 import '../theme/copilot_colors.dart';
 import '../theme/copilot_text_styles.dart';
+import '../utils/copilot_loading_phase.dart';
 import '../widgets/copilot_avatar.dart';
 import '../widgets/copilot_context_chip.dart';
 import '../widgets/copilot_conversation_history_list.dart';
@@ -130,9 +131,44 @@ class _Header extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CopilotAvatar(size: 28),
+              Obx(() => CopilotAvatar(size: 32, thinking: CopilotController.to.isSending.value)),
               const SizedBox(width: 10),
-              Expanded(child: Text('Copilot IA', style: CopilotTextStyles.panelTitle(isDark))),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Copilot IA', style: CopilotTextStyles.panelTitle(isDark)),
+                    // Statut en direct : la phase en cours pendant une
+                    // réponse (même source que l'indicateur de la bulle).
+                    Obx(() {
+                      final controller = CopilotController.to;
+                      final busy = controller.isSending.value;
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: busy ? CopilotColors.orbGradient.last : CopilotColors.success(isDark),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              busy ? controller.loadingPhase.value.label : 'Assistant CRM · prêt',
+                              overflow: TextOverflow.ellipsis,
+                              style: CopilotTextStyles.timestamp(isDark),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
+              ),
               Obx(() => _TabIconButton(
                     tooltip: 'Dashboard',
                     icon: Icons.dashboard_rounded,

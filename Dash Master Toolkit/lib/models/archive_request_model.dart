@@ -25,7 +25,7 @@ class ArchiveRequestMessage {
       id:         _str(j['_id'] ?? j['id']),
       senderId:   _str(j['senderId'] ?? j['userId']),
       senderName: _str(j['senderName'] ?? j['userName'], fallback: 'Utilisateur'),
-      role:       _str(j['role'], fallback: 'user'),
+      role:       _str(j['role'], fallback: 'commercial'), // vocabulaire des rôles v2
       content:    _str(j['content'] ?? j['message']),
       createdAt:  _date(j['createdAt'] ?? j['timestamp']),
       isRead:     j['isRead'] == true,

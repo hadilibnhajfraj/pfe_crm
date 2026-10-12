@@ -3,17 +3,33 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
 import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart';
+import 'package:dash_master_toolkit/ai/services/copilot_suggestion_engine.dart';
 import 'package:dash_master_toolkit/ai/widgets/copilot_empty_state.dart';
 
 void main() {
-  testWidgets('sans contexte actif, affiche le titre et les suggestions génériques par défaut', (tester) async {
+  testWidgets('sans contexte actif : titre + les 5 suggestions de prompts, sans section « Pour cet écran »', (tester) async {
     final context = CopilotContextController();
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: CopilotEmptyState(context: context))));
 
     expect(find.text('Comment puis-je vous aider ?'), findsOneWidget);
-    expect(find.text('Quels projets sont en retard ?'), findsOneWidget);
-    expect(find.text('Conseille-moi sur mes priorités du jour'), findsOneWidget);
+    for (final label in ['📊 Analyse mes projets', '👥 Montre mes contacts', '📄 Analyse un document', '🔎 Trouve les projets sans relance', '🤖 Que peux-tu faire ?']) {
+      expect(find.text(label), findsOneWidget, reason: label);
+    }
+    expect(find.text('POUR CET ÉCRAN'), findsNothing);
     expect(find.byType(InkWell), findsWidgets);
+  });
+
+  testWidgets('une suggestion envoie la question formulée pour le bon Agent ; « Analyse un document » ouvre le sélecteur', (tester) async {
+    final context = CopilotContextController();
+    final triggered = <CopilotQuickPrompt>[];
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: CopilotEmptyState(context: context, onQuickPrompt: triggered.add))));
+
+    await tester.tap(find.text('🤖 Que peux-tu faire ?'));
+    await tester.tap(find.text('📄 Analyse un document'));
+    await tester.tap(find.text('🔎 Trouve les projets sans relance'));
+
+    expect(triggered.map((p) => p.message), ['Quelles sont mes capacités dans le Copilot ?', 'Résume ce document.', "Quels projets n'ont pas été relancés depuis 30 jours ?"]);
+    expect(triggered.map((p) => p.action), [CopilotQuickPromptAction.send, CopilotQuickPromptAction.attachDocument, CopilotQuickPromptAction.send]);
   });
 
   testWidgets('Smart Suggestions : contexte dashboard actif → questions KPI/critiques/ventes', (tester) async {

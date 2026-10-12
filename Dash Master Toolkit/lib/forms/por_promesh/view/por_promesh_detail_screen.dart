@@ -98,6 +98,7 @@ class _PorPromeshDetailScreenState extends State<PorPromeshDetailScreen> {
   // jamais inventé ici.
   void _updateCopilotContext(PorPromeshModel item) {
     CopilotContextController.to.setContext(CopilotPageContext.industrial(
+      recordId: item.id,
       family: 'PROMESH',
       machine: item.machine,
       poste: item.poste,

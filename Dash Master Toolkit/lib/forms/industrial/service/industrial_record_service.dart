@@ -7,7 +7,10 @@
 // une combinaison module/machine/poste déjà chargée (invalidée uniquement
 // par create/update/delete ou par `forceRefresh: true`, ex. pull-to-refresh).
 
+import 'package:dio/dio.dart';
+
 import 'package:dash_master_toolkit/providers/api_client.dart';
+import 'package:dash_master_toolkit/forms/production/view/widgets/existing_fiches_dialog.dart';
 import '../model/industrial_record_model.dart';
 
 class IndustrialRecordService {
@@ -53,6 +56,20 @@ class IndustrialRecordService {
     return IndustrialRecordModel.fromJson(_unwrapObject(res.data));
   }
 
+  /// Fiches PROBAR déjà présentes pour la même machine, le même poste et la
+  /// même date (GET /industrial-records/existing) — interrogé AVANT la
+  /// création pour prévenir l'utilisateur. Lecture seule. [date] est la date
+  /// que l'application inscrira sur la fiche (AAAA-MM-JJ).
+  Future<ExistingFiches> fetchExistingProbar({
+    required String machine,
+    required String poste,
+    required String date,
+  }) async {
+    final res = await ApiClient.instance.dio.get('$_basePath/existing',
+        queryParameters: {'module': 'probar', 'machine': machine, 'poste': poste, 'date': date});
+    return ExistingFiches.fromJson(_unwrapObject(res.data), quantiteKey: 'quantiteProduite');
+  }
+
   Future<IndustrialRecordModel> create(IndustrialRecordModel model) async {
     final res = await ApiClient.instance.dio.post(_basePath, data: model.toJson());
     final saved = IndustrialRecordModel.fromJson(_unwrapObject(res.data));
@@ -61,10 +78,20 @@ class IndustrialRecordService {
   }
 
   Future<IndustrialRecordModel> update(String id, IndustrialRecordModel model) async {
-    final res = await ApiClient.instance.dio.put('$_basePath/$id', data: model.toJson());
-    final saved = IndustrialRecordModel.fromJson(_unwrapObject(res.data));
-    _invalidateModule(model.module);
-    return saved;
+    try {
+      final res = await ApiClient.instance.dio.put('$_basePath/$id', data: model.toJson());
+      final saved = IndustrialRecordModel.fromJson(_unwrapObject(res.data));
+      _invalidateModule(model.module);
+      return saved;
+    } on DioException catch (e) {
+      // Un refus métier du serveur (400 : champ manquant, heures incohérentes
+      // à la validation…) porte un message lisible : c'est lui qu'on affiche.
+      final data = e.response?.data;
+      if (e.response?.statusCode == 400 && data is Map && data['message'] != null) {
+        throw Exception(data['message'].toString());
+      }
+      rethrow;
+    }
   }
 
   Future<void> delete(String id) async {

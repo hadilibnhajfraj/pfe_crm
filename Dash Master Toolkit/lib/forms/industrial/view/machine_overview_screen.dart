@@ -1,7 +1,8 @@
 // lib/forms/industrial/view/machine_overview_screen.dart
 //
-// Vue "ligne de production" (PROMESH ou PROBAR) — 4 grosses cartes Machine
-// 1..4. Réutilisée pour les 2 lignes via les paramètres [lineRoot]/[color].
+// Vue "ligne de production" (PROMESH ou PROBAR) — une grosse carte par
+// machine ACTIVE du référentiel (GET /machines, MachineCatalog), plus aucune
+// liste fixe. Réutilisée pour les 2 lignes via [lineRoot]/[color].
 // Pour PROMESH (fetchPromeshStats: true), chaque carte affiche en plus le
 // nombre de fiches saisies aujourd'hui et l'état (Active / Arrêt).
 
@@ -12,7 +13,9 @@ import 'package:intl/intl.dart';
 import 'package:dash_master_toolkit/forms/view/pipeline_theme.dart';
 import 'package:dash_master_toolkit/forms/por_promesh/service/por_promesh_service.dart';
 import 'package:dash_master_toolkit/localization/app_localizations.dart';
+import 'package:provider/provider.dart';
 import '../theme/industrial_theme.dart';
+import '../service/machine_catalog.dart';
 
 class MachineOverviewScreen extends StatefulWidget {
   final String title;
@@ -58,8 +61,17 @@ class _MachineOverviewScreenState extends State<MachineOverviewScreen> {
     }
   }
 
+  // '/production/promesh' → 'PROMESH', '/production/probar' → 'PROBAR'.
+  String get _typeMachine => widget.lineRoot.split('/').last.toUpperCase();
+
   @override
   Widget build(BuildContext context) {
+    final catalog = context.watch<MachineCatalog>();
+    if (!catalog.isLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => catalog.ensureLoaded());
+    }
+    final machines = catalog.ofType(_typeMachine, activeOnly: true);
+
     return Scaffold(
       backgroundColor: kCrmBg,
       body: SafeArea(
@@ -92,6 +104,16 @@ class _MachineOverviewScreenState extends State<MachineOverviewScreen> {
                   ),
               ]),
               const SizedBox(height: 24),
+              if (machines.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    catalog.error != null
+                        ? 'Machines indisponibles : ${catalog.error}'
+                        : (catalog.isLoaded ? 'Aucune machine active sur cette ligne.' : 'Chargement des machines…'),
+                    style: tInter(fontSize: 13, color: kCrmTextSub),
+                  ),
+                ),
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -99,13 +121,15 @@ class _MachineOverviewScreenState extends State<MachineOverviewScreen> {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 childAspectRatio: 2.2,
-                children: List.generate(4, (i) {
-                  final num = i + 1;
+                // Machines du référentiel (GET /machines) — plus de liste fixe
+                // de 4 : PROBAR-05 / PROMESH-05 apparaissent dès leur création.
+                children: machines.map((m) {
+                  final num = m.numero;
                   final count = _ficheCountByMachine[num.toString()] ?? 0;
                   final active = widget.fetchPromeshStats && count > 0;
                   return BigActionCard(
                     icon: Icons.precision_manufacturing_outlined,
-                    title: AppLocalizations.of(context).translate('Machine $num'),
+                    title: m.code,
                     subtitle: AppLocalizations.of(context).translate(widget.fetchPromeshStats
                         ? 'Poste Matin / Poste Soir'
                         : 'Poste Matin / Poste Nuit'),
@@ -145,7 +169,7 @@ class _MachineOverviewScreenState extends State<MachineOverviewScreen> {
                           ])
                         : null,
                   );
-                }),
+                }).toList(),
               ),
             ]),
           ),

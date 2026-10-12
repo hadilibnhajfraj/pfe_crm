@@ -16,6 +16,7 @@ import 'package:dash_master_toolkit/forms/view/pipeline_theme.dart';
 import 'package:dash_master_toolkit/forms/industrial/theme/industrial_theme.dart';
 import 'package:dash_master_toolkit/localization/app_localizations.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
+import 'package:dash_master_toolkit/forms/production/view/widgets/existing_fiches_dialog.dart';
 import 'package:dash_master_toolkit/forms/por_promesh/view/modules/industrial_context_header.dart';
 import 'package:dash_master_toolkit/forms/por_promesh/view/widgets/shimmer_box.dart';
 
@@ -152,16 +153,17 @@ class _ProbarPosteDashboardScreenState extends State<ProbarPosteDashboardScreen>
   String get _base => '${MyRoute.productionProbarRoot}/machine/${widget.machine}/poste/${widget.poste}';
   String get _modulesRoute => '$_base/modules';
 
-  // Nouveau workflow (ficheId explicite, conservé pendant toute la
-  // navigation) :
-  // 1. On retrouve un éventuel brouillon déjà existant pour aujourd'hui
-  //    (même machine + poste) via bootstrapForMachinePoste — pour ne
-  //    JAMAIS créer une deuxième fiche si une existe déjà.
-  // 2. Si aucun brouillon n'existe, on crée IMMÉDIATEMENT la fiche en base
-  //    (saveDraft) pour obtenir un ficheId stable dès l'ouverture.
-  // 3. On navigue vers la page Modules avec ce ficheId en query param —
-  //    c'est ce même id qui sera transmis à chaque écran module ensuite,
-  //    aucune re-création implicite n'est plus possible.
+  // Workflow (ficheId explicite, conservé pendant toute la navigation) :
+  // 1. On cherche les fiches déjà présentes aujourd'hui pour cette machine
+  //    et ce poste (GET /industrial-records/existing).
+  // 2. S'il y en a, l'utilisateur est PRÉVENU et choisit : reprendre un
+  //    brouillon, ou créer une fiche supplémentaire (plusieurs fiches pour un
+  //    même poste sont normales). Plus aucune reprise automatique : avant, un
+  //    brouillon du jour était rouvert d'office, ce qui empêchait de créer
+  //    une seconde fiche. Rien n'est fusionné, écrasé ni supprimé.
+  // 3. La fiche est créée IMMÉDIATEMENT en base (saveDraft) pour obtenir un
+  //    ficheId stable, puis on navigue vers la page Modules avec ce ficheId —
+  //    c'est ce même id qui sera transmis à chaque écran module ensuite.
   Future<void> _createOrOpenDraft() async {
     if (_creatingDraft) return;
     setState(() => _creatingDraft = true);
@@ -170,10 +172,42 @@ class _ProbarPosteDashboardScreenState extends State<ProbarPosteDashboardScreen>
           ? Get.find<ProbarController>()
           : Get.put(ProbarController(), permanent: true);
 
-      await c.bootstrapForMachinePoste(widget.machine, widget.poste, forceRefresh: true);
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      String? resumeId;
+      bool checked = false;
+      try {
+        final existing = await IndustrialRecordService.instance
+            .fetchExistingProbar(machine: widget.machine, poste: widget.poste, date: today);
+        checked = true;
+        if (!existing.isEmpty) {
+          // Brouillon proposé à la reprise : le brouillon vide s'il y en a
+          // un, sinon le brouillon en cours le plus récent.
+          final drafts = existing.drafts;
+          final proposed = existing.emptyDraftId ?? (drafts.isEmpty ? null : drafts.last.id);
+          if (!mounted) return;
+          final choice = await showExistingFichesDialog(context,
+              existing: existing, resumeId: proposed, resumeIsEmpty: existing.emptyDraftId != null);
+          if (choice == null) return; // annulé : aucune fiche créée
+          resumeId = choice.resumeId;
+        }
+      } catch (e) {
+        debugPrint('[ProbarDashboard] Vérification des fiches existantes impossible : $e');
+      }
 
-      if (c.recordId == null) {
+      if (resumeId != null) {
+        await c.bootstrapWithId(widget.machine, widget.poste, resumeId);
+      } else if (checked) {
+        // Fiche neuve et indépendante : formulaire remis à zéro, puis créée.
+        c.resetForm();
+        c.setMachinePoste(machine: widget.machine, poste: widget.poste);
+        c.dateProduction.text = today;
         await c.saveDraft();
+      } else {
+        // Vérification impossible : comportement d'origine, inchangé.
+        await c.bootstrapForMachinePoste(widget.machine, widget.poste, forceRefresh: true);
+        if (c.recordId == null) {
+          await c.saveDraft();
+        }
       }
       final ficheId = c.recordId;
       if (ficheId == null) {

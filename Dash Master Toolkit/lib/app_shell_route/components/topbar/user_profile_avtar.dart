@@ -50,8 +50,9 @@ class UserProfileAvatar extends StatelessWidget {
         }
       },
       itemBuilder: (context) {
-        final isCommercial =
-            AuthService().userRole?.toLowerCase().trim() == 'commercial';
+        // "Changer de commercial" (choix du nom de saisie user_nom) :
+        // espace contacts = rôle commercial_sedentaire (ancien "commercial").
+        final isCommercial = AuthService().isCommercialSedentaire;
         return [
           const PopupMenuItem(
             value: 1,

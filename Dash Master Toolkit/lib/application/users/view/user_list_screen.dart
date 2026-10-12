@@ -1,6 +1,8 @@
 import 'package:dash_master_toolkit/application/users/users_imports.dart';
 import 'package:responsive_framework/responsive_framework.dart' as rf;
 import 'package:go_router/go_router.dart';
+import 'package:dash_master_toolkit/providers/auth_service.dart';
+import 'package:dash_master_toolkit/utils/user_roles.dart';
 
 class UserListScreen extends StatefulWidget {
   const UserListScreen({super.key});
@@ -27,7 +29,54 @@ class _UserListScreenState extends State<UserListScreen> {
       resetPage,
       onToggleActive: (u) => controller.toggleActive(u),
       onViewProjects: (u) => _openUserProjects(u),
+      onChangeRole: _canChangeRole ? (u) => _openRoleDialog(u) : null,
     );
+  }
+
+  // Changement de rôle réservé à superadmin / superadmin2 (même règle que
+  // backend PUT /admin/users/:id/role).
+  bool get _canChangeRole {
+    final r = (AuthService().userRole ?? '').toLowerCase().trim();
+    return r == 'superadmin' || r == 'superadmin2';
+  }
+
+  // Règle E : proposer uniquement les 7 rôles réels (kUserRoles).
+  Future<void> _openRoleDialog(UserModel user) async {
+    String selected = kUserRoles.contains(user.role) ? user.role : kUserRoles.first;
+
+    final chosen = await showDialog<String>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          title: Text("Rôle de ${user.email}"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DropdownButton<String>(
+                value: selected,
+                isExpanded: true,
+                items: kUserRoles
+                    .map((r) => DropdownMenuItem(value: r, child: Text(userRoleLabel(r))))
+                    .toList(),
+                onChanged: (v) => setLocal(() => selected = v ?? selected),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Le nouveau rôle prend effet à la prochaine connexion de l'utilisateur.",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text("Annuler")),
+            ElevatedButton(onPressed: () => Navigator.of(ctx).pop(selected), child: const Text("Enregistrer")),
+          ],
+        ),
+      ),
+    );
+
+    if (chosen != null) await controller.changeRole(user, chosen);
   }
 
   void resetPage() {
@@ -78,6 +127,7 @@ Future<void> _openUserProjects(UserModel user) async {
             resetPage,
             onToggleActive: (u) => controller.toggleActive(u),
             onViewProjects: (u) => _openUserProjects(u),
+            onChangeRole: _canChangeRole ? (u) => _openRoleDialog(u) : null,
           );
 
           // ✅ re-apply filter if present
@@ -201,6 +251,7 @@ Future<void> _openUserProjects(UserModel user) async {
 
 typedef ToggleCallback = Future<void> Function(UserModel user);
 typedef ViewProjectsCallback = Future<void> Function(UserModel user);
+typedef ChangeRoleCallback = Future<void> Function(UserModel user);
 
 class UserDataSource extends DataTableSource {
   final ThemeController themeController;
@@ -208,6 +259,8 @@ class UserDataSource extends DataTableSource {
   final VoidCallback resetPage;
   final ToggleCallback onToggleActive;
   final ViewProjectsCallback onViewProjects;
+  // null = l'utilisateur connecté ne peut pas changer les rôles.
+  final ChangeRoleCallback? onChangeRole;
 
   final List<UserModel> originalUsers;
   List<UserModel> filteredUsers;
@@ -219,6 +272,7 @@ class UserDataSource extends DataTableSource {
     this.resetPage, {
     required this.onToggleActive,
     required this.onViewProjects,
+    this.onChangeRole,
   }) : filteredUsers = List.from(originalUsers);
 
   void filterData(String query) {
@@ -308,6 +362,12 @@ class UserDataSource extends DataTableSource {
               icon: Icon(user.isActive ? Icons.lock_open : Icons.lock),
               onPressed: () => onToggleActive(user),
             ),
+            if (onChangeRole != null)
+              IconButton(
+                tooltip: "Changer le rôle",
+                icon: const Icon(Icons.badge_outlined),
+                onPressed: () => onChangeRole!(user),
+              ),
           ],
         )),
       ],

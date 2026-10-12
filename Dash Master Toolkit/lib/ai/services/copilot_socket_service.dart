@@ -58,11 +58,12 @@ class CopilotSocketService {
     });
   }
 
-  void send({required String message, String? conversationId, Map<String, dynamic>? pageContext}) {
+  void send({required String message, String? conversationId, Map<String, dynamic>? pageContext, List<String>? documentIds}) {
     _socket.emit('ai-copilot:send', {
       'message': message,
       if (conversationId != null) 'conversationId': conversationId,
       if (pageContext != null) 'pageContext': pageContext,
+      if (documentIds != null && documentIds.isNotEmpty) 'documentIds': documentIds,
     });
   }
 

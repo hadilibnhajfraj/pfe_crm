@@ -123,7 +123,9 @@ Future<void> _loadUsers() async {
 
 users = allUsers.where((u) {
   final role = (u['role'] ?? '').toString().toLowerCase();
-  return role == "user"; // 🔥 ou "agent" selon ton système
+  // Commerciaux terrain (responsables de projets) — vocabulaire des rôles v2 :
+  // l'ancien rôle "user" est devenu "commercial".
+  return role == "commercial";
 }).toList();
       });
     }

@@ -14,12 +14,19 @@ class CopilotPendingAction {
   final String id;
   final List<CopilotPendingStep> steps;
 
-  const CopilotPendingAction({required this.id, required this.steps});
+  /// Phase 3 (TaskPlannerAgent) : `type` = "task_plan" et `goal` = objectif du
+  /// plan. Absents pour les propositions d'AutomationAgent.
+  final String? type;
+  final String? goal;
+
+  const CopilotPendingAction({required this.id, required this.steps, this.type, this.goal});
 
   factory CopilotPendingAction.fromJson(Map<String, dynamic> j) {
     final rawSteps = j['steps'];
     return CopilotPendingAction(
       id: (j['id'] ?? '').toString(),
+      type: j['type']?.toString(),
+      goal: j['goal']?.toString(),
       steps: rawSteps is List
           ? rawSteps
               .whereType<Map>()
@@ -79,6 +86,7 @@ class CopilotResponse {
   final String? agent;
   final DateTime? generatedAt;
   final String? errorMessage;
+  final bool errorRetryable;
 
   const CopilotResponse({
     this.conversationId,
@@ -96,6 +104,7 @@ class CopilotResponse {
     this.agent,
     this.generatedAt,
     this.errorMessage,
+    this.errorRetryable = true,
   });
 
   bool get isError => mode == 'error';
@@ -133,6 +142,9 @@ class CopilotResponse {
       agent: j['agent']?.toString(),
       generatedAt: _date(j['generatedAt']),
       errorMessage: rawError is Map ? rawError['message']?.toString() : null,
+      // Refus d'autorisation (`retryable: false` côté backend) : réessayer
+      // donnerait le même refus, le bouton n'est donc pas proposé.
+      errorRetryable: !(rawError is Map && rawError['retryable'] == false),
     );
   }
 

@@ -511,6 +511,7 @@
   "KPI Commercial Contacts": "KPI коммерческих контактов",
   "KPI Projets CRM": "KPI проектов CRM",
   "Dashboard Industriel": "Промышленная панель управления",
+  "Dashboard Production": "Панель производства",
   "Accueil": "Главная",
   "Commercial Contacts": "Коммерческие контакты",
   "Commercial Profile": "Коммерческий профиль",
@@ -1053,5 +1054,13 @@
   "Sep": "сен",
   "Oct": "окт",
   "Nov": "ноя",
-  "Déc": "дек"
+  "Déc": "дек",
+  "Fiche déjà existante pour ce poste": "Для этой смены уже есть запись",
+  "fiche existe déjà pour cette machine, ce poste et cette date.": "запись уже существует для этой машины, смены и даты.",
+  "fiches existent déjà pour cette machine, ce poste et cette date.": "записей уже существует для этой машины, смены и даты.",
+  "Brouillon vide": "Пустой черновик",
+  "Vous pouvez créer une fiche supplémentaire. Aucune fiche existante ne sera modifiée.": "Вы можете создать дополнительную запись. Существующие записи не будут изменены.",
+  "Reprendre le brouillon vide": "Продолжить пустой черновик",
+  "Reprendre le brouillon en cours": "Продолжить текущий черновик",
+  "Créer une nouvelle fiche": "Создать новую запись"
 }

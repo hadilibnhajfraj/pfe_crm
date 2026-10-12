@@ -20,6 +20,7 @@ import 'package:dash_master_toolkit/route/my_route.dart';
 import 'package:dash_master_toolkit/forms/view/pipeline_theme.dart';
 import 'package:dash_master_toolkit/forms/industrial/theme/industrial_theme.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
+import 'package:dash_master_toolkit/forms/production/view/widgets/existing_fiches_dialog.dart';
 
 import '../controller/por_promesh_controller.dart';
 import '../model/por_promesh_model.dart';
@@ -223,10 +224,35 @@ class _PosteDashboardScreenState extends State<PosteDashboardScreen> {
         debugPrint('[PosteDashboard] Brouillon de session déjà ouvert, réutilisation id=$reusableId (pas de POST)');
         id = reusableId;
       } else {
-        final record =
-            await PorPromeshService.instance.createOrOpenDraft(machine: widget.machine, poste: widget.poste);
-        debugPrint('[PosteDashboard] POST terminé, ID reçu : ${record.id}');
-        id = record.id;
+        // Avant de créer : y a-t-il déjà des fiches pour cette machine, ce
+        // poste et aujourd'hui ? Si oui, l'utilisateur est prévenu et choisit.
+        // Rien n'est interdit ni fusionné ; un brouillon resté VIDE peut être
+        // repris. Si la vérification échoue, on crée comme avant : elle ne
+        // doit jamais empêcher de saisir une fiche.
+        String? resumeId;
+        try {
+          final existing =
+              await PorPromeshService.instance.fetchExisting(machine: widget.machine, poste: widget.poste);
+          if (!existing.isEmpty) {
+            if (!mounted) return;
+            final choice = await showExistingFichesDialog(context,
+                existing: existing, resumeId: existing.emptyDraftId, resumeIsEmpty: true, unite: 'm²');
+            if (choice == null) return; // annulé : aucune fiche créée
+            resumeId = choice.resumeId;
+          }
+        } catch (e) {
+          debugPrint('[PosteDashboard] Vérification des fiches existantes impossible : $e');
+        }
+
+        if (resumeId != null) {
+          debugPrint('[PosteDashboard] Reprise du brouillon vide id=$resumeId (pas de POST)');
+          id = resumeId;
+        } else {
+          final record =
+              await PorPromeshService.instance.createOrOpenDraft(machine: widget.machine, poste: widget.poste);
+          debugPrint('[PosteDashboard] POST terminé, ID reçu : ${record.id}');
+          id = record.id;
+        }
       }
 
       // Navigation immédiate, jamais de refresh du Dashboard (KPI/liste)

@@ -71,9 +71,20 @@ enum SidebarItemType { tile, submenu }
 // ─────────────────────────────────────────────────────────────────────────────
 // TOP MENUS  (single Dashboard tile → /kpi = DashboardScreen)
 // ─────────────────────────────────────────────────────────────────────────────
+// Tuile commune à tous les rôles : tableau de bord personnalisé dont le
+// contenu est décidé par le serveur (GET /dashboard/me).
+SidebarItemModel meDashboardTile() => SidebarItemModel(
+      name:           'Mon tableau de bord',
+      icon:           Icons.space_dashboard_outlined,
+      sidebarItemType: SidebarItemType.tile,
+      navigationPath: MyRoute.meDashboardScreen,
+    );
+
+// Vocabulaire des rôles v2 : `isCommercialSedentaire` = rôle
+// commercial_sedentaire (ancien rôle "commercial" — gestion des contacts).
 List<SidebarItemModel> buildTopMenus({
   required bool isAccueil,
-  required bool isCommercial,
+  required bool isCommercialSedentaire,
   required bool canViewCommercialKpi,
   bool isLogistiqueAchat = false,
   bool canViewPorPromesh = false,
@@ -90,12 +101,21 @@ List<SidebarItemModel> buildTopMenus({
         sidebarItemType: SidebarItemType.tile,
         navigationPath: MyRoute.porPromeshDashboardScreen,
       ),
+      // Ce rôle n'a pas le sous-menu Dashboard (CRM) des autres rôles : son
+      // accès au Dashboard Production est ici, pas dans le groupe PRODUCTION.
+      SidebarItemModel(
+        name:           'Dashboard Production',
+        icon:           Icons.precision_manufacturing_outlined,
+        sidebarItemType: SidebarItemType.tile,
+        navigationPath: MyRoute.productionDashboardScreen,
+      ),
+      meDashboardTile(),
     ];
   }
-  if (isAccueil) return [];
+  if (isAccueil) return [meDashboardTile()];
 
-  // Commercial : Dashboard avec uniquement KPI Commercial Contacts (pas KPI Projets CRM)
-  if (isCommercial) {
+  // Commercial sédentaire : Dashboard avec uniquement KPI Commercial Contacts (pas KPI Projets CRM)
+  if (isCommercialSedentaire) {
     return [
       _safeSubmenuItem(
         name:           'Dashboard',
@@ -109,11 +129,12 @@ List<SidebarItemModel> buildTopMenus({
           ),
         ],
       ),
+      meDashboardTile(),
     ];
   }
 
-  // Admin / superadmin / autres : Dashboard avec KPI Projets CRM
-  // KPI Commercial Contacts uniquement si le rôle y a accès (admin, superadmin, commercial)
+  // Admin / superadmin / commercial / autres : Dashboard avec KPI Projets CRM
+  // KPI Commercial Contacts uniquement si le rôle y a accès (admin, superadmin, commercial_sedentaire)
   return [
     _safeSubmenuItem(
       name:           'Dashboard',
@@ -133,12 +154,13 @@ List<SidebarItemModel> buildTopMenus({
           ),
         if (canViewPorPromesh && !hideIndustrialDashboard && !isRestrictedAdmin)
           SidebarSubmenuModel(
-            name:           'Dashboard Industriel',
-            navigationPath: MyRoute.porPromeshDashboardScreen,
+            name:           'Dashboard Production',
+            navigationPath: MyRoute.productionDashboardScreen,
             icon:           Icons.precision_manufacturing_outlined,
           ),
       ],
     ),
+    meDashboardTile(),
   ];
 }
 
@@ -147,14 +169,18 @@ List<SidebarItemModel> buildTopMenus({
 // ─────────────────────────────────────────────────────────────────────────────
 List<GroupedMenuModel> buildGroupedMenus({
   required bool isAdmin,
-  required bool isCommercial,
+  required bool isCommercialSedentaire,
   required bool isAccueil,
+  // Rôle commercial (terrain, ancien "user") : menu par défaut + "Mes contacts".
+  bool isCommercial = false,
   bool isLogistiqueAchat = false,
   bool canViewPorPromesh = false,
   bool hideIndustrialDashboard = false,
   bool hideHrAndRecuperables = false,
   bool isRestrictedAdmin = false,
   bool isRootAdmin = false,
+  // Référentiel Machines (MachineCatalog) pour le menu Production.
+  List<MachineModel> machines = const [],
 }) {
   // ── ESPACE DÉDIÉ — responsable_logistique_achat ─────────────────────────
   // Rien d'autre que le module industriel n'est visible pour ce rôle : pas
@@ -162,7 +188,7 @@ List<GroupedMenuModel> buildGroupedMenus({
   // RH > Demandes reste accessible — tout employé doit pouvoir demander un
   // congé ou une autorisation de sortie, quel que soit son rôle.
   if (isLogistiqueAchat) {
-    return [...buildIndustrialGroups(), buildHrGroup(), buildRecuperableGroup()];
+    return [...buildIndustrialGroups(machines: machines), buildHrGroup(), buildRecuperableGroup()];
   }
 
   // ── ACCUEIL ─────────────────────────────────────────────────────────────
@@ -182,8 +208,11 @@ List<GroupedMenuModel> buildGroupedMenus({
     ];
   }
 
-  // ── COMMERCIAL ──────────────────────────────────────────────────────────
-  if (isCommercial) {
+  // ── COMMERCIAL SÉDENTAIRE ───────────────────────────────────────────────
+  // Gestion et affectation des contacts. Plus d'entrée "Mes Projets" : la
+  // création de projet est réservée au rôle commercial (règle C, le backend
+  // répond 403 à un commercial_sedentaire).
+  if (isCommercialSedentaire) {
     return [
       GroupedMenuModel(
         name: 'COMMERCIAL',
@@ -209,17 +238,6 @@ List<GroupedMenuModel> buildGroupedMenus({
         ],
       ),
       GroupedMenuModel(
-        name: 'MES PROJETS',
-        menus: [
-          SidebarItemModel(
-            name:           'Mes Projets',
-            icon:           Icons.folder_outlined,
-            sidebarItemType: SidebarItemType.tile,
-            navigationPath: MyRoute.projectFormScreen,
-          ),
-        ],
-      ),
-      GroupedMenuModel(
         name: 'TOOLS',
         menus: [
           SidebarItemModel(
@@ -233,7 +251,7 @@ List<GroupedMenuModel> buildGroupedMenus({
     ];
   }
 
-  // ── DEFAULT (admin / user / superadmin) ─────────────────────────────────
+  // ── DEFAULT (admin / superadmin / commercial) ───────────────────────────
   return [
     GroupedMenuModel(
       name: 'PROJECT MANAGEMENT',
@@ -259,12 +277,20 @@ List<GroupedMenuModel> buildGroupedMenus({
                 navigationPath: 'commercial-contacts',
                 icon:           Icons.handshake_outlined,
               ),
+            // Règle A : le commercial consulte les contacts qui lui sont
+            // affectés ou qu'il suit (périmètre filtré par le backend).
+            if (isCommercial && !isAdmin)
+              SidebarSubmenuModel(
+                name:           'Mes contacts',
+                navigationPath: 'commercial-contacts',
+                icon:           Icons.handshake_outlined,
+              ),
           ],
         ),
       ],
     ),
 
-    if (canViewPorPromesh && !isRestrictedAdmin) ...buildIndustrialGroups(),
+    if (canViewPorPromesh && !isRestrictedAdmin) ...buildIndustrialGroups(machines: machines),
 
     if (isAdmin && !hideIndustrialDashboard && !isRestrictedAdmin)
       GroupedMenuModel(
@@ -380,35 +406,78 @@ List<GroupedMenuModel> buildGroupedMenus({
 // MODULE INDUSTRIEL — PRODUCTION (PROMESH/PROBAR par machine) / MÉLANGE /
 // MAINTENANCE — IA partagée par l'espace dédié et la section admin/superadmin.
 // ─────────────────────────────────────────────────────────────────────────────
-List<SidebarSubmenuModel> _machineSubmenus(String lineRoot) => List.generate(
-      4,
-      (i) => SidebarSubmenuModel(
-        name:           'Machine ${i + 1}',
-        navigationPath: '$lineRoot/machine/${i + 1}',
-        icon:           Icons.precision_manufacturing_outlined,
-      ),
-    );
+// Sous-menus d'une ligne de production, construits depuis le référentiel
+// Machines (GET /machines, MachineCatalog) — aucune machine codée en dur :
+// PROBAR-05 / PROMESH-05 apparaissent dès qu'elles existent en base. Seules
+// les machines ACTIVES sont proposées (une machine désactivée ne reçoit plus
+// de fiche) ; l'écran Machines liste aussi les inactives.
+List<SidebarSubmenuModel> _machineSubmenus(
+  String lineRoot,
+  String typeMachine,
+  List<MachineModel> machines,
+) =>
+    machineMenuEntries(lineRoot, typeMachine, machines)
+        .map((e) => SidebarSubmenuModel(
+              name:           e.name,
+              navigationPath: e.path,
+              icon:           Icons.precision_manufacturing_outlined,
+            ))
+        .toList();
 
-List<GroupedMenuModel> buildIndustrialGroups() => [
+// Entrée d'une ligne de production (PROMESH / PROBAR) : un sous-menu par
+// machine active. Tant que le référentiel n'est pas chargé (premier rendu
+// après connexion, GET /machines en cours ou en échec) ou si la ligne n'a
+// aucune machine active, la liste est vide : l'entrée n'est alors pas créée —
+// un SidebarItemType.submenu sans enfant est invalide. Elle apparaît dès que
+// MachineCatalog notifie le chargement.
+SidebarItemModel? _productionLineItem({
+  required String name,
+  required String lineRoot,
+  required String typeMachine,
+  required Color accentColor,
+  required List<MachineModel> machines,
+}) {
+  final submenus = _machineSubmenus(lineRoot, typeMachine, machines);
+  if (submenus.isEmpty) return null;
+  return SidebarItemModel(
+    name:           name,
+    icon:           Icons.factory_outlined,
+    sidebarItemType: SidebarItemType.submenu,
+    navigationPath: lineRoot,
+    accentColor:    accentColor,
+    submenus:       submenus,
+  );
+}
+
+List<GroupedMenuModel> buildIndustrialGroups({List<MachineModel> machines = const []}) {
+  final promesh = _productionLineItem(
+    name:        'PROMESH',
+    lineRoot:    MyRoute.productionPromeshRoot,
+    typeMachine: 'PROMESH',
+    accentColor: kPromeshColor,
+    machines:    machines,
+  );
+  final probar = _productionLineItem(
+    name:        'PROBAR',
+    lineRoot:    MyRoute.productionProbarRoot,
+    typeMachine: 'PROBAR',
+    accentColor: kProbarColor,
+    machines:    machines,
+  );
+  return [
       GroupedMenuModel(
         name: 'PRODUCTION',
         menus: [
+          // Référentiel unique des machines PROBAR + PROMESH (règle D) —
+          // responsable_logistique_achat et administrateurs.
           SidebarItemModel(
-            name:           'PROMESH',
-            icon:           Icons.factory_outlined,
-            sidebarItemType: SidebarItemType.submenu,
-            navigationPath: MyRoute.productionPromeshRoot,
-            accentColor:    kPromeshColor,
-            submenus:       _machineSubmenus(MyRoute.productionPromeshRoot),
+            name:           'Machines',
+            icon:           Icons.settings_input_component_outlined,
+            sidebarItemType: SidebarItemType.tile,
+            navigationPath: MyRoute.machinesScreen,
           ),
-          SidebarItemModel(
-            name:           'PROBAR',
-            icon:           Icons.factory_outlined,
-            sidebarItemType: SidebarItemType.submenu,
-            navigationPath: MyRoute.productionProbarRoot,
-            accentColor:    kProbarColor,
-            submenus:       _machineSubmenus(MyRoute.productionProbarRoot),
-          ),
+          if (promesh != null) promesh,
+          if (probar != null) probar,
         ],
       ),
       GroupedMenuModel(
@@ -450,6 +519,7 @@ List<GroupedMenuModel> buildIndustrialGroups() => [
         ],
       ),
     ];
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULE RH — DEMANDES (congé / autorisation de sortie)

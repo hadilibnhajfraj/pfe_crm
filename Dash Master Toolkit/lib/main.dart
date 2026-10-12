@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
 import 'package:dash_master_toolkit/providers/language_provider.dart';
+import 'package:dash_master_toolkit/forms/industrial/service/machine_catalog.dart';
 import 'package:dash_master_toolkit/route/my_route.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -38,6 +39,9 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AppLanguageProvider()),
         ChangeNotifierProvider(create: (_) => AuthService()),
+        // Catalogue des machines (GET /machines) — instance unique partagée
+        // par le menu Production et les écrans industriels.
+        ChangeNotifierProvider<MachineCatalog>.value(value: MachineCatalog.instance),
       ],
       child: const MyApp(),
     ),

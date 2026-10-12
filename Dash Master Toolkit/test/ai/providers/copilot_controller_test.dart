@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:dash_master_toolkit/ai/models/copilot_attachment.dart';
 import 'package:dash_master_toolkit/ai/models/copilot_message.dart';
 import 'package:dash_master_toolkit/ai/models/copilot_page_context.dart';
 import 'package:dash_master_toolkit/ai/models/copilot_response.dart';
@@ -21,6 +22,7 @@ import 'package:dash_master_toolkit/ai/providers/copilot_context_controller.dart
 import 'package:dash_master_toolkit/ai/providers/copilot_controller.dart';
 import 'package:dash_master_toolkit/ai/services/copilot_api_service.dart';
 import 'package:dash_master_toolkit/ai/services/copilot_socket_service.dart';
+import 'package:dash_master_toolkit/ai/utils/copilot_loading_phase.dart';
 import 'package:dash_master_toolkit/providers/auth_service.dart';
 
 class MockCopilotApiService extends Mock implements CopilotApiService {}
@@ -37,6 +39,7 @@ void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(CancelToken());
+    registerFallbackValue(Uint8List(0));
 
     // CopilotController construit AuthService() (singleton réel de l'app,
     // voir lib/providers/auth_service.dart), qui construit GetStorage(),
@@ -327,6 +330,7 @@ void main() {
         'screen': 'project',
         'label': 'Villa Sfax',
         'data': {'client': 'Comptoir X', 'statut': 'en_cours'},
+        'entity': 'project', // Phase 1 : type d'entité canonique pour le backend
       });
     });
 
@@ -375,6 +379,210 @@ void main() {
             pageContext: captureAny(named: 'pageContext'),
           )).captured;
       expect(captured.single, isNull);
+    });
+  });
+
+  // Phase 2 — documents joints : envoi, états de la puce, documentIds dans le
+  // message, nettoyage côté serveur.
+  group('documents joints (Phase 2)', () {
+    final pdfBytes = Uint8List.fromList('%PDF-1.4 contenu'.codeUnits);
+    CopilotAttachment picked(String name, [int size = 16]) => CopilotAttachment(id: 'a-$name', fileName: name, sizeBytes: size);
+
+    void stubChat() {
+      when(() => api.sendMessage(
+            message: any(named: 'message'),
+            conversationId: any(named: 'conversationId'),
+            cancelToken: any(named: 'cancelToken'),
+            pageContext: any(named: 'pageContext'),
+            documentIds: any(named: 'documentIds'),
+          )).thenAnswer((_) async => fakeResponse());
+    }
+
+    List<dynamic> capturedDocumentIds() => verify(() => api.sendMessage(
+          message: any(named: 'message'),
+          conversationId: any(named: 'conversationId'),
+          cancelToken: any(named: 'cancelToken'),
+          pageContext: any(named: 'pageContext'),
+          documentIds: captureAny(named: 'documentIds'),
+        )).captured;
+
+    test('envoi réussi : la puce passe de « envoi » à « prêt » avec le documentId du backend', () async {
+      final completer = Completer<CopilotUploadedDocument>();
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress'))).thenAnswer((_) => completer.future);
+
+      final future = controller.uploadAttachment(picked('rapport.pdf'), pdfBytes);
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.attachments.single.isUploading, isTrue);
+
+      completer.complete(const CopilotUploadedDocument(documentId: 'doc-1', filename: 'rapport.pdf'));
+      expect(await future, isNull);
+      expect(controller.attachments.single.isReady, isTrue);
+      expect(controller.attachments.single.documentId, 'doc-1');
+    });
+
+    test('le message part avec les documentIds des puces prêtes, puis les puces sont vidées', () async {
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')))
+          .thenAnswer((_) async => const CopilotUploadedDocument(documentId: 'doc-1', filename: 'rapport.pdf'));
+      stubChat();
+
+      await controller.uploadAttachment(picked('rapport.pdf'), pdfBytes);
+      await controller.send('Résume ce fichier.');
+
+      expect(capturedDocumentIds().single, ['doc-1']);
+      expect(controller.attachments, isEmpty);
+    });
+
+    test('sans document : documentIds null (contrat d\'appel inchangé)', () async {
+      stubChat();
+      await controller.send('Bonjour');
+      expect(capturedDocumentIds().single, isNull);
+    });
+
+    test('format refusé localement : puce en erreur, AUCUN envoi au backend', () async {
+      final error = await controller.uploadAttachment(picked('outil.exe'), pdfBytes);
+
+      expect(error, contains('Format non pris en charge'));
+      expect(controller.attachments.single.isError, isTrue);
+      verifyNever(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')));
+    });
+
+    test('fichier > 10 Mo refusé localement', () async {
+      final error = await controller.uploadAttachment(picked('gros.pdf'), Uint8List(10 * 1024 * 1024 + 1));
+      expect(error, contains('10 Mo'));
+      verifyNever(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')));
+    });
+
+    test('refus du backend : message exact sur la puce, et la puce en erreur ne part pas avec le message', () async {
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')))
+          .thenThrow(Exception("Le contenu du fichier ne correspond pas à l'extension .pdf."));
+      stubChat();
+
+      final error = await controller.uploadAttachment(picked('faux.pdf'), pdfBytes);
+      expect(error, "Le contenu du fichier ne correspond pas à l'extension .pdf.");
+      expect(controller.attachments.single.errorMessage, error);
+
+      await controller.send('Résume ce fichier.');
+      expect(capturedDocumentIds().single, isNull);
+    });
+
+    test('envoi du message bloqué tant qu\'un document est en cours d\'analyse', () async {
+      final completer = Completer<CopilotUploadedDocument>();
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress'))).thenAnswer((_) => completer.future);
+      stubChat();
+
+      final upload = controller.uploadAttachment(picked('rapport.pdf'), pdfBytes);
+      await Future<void>.delayed(Duration.zero);
+      await controller.send('Résume ce fichier.');
+
+      expect(controller.messages, isEmpty);
+      completer.complete(const CopilotUploadedDocument(documentId: 'doc-1', filename: 'rapport.pdf'));
+      await upload;
+    });
+
+    test('retirer une puce prête supprime le document côté serveur', () async {
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')))
+          .thenAnswer((_) async => const CopilotUploadedDocument(documentId: 'doc-1', filename: 'rapport.pdf'));
+      when(() => api.deleteDocument(any())).thenAnswer((_) async {});
+
+      await controller.uploadAttachment(picked('rapport.pdf'), pdfBytes);
+      controller.removeAttachment('a-rapport.pdf');
+
+      expect(controller.attachments, isEmpty);
+      verify(() => api.deleteDocument('doc-1')).called(1);
+    });
+
+    test('puce retirée PENDANT l\'envoi : le document indexé entre-temps est supprimé (jamais orphelin)', () async {
+      final completer = Completer<CopilotUploadedDocument>();
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress'))).thenAnswer((_) => completer.future);
+      when(() => api.deleteDocument(any())).thenAnswer((_) async {});
+
+      final upload = controller.uploadAttachment(picked('rapport.pdf'), pdfBytes);
+      await Future<void>.delayed(Duration.zero);
+      controller.removeAttachment('a-rapport.pdf');
+      verifyNever(() => api.deleteDocument(any()));
+
+      completer.complete(const CopilotUploadedDocument(documentId: 'doc-9', filename: 'rapport.pdf'));
+      await upload;
+
+      expect(controller.attachments, isEmpty);
+      verify(() => api.deleteDocument('doc-9')).called(1);
+    });
+
+    test('au plus 5 documents par message', () async {
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')))
+          .thenAnswer((_) async => const CopilotUploadedDocument(documentId: 'd', filename: 'x.txt'));
+      for (var i = 0; i < 5; i++) {
+        expect(await controller.uploadAttachment(picked('n$i.txt'), pdfBytes), isNull);
+      }
+      expect(await controller.uploadAttachment(picked('n5.txt'), pdfBytes), contains('Cinq documents'));
+      expect(controller.attachments, hasLength(5));
+    });
+
+    test('progression RÉELLE de l\'envoi (onSendProgress de Dio) reflétée sur la puce', () async {
+      final completer = Completer<CopilotUploadedDocument>();
+      void Function(int, int)? progress;
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress'))).thenAnswer((invocation) {
+        progress = invocation.namedArguments[#onSendProgress] as void Function(int, int)?;
+        return completer.future;
+      });
+
+      final upload = controller.uploadAttachment(picked('rapport.pdf'), pdfBytes);
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.attachments.single.progress, isNull);
+
+      progress!(40, 100);
+      expect(controller.attachments.single.progress, closeTo(0.4, 0.001));
+      progress!(41, 100); // < 2 % : pas de reconstruction inutile
+      expect(controller.attachments.single.progress, closeTo(0.4, 0.001));
+      progress!(100, 100);
+      expect(controller.attachments.single.progress, 1.0);
+      expect(controller.attachments.single.isUploading, isTrue); // transmis, encore en analyse
+
+      completer.complete(const CopilotUploadedDocument(documentId: 'doc-1', filename: 'rapport.pdf'));
+      await upload;
+      expect(controller.attachments.single.isReady, isTrue);
+    });
+  });
+
+  // Loading intelligent — la phase affichée pendant l'attente est déduite du
+  // message envoyé (aucun événement de phase inventé côté backend).
+  group('loadingPhase', () {
+    final pdfBytes = Uint8List.fromList('%PDF-1.4 contenu'.codeUnits);
+
+    void stubChat() {
+      when(() => api.sendMessage(
+            message: any(named: 'message'),
+            conversationId: any(named: 'conversationId'),
+            cancelToken: any(named: 'cancelToken'),
+            pageContext: any(named: 'pageContext'),
+            documentIds: any(named: 'documentIds'),
+          )).thenAnswer((_) async => fakeResponse());
+    }
+
+    test('question de données → Recherche dans le CRM ; action → Préparation de l\'action', () async {
+      stubChat();
+      await controller.send('Quels projets sont en retard ?');
+      expect(controller.loadingPhase.value, CopilotLoadingPhase.crm);
+      await controller.send('Trouve mes projets en cours et prépare une relance pour chacun');
+      expect(controller.loadingPhase.value, CopilotLoadingPhase.action);
+      await controller.send('confirme');
+      expect(controller.loadingPhase.value, CopilotLoadingPhase.action);
+    });
+
+    test('document joint → Analyse du document, y compris pour les questions suivantes sur ce texte ; remis à zéro par une nouvelle conversation', () async {
+      stubChat();
+      when(() => api.uploadDocument(bytes: any(named: 'bytes'), fileName: any(named: 'fileName'), onSendProgress: any(named: 'onSendProgress')))
+          .thenAnswer((_) async => const CopilotUploadedDocument(documentId: 'doc-1', filename: 'r.pdf'));
+
+      await controller.uploadAttachment(const CopilotAttachment(id: 'a', fileName: 'r.pdf', sizeBytes: 16), pdfBytes);
+      await controller.send('Quels sont les problèmes ?');
+      expect(controller.loadingPhase.value, CopilotLoadingPhase.document);
+      await controller.send('Résume les points clés');
+      expect(controller.loadingPhase.value, CopilotLoadingPhase.document);
+
+      controller.startNewConversation();
+      await controller.send('Résume les points clés');
+      expect(controller.loadingPhase.value, CopilotLoadingPhase.crm);
     });
   });
 }

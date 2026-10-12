@@ -14,12 +14,12 @@ import 'package:dash_master_toolkit/providers/auth_service.dart';
 import 'package:dash_master_toolkit/localization/app_localizations.dart';
 import '../theme/industrial_theme.dart';
 import 'package:dash_master_toolkit/services/maintenance_request_service.dart';
+import 'package:dash_master_toolkit/forms/industrial/service/machine_catalog.dart';
+import 'package:provider/provider.dart';
 
-const _equipements = [
-  'PROMESH — Machine 1', 'PROMESH — Machine 2', 'PROMESH — Machine 3', 'PROMESH — Machine 4',
-  'PROBAR — Machine 1', 'PROBAR — Machine 2', 'PROBAR — Machine 3', 'PROBAR — Machine 4',
-  'Mélangeur', 'Autre équipement',
-];
+// Équipements : machines ACTIVES du référentiel (MachineCatalog, GET
+// /machines) + équipements hors référentiel — plus de liste fixe 1..4.
+List<String> get _equipements => MachineCatalog.instance.maintenanceEquipements();
 
 class MaintenanceFormScreen extends StatefulWidget {
   const MaintenanceFormScreen({super.key});
@@ -33,7 +33,7 @@ class _MaintenanceFormScreenState extends State<MaintenanceFormScreen> {
   final _date = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
   final _typePanne = TextEditingController();
   final _description = TextEditingController();
-  final _equipementCtrl = TextEditingController(text: _equipements.first);
+  final _equipementCtrl = TextEditingController();
   String _urgence = 'moyenne';
   bool _saving = false;
 
@@ -104,6 +104,14 @@ class _MaintenanceFormScreenState extends State<MaintenanceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Équipements du référentiel : chargés au besoin, reconstruits dès que
+    // le catalogue est disponible.
+    final catalog = context.watch<MachineCatalog>();
+    if (!catalog.isLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => catalog.ensureLoaded());
+    }
+    if (!_equipements.contains(_equipementCtrl.text)) _equipementCtrl.text = _equipements.first;
+
     return Scaffold(
       backgroundColor: kCrmBg,
       body: SafeArea(

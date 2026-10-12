@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../services/device_identity_service.dart';
+import '../forms/industrial/service/machine_catalog.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -49,12 +50,31 @@ bool get isAdmin {
 bool get isAgent => userRole?.toLowerCase() == 'agent';
 bool get isClient => userRole?.toLowerCase() == 'client';
 
+// ── Vocabulaire des rôles v2 (backend : src/constants/roles.js) ─────────
+// commercial            = commercial terrain (ancien "user") : crée et suit ses projets
+// commercial_sedentaire = gestion et affectation des contacts (ancien "commercial")
+bool get isCommercial => (userRole ?? '').toLowerCase().trim() == 'commercial';
+bool get isCommercialSedentaire =>
+    (userRole ?? '').toLowerCase().trim() == 'commercial_sedentaire';
+
 // Accès au dashboard KPI Commercial Contacts :
-// uniquement admin, superadmin, superadmin2 et commercial.
-// Le rôle "user" est explicitement exclu.
+// uniquement admin, superadmin, superadmin2 et commercial_sedentaire
+// (mêmes rôles que backend commercialContactKpi.routes.js).
+// Le rôle "commercial" (terrain) est explicitement exclu.
 bool get canViewCommercialKpi {
   final r = (userRole ?? '').toLowerCase().trim();
-  return r == 'admin' || r == 'superadmin' || r == 'superadmin2' || r == 'commercial';
+  return r == 'admin' || r == 'superadmin' || r == 'superadmin2' || r == 'commercial_sedentaire';
+}
+
+// Affectation d'un contact à un commercial (POST /commercial-contacts/assign) :
+// commercial_sedentaire + administrateurs — même règle que le backend.
+bool get canAssignContacts => isAdmin || isCommercialSedentaire;
+
+// Gestion du référentiel Machines (backend machine.routes.js) :
+// responsable_logistique_achat + administrateurs.
+bool get canManageMachines {
+  final r = (userRole ?? '').toLowerCase().trim();
+  return r == 'admin' || r == 'superadmin' || r == 'superadmin2' || r == 'responsable_logistique_achat';
 }
 
 // Accès au module POR PROMESH :
@@ -345,6 +365,8 @@ Future<List<String>> getUserNames() async {
   // ---------------- LOGOUT ----------------
   Future<void> logout() async {
     await _cleanupSession();
+    // Le catalogue des machines est rechargé pour le prochain utilisateur.
+    MachineCatalog.instance.reset();
     notifyListeners();
   }
 

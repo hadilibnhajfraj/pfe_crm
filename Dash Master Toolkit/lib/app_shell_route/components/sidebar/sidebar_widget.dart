@@ -8,6 +8,9 @@ import 'package:dash_master_toolkit/forms/industrial/theme/industrial_theme.dart
     show kPromeshColor, kProbarColor, kMelangeColor, kMaintenanceColor;
 import 'package:dash_master_toolkit/forms/hr/theme/hr_theme.dart' show kHrColor;
 import 'package:dash_master_toolkit/forms/recuperables/theme/recuperable_theme.dart' show kRecuperableColor;
+import 'package:dash_master_toolkit/forms/industrial/model/machine_model.dart';
+import 'package:dash_master_toolkit/forms/industrial/model/machine_menu.dart';
+import 'package:dash_master_toolkit/forms/industrial/service/machine_catalog.dart';
 
 part 'sidebar_item_model.dart';
 
@@ -29,7 +32,10 @@ class SideBarWidget extends StatelessWidget {
     final auth    = context.watch<AuthService>();
     final role    = (auth.userRole ?? '').toString().trim().toLowerCase();
     final isAdmin = role == 'admin' || role == 'superadmin' || role == 'superadmin2';
+    // Vocabulaire des rôles v2 : commercial = terrain (ancien "user"),
+    // commercial_sedentaire = gestion des contacts (ancien "commercial").
     final isCommercial = role == 'commercial';
+    final isCommercialSedentaire = role == 'commercial_sedentaire';
     final isAccueil    = role == 'accueil';
     final isLogistiqueAchat = role == 'responsable_logistique_achat';
     final canViewCommercialKpi = auth.canViewCommercialKpi;
@@ -37,9 +43,18 @@ class SideBarWidget extends StatelessWidget {
     final hideIndustrialDashboard = auth.hideIndustrialDashboard;
     final email = (auth.userEmail ?? '').toLowerCase().trim();
 
-    // "user" et "commercial" ne doivent plus voir les groupes RH et
-    // Récupérables — inchangé pour tous les autres rôles.
-    final bool hideHrAndRecuperables = role == 'user' || role == 'commercial';
+    // Menu Production dynamique : machines lues depuis GET /machines
+    // (MachineCatalog), chargées une fois pour les rôles de l'espace
+    // industriel ; le menu se reconstruit à chaque refresh() du catalogue.
+    final machineCatalog = context.watch<MachineCatalog>();
+    if (canViewPorPromesh && !machineCatalog.isLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => machineCatalog.ensureLoaded());
+    }
+
+    // "commercial" et "commercial_sedentaire" (anciens "user" et
+    // "commercial") ne voient pas les groupes RH et Récupérables — inchangé
+    // pour tous les autres rôles.
+    final bool hideHrAndRecuperables = isCommercial || isCommercialSedentaire;
 
     // issam@gmail.com et bayrem@gmail.com — comptes admin-tier restreints à
     // Dashboard/Projects/Tools : aucun menu industriel (Dashboard Industriel,
@@ -57,7 +72,7 @@ class SideBarWidget extends StatelessWidget {
 
     final topMenus     = buildTopMenus(
       isAccueil:           isAccueil,
-      isCommercial:        isCommercial,
+      isCommercialSedentaire: isCommercialSedentaire,
       isLogistiqueAchat:   isLogistiqueAchat,
       canViewCommercialKpi: canViewCommercialKpi,
       canViewPorPromesh:   canViewPorPromesh,
@@ -66,6 +81,7 @@ class SideBarWidget extends StatelessWidget {
     );
     final groupedMenus = buildGroupedMenus(
       isAdmin:      isAdmin,
+      isCommercialSedentaire: isCommercialSedentaire,
       isCommercial: isCommercial,
       isAccueil:    isAccueil,
       isLogistiqueAchat: isLogistiqueAchat,
@@ -74,6 +90,7 @@ class SideBarWidget extends StatelessWidget {
       hideHrAndRecuperables: hideHrAndRecuperables,
       isRestrictedAdmin: isRestrictedAdmin,
       isRootAdmin: isRootAdmin,
+      machines: machineCatalog.machines,
     );
 
     final sidebarW = iconOnly
