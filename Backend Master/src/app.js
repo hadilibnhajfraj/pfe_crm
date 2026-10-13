@@ -180,6 +180,9 @@ app.use("/commercial-contacts", commercialRoutes);
 app.use("/google-calendar", googleCalendarRoutes);
 app.use("/projetactions", projectActionRoutes);
 app.use("/metabase", metabaseRoutes);
+// Intégration Power BI (App owns data) — inactive tant que POWERBI_EMBED_ENABLED
+// et les paramètres Microsoft ne sont pas renseignés (voir modules/powerbi).
+app.use("/powerbi", require("./modules/powerbi/powerbi.routes"));
 
 app.get("/me", authRequired, (req, res) => {
   res.json({ user: req.user });

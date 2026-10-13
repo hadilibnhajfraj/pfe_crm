@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const projectService = require("../../../../modules/projects/services/project.service");
 
@@ -20,8 +21,8 @@ function createMoveProjectStageTool() {
     name: "move_project_stage",
     description: "Déplace un projet vers une nouvelle étape de pipeline (admin-tier uniquement via ce Tool).",
     inputSchema: Joi.object({
-      projectId: Joi.string().guid({ version: "uuidv4" }).required(),
-      pipelineStageId: Joi.string().guid({ version: "uuidv4" }).required(),
+      projectId: uuidString().required(),
+      pipelineStageId: uuidString().required(),
     }),
     requiredRoles: ADMIN_TIER_ROLES,
     run: async (input, { actingUser }) =>

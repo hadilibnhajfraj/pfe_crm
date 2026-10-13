@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
 
@@ -12,7 +13,7 @@ function createDeletePorPromeshTool() {
   return new ServiceBackedTool({
     name: "delete_por_promesh",
     description: "Supprime une fiche POR PROMESH non verrouillée.",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: DELETE_ROLES,
     run: async (input, { actingUser }) => porPromeshService.deletePorPromesh(input.id, actingUser),
   });

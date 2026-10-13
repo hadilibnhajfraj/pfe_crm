@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const projectActionService = require("../../../../modules/project-actions/services/projectAction.service");
 
@@ -25,7 +26,7 @@ function createCreateProjectActionTool() {
     description:
       "Crée une activité sur un projet (ex. visite, relance) et, si une date de relance est fournie, le rappel associé.",
     inputSchema: Joi.object({
-      projectId: Joi.string().guid({ version: "uuidv4" }).required(),
+      projectId: uuidString().required(),
       typeAction: Joi.string().max(100).allow(null, "").optional(),
       commentaire: Joi.string().max(2000).allow(null, "").optional(),
       dateAction: Joi.date().iso().optional(),

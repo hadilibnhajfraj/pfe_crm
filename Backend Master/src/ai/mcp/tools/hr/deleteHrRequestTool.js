@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
 
@@ -10,7 +11,7 @@ function createDeleteHrRequestTool() {
   return new ServiceBackedTool({
     name: "delete_hr_request",
     description: "Supprime une demande RH (le demandeur uniquement, tant qu'elle est en attente ; un reviewer, à tout moment).",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: [],
     run: async (input, { actingUser }) => hrRequestService.deleteRequest(input.id, actingUser),
   });

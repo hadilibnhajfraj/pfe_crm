@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
 
@@ -24,7 +25,7 @@ function createUpdatePorPromeshTool() {
     name: "update_por_promesh",
     description: "Met à jour une fiche POR PROMESH non verrouillée (status=BROUILLON).",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
       dateProduction: Joi.date().iso().allow(null).optional(),
       heureDebut: Joi.string().pattern(TIME_PATTERN).allow("", null).optional(),
       heureFin: Joi.string().pattern(TIME_PATTERN).allow("", null).optional(),

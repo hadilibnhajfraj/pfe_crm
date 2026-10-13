@@ -42,12 +42,29 @@ function mentionsRelance(message) {
   return terms.has("relance") || terms.has("relancer") || terms.has("relances");
 }
 
+// ## Exception : la question nomme explicitement des PROJETS
+// « Quels projets nécessitent une relance ? » contient « relance » mais porte
+// sur des projets, pas sur des contacts : la bascule ci-dessous l'envoyait à
+// tort vers `commercial_agent`, qui répondait par la liste des contacts à
+// rappeler (constaté sur le backend réel le 12/10/2026). Quand le message
+// nomme un projet ET ne nomme ni client, ni contact, ni prospect, le choix du
+// routeur (`projects`) est conservé. « Quels sont mes clients en retard de
+// relance ? » ne nomme aucun projet : la bascule d'origine reste inchangée.
+const PROJECT_TERMS = ["projet", "projets", "chantier", "chantiers"];
+const CONTACT_TERMS = ["client", "clients", "contact", "contacts", "prospect", "prospects"];
+
+function isAboutProjectsOnly(message) {
+  const terms = new Set(tokenize(message));
+  return PROJECT_TERMS.some((t) => terms.has(t)) && !CONTACT_TERMS.some((t) => terms.has(t));
+}
+
 // `key` est la clé DÉJÀ choisie par le vrai routeur — jamais recalculée
 // depuis zéro.
 function applyCommercialRelanceOverride(message, key, catalogByKey) {
   if (key !== "projects") return key;
   if (!catalogByKey.has("commercial_contacts")) return key;
-  return mentionsRelance(message) ? "commercial_contacts" : key;
+  if (!mentionsRelance(message)) return key;
+  return isAboutProjectsOnly(message) ? key : "commercial_contacts";
 }
 
-module.exports = { applyCommercialRelanceOverride, mentionsRelance };
+module.exports = { applyCommercialRelanceOverride, mentionsRelance, isAboutProjectsOnly };

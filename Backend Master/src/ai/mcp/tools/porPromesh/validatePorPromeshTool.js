@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
 
@@ -14,7 +15,7 @@ function createValidatePorPromeshTool() {
   return new ServiceBackedTool({
     name: "validate_por_promesh",
     description: "Valide définitivement une fiche POR PROMESH (verrouillage irréversible : status=VALIDE, isLocked=true).",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: READ_WRITE_ROLES,
     run: async (input, { actingUser }) => porPromeshService.validatePorPromesh(input.id, actingUser),
   });

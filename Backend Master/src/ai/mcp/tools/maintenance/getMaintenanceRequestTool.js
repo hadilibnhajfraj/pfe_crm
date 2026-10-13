@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
 
@@ -11,7 +12,7 @@ function createGetMaintenanceRequestTool() {
   return new ServiceBackedTool({
     name: "get_maintenance_request",
     description: "Récupère une demande de maintenance par identifiant.",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: [],
     run: async (input, { actingUser }) =>
       maintenanceService.getById(actingUser.id, actingUser.role, input.id, actingUser.email),

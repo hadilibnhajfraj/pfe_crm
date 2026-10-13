@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
 const { HR_MANAGER_EMAIL } = require("../../../../config/hrManager");
@@ -16,7 +17,7 @@ function createAcceptHrRequestTool() {
     name: "accept_hr_request",
     description: "Accepte une demande RH en attente.",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
       comment: Joi.string().max(2000).allow(null, "").optional(),
     }),
     requiredRoles: HR_REVIEWER_ROLES,

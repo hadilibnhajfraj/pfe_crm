@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const industrialRecordService = require("../../../../modules/industrial-records/services/industrialRecord.service");
 
@@ -21,7 +22,7 @@ function createUpdateIndustrialRecordTool() {
     name: "update_industrial_record",
     description: "Met à jour une fiche industrielle.",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
       dateFiche: Joi.date().iso().optional(),
       machine: Joi.string().max(50).optional(),
       poste: Joi.string().valid("matin", "nuit").optional(),

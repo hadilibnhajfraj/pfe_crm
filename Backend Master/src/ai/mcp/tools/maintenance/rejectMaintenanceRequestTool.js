@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
 const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
@@ -11,7 +12,7 @@ function createRejectMaintenanceRequestTool() {
     name: "reject_maintenance_request",
     description: "Refuse une demande de maintenance en attente, avec motif.",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
       reason: Joi.string().max(2000).required(),
     }),
     requiredRoles: MAINTENANCE_MANAGER_ROLES,

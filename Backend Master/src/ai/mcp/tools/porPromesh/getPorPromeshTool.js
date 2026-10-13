@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
 
@@ -10,7 +11,7 @@ function createGetPorPromeshTool() {
   return new ServiceBackedTool({
     name: "get_por_promesh",
     description: "Récupère une fiche POR PROMESH complète par identifiant.",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: READ_WRITE_ROLES,
     run: async (input, { actingUser }) => porPromeshService.getPorPromeshById(input.id, actingUser),
   });

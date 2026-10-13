@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const notificationService = require("../../../../services/notification.service");
 
@@ -16,7 +17,7 @@ function createSendNotificationEmailTool() {
     name: "send_notification_email",
     description: "Envoie un e-mail et crée la notification correspondante pour un destinataire donné.",
     inputSchema: Joi.object({
-      toUserId: Joi.string().guid({ version: "uuidv4" }).required(),
+      toUserId: uuidString().required(),
       emailTo: Joi.string().email().required(),
       fromName: Joi.string().max(120).optional(),
       subject: Joi.string().max(255).required(),

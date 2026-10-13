@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const notificationService = require("../../../../services/notification.service");
 
@@ -11,7 +12,7 @@ function createMarkNotificationReadTool() {
   return new ServiceBackedTool({
     name: "mark_notification_read",
     description: "Marque une notification précise comme lue.",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: [],
     run: async (input, { actingUser }) => notificationService.markOneRead(actingUser.id, input.id),
   });

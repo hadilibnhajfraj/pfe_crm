@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
 
@@ -13,7 +14,7 @@ function createAddMaintenanceCommentTool() {
     name: "add_maintenance_comment",
     description: "Ajoute un commentaire à une demande de maintenance.",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
       message: Joi.string().max(2000).required(),
     }),
     requiredRoles: [],

@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const projectService = require("../../../../modules/projects/services/project.service");
 
@@ -63,7 +64,7 @@ function createListProjectsTool() {
     description: "Liste les projets (pipeline/kanban) avec statistiques globales — filtrage/tri best-effort.",
     inputSchema: Joi.object({
       mine: Joi.boolean().optional(),
-      ownerId: Joi.string().guid({ version: "uuidv4" }).optional(),
+      ownerId: uuidString().optional(),
       // Colonne réelle `Project.statut` (STRING, valeurs métier françaises —
       // ex. "Négociation", "Identification" — voir project.repository.js::
       // buildBaseWhere). Non déclaré auparavant : `.unknown(true)` laissait

@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const userService = require("../../../../services/user.service");
 
@@ -14,7 +15,7 @@ function createUpdateUserProfileTool() {
     name: "update_user_profile",
     description: "Met à jour le profil RH d'un utilisateur donné (matricule, qualification, département, service...).",
     inputSchema: Joi.object({
-      userId: Joi.string().guid({ version: "uuidv4" }).required(),
+      userId: uuidString().required(),
       name: Joi.string().max(255).optional(),
       designation: Joi.string().max(255).optional(),
       phone: Joi.string().max(50).optional(),

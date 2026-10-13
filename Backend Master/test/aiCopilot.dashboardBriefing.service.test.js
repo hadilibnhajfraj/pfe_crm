@@ -84,7 +84,21 @@ describe("projets critiques + qualité CRM + cartes de risque/recommandation", (
 
   test("appelle list_projects avec les MÊMES paramètres que ProjectAgent._runAttentionAnalysis (même périmètre)", async () => {
     await getDashboardBriefing(REQ_USER);
-    expect(projectService.listProjects).toHaveBeenCalledWith({ limit: 100, isArchived: false }, REQ_USER.sub);
+    // Rôle non admin : toujours limité à ses propres projets (mine: true).
+    expect(projectService.listProjects).toHaveBeenCalledWith({ limit: 100, isArchived: false, mine: true }, REQ_USER.sub);
+  });
+
+  test("un rôle admin-tier garde la vue transverse : aucun filtre « mes projets » imposé", async () => {
+    await getDashboardBriefing(MANAGER_REQ_USER);
+    expect(projectService.listProjects).toHaveBeenCalledWith({ limit: 100, isArchived: false }, MANAGER_REQ_USER.sub);
+  });
+
+  test("un filtre de périmètre ne peut pas être élargi : sédentaire et production sont aussi limités à leurs projets", async () => {
+    for (const role of ["commercial_sedentaire", "responsable_logistique_achat", "accueil"]) {
+      projectService.listProjects.mockClear();
+      await getDashboardBriefing({ sub: "x1", role, email: "x@cbi.tn" });
+      expect(projectService.listProjects).toHaveBeenCalledWith({ limit: 100, isArchived: false, mine: true }, "x1");
+    }
   });
 
   test("recommendationCards vient de SuggestionEngine (jamais vide quand un projet critique a des facteurs)", async () => {

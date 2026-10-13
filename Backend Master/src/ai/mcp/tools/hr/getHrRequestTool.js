@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
 
@@ -14,7 +15,7 @@ function createGetHrRequestTool() {
     name: "get_hr_request",
     description: "Récupère le détail d'une demande RH par identifiant.",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
     }),
     requiredRoles: [],
     run: async (input, { actingUser }) => {

@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const userService = require("../../../../services/user.service");
 
@@ -15,7 +16,7 @@ function createSetUserActiveTool() {
     name: "set_user_active",
     description: "Active ou désactive un compte utilisateur.",
     inputSchema: Joi.object({
-      userId: Joi.string().guid({ version: "uuidv4" }).required(),
+      userId: uuidString().required(),
       active: Joi.boolean().required(),
     }),
     requiredRoles: ADMIN_TIER_ROLES,

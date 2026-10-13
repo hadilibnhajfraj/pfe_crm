@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const userService = require("../../../../services/user.service");
 
@@ -13,7 +14,7 @@ function createGetUserProfileTool() {
   return new ServiceBackedTool({
     name: "get_user_profile",
     description: "Récupère le profil RH d'un utilisateur donné (vue admin).",
-    inputSchema: Joi.object({ userId: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ userId: uuidString().required() }),
     requiredRoles: ADMIN_TIER_ROLES,
     run: async (input) => userService.getUserProfile(input.userId),
   });

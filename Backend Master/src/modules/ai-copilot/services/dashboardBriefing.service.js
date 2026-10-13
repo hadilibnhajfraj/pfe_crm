@@ -17,6 +17,7 @@
 // AI_COPILOT_HTTP.md).
 const { Op } = require("sequelize");
 const projectService = require("../../projects/services/project.service");
+const { scopeInputForActingUser } = require("../../../ai/mcp/tools/projects/listProjectsTool");
 const { analyzeProjectAttention } = require("../../../ai/reasoning/projectAttentionAnalyzer");
 const { analyzeDataQuality } = require("../../../ai/reasoning/dataQualityAnalyzer");
 const { SuggestionEngine } = require("../../../ai/orchestrator/suggestionEngine");
@@ -92,12 +93,15 @@ async function buildGreeting(actingUser) {
 
 // ── Projets critiques + qualité CRM + cartes de risque/recommandation ────
 async function buildProjectInsights(actingUser) {
-  // Mêmes paramètres EXACTS que ProjectAgent._runAttentionAnalysis() — même
-  // périmètre de projets ("actifs", non archivés), jamais une deuxième
-  // définition qui pourrait diverger. `list_projects` est ouvert à tout
-  // utilisateur authentifié (voir listProjectsTool.js, requiredRoles: []) —
-  // aucun filtrage par utilisateur ici, cohérent avec ce qui existe déjà.
-  const { data: projects } = await projectService.listProjects({ limit: 100, isArchived: false }, actingUser.id);
+  // Mêmes paramètres que ProjectAgent._runAttentionAnalysis() — projets
+  // "actifs", non archivés — ET même périmètre : scopeInputForActingUser()
+  // est la règle unique de list_projects (admin-tier : tous les projets ;
+  // tout autre rôle : ses propres projets). Sans elle, cet appel direct au
+  // service chargeait les projets de TOUS les utilisateurs : un commercial
+  // voyait « 29 projets critiques » pour 14 projets à lui, et des cartes de
+  // risque portant sur les projets d'autres commerciaux (constaté sur la
+  // base de démonstration le 12/10/2026).
+  const { data: projects } = await projectService.listProjects(scopeInputForActingUser({ limit: 100, isArchived: false }, actingUser), actingUser.id);
 
   const ranked = analyzeProjectAttention(projects);
   const criticalRanked = ranked.filter((r) => r.priority === "critique");

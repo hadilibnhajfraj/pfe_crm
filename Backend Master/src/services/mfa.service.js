@@ -35,10 +35,17 @@ const jwt = require("jsonwebtoken");
 // pouvoir grep/filtrer facilement, à retirer une fois la cause confirmée.
 // L'OTP en clair n'est loggé qu'en dehors de production.
 // ─────────────────────────────────────────────────────────────────────────
+// Le code à usage unique et son empreinte (SHA-256 d'un code à 6 chiffres :
+// réversible par essais) ne sont journalisés que sur demande explicite, hors
+// production : MFA_DIAG_SHOW_OTP=true.
+const SHOW_PLAINTEXT_OTP = process.env.NODE_ENV !== "production" && process.env.MFA_DIAG_SHOW_OTP === "true";
+const SENSITIVE_DIAG_FIELD = /hash|otp$|otp_recu|code$|token$/i;
 function mfaDiag(label, fields) {
-  console.log(`[MFA-DIAG] ${label}`, JSON.stringify(fields));
+  const safe = SHOW_PLAINTEXT_OTP
+    ? fields
+    : Object.fromEntries(Object.entries(fields || {}).map(([key, value]) => [key, SENSITIVE_DIAG_FIELD.test(key) && value != null ? "[masqué]" : value]));
+  console.log(`[MFA-DIAG] ${label}`, JSON.stringify(safe));
 }
-const SHOW_PLAINTEXT_OTP = process.env.NODE_ENV !== "production";
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const OTP_MAX_ATTEMPTS = 5;

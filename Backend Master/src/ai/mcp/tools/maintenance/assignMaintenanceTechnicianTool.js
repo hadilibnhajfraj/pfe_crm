@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
 const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
@@ -11,8 +12,8 @@ function createAssignMaintenanceTechnicianTool() {
     name: "assign_maintenance_technician",
     description: "Affecte un technicien à une demande de maintenance (ne change pas le statut).",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
-      technicianId: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
+      technicianId: uuidString().required(),
     }),
     requiredRoles: MAINTENANCE_MANAGER_ROLES,
     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],

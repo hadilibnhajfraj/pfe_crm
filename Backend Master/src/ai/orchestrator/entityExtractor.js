@@ -78,6 +78,14 @@ const SET_REFERENCE_PATTERN =
 // depuis 30 jours », « jamais relancés », « non relancés ».
 const NOT_RELANCED_PATTERN = /\b(?:pas|jamais|non|sans|aucune?)\b[^.?!]{0,30}?\brelanc/;
 
+// « Quels projets nécessitent une relance ? », « projets à relancer »,
+// « quels projets dois-je relancer ? » : même besoin que « pas relancés »,
+// exprimé à l'affirmative. Reconnu UNIQUEMENT pour une question qui porte sur
+// des projets (voir extractEntities) : une question sur des clients ou des
+// contacts garde exactement son interprétation actuelle.
+const NEEDS_RELANCE_PATTERN =
+  /\b(?:necessit\w*|besoin|exige\w*|requi\w*|attend\w*)\b[^.?!]{0,30}?\brelanc|\ba\s+relancer\b|\b(?:dois|doit|devons|devez|faut)\b[^.?!]{0,12}?\brelancer\b/;
+
 // Statuts projet — chaque valeur réelle, tolérante au pluriel/accord.
 const STATUS_PATTERNS = KNOWN_STATUS_VALUES.map((value) => {
   const base = normalizeAccents(value).replace(/\s+/g, "\\s+");
@@ -155,7 +163,8 @@ function extractEntities(message, { now = new Date() } = {}) {
 
   const entityMatch = ENTITY_PATTERNS.find(({ pattern }) => pattern.test(text));
   const period = extractPeriod(text, now);
-  const notRelanced = NOT_RELANCED_PATTERN.test(text);
+  const needsRelance = Boolean(entityMatch) && entityMatch.type === "project" && NEEDS_RELANCE_PATTERN.test(text);
+  const notRelanced = NOT_RELANCED_PATTERN.test(text) || needsRelance;
   const personMatch = raw.match(PERSON_PATTERN);
   const person = personMatch && !PERSON_STOPWORDS.has(personMatch[1].toLowerCase()) ? personMatch[1].trim() : null;
   const recordMatch = raw.match(RECORD_REF_PATTERN);

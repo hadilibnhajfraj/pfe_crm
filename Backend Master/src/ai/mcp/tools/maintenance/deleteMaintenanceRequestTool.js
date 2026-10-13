@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
 const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
@@ -10,7 +11,7 @@ function createDeleteMaintenanceRequestTool() {
   return new ServiceBackedTool({
     name: "delete_maintenance_request",
     description: "Supprime définitivement une demande de maintenance.",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: MAINTENANCE_MANAGER_ROLES,
     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],
     run: async (input) => maintenanceService.deleteRequest(input.id),

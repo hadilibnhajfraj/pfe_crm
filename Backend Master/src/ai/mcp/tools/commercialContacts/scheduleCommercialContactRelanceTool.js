@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const relanceService = require("../../../../modules/commercial-contacts/services/commercialContactRelance.service");
 
@@ -25,10 +26,10 @@ function createScheduleCommercialContactRelanceTool() {
     description:
       "Programme une relance datée pour un contact commercial (et, optionnellement, affecte un commercial responsable) — crée un enregistrement CommercialContactRelance réel.",
     inputSchema: Joi.object({
-      contactId: Joi.string().guid({ version: "uuidv4" }).required(),
+      contactId: uuidString().required(),
       dateRelance: Joi.date().iso().required(),
       heureRelance: Joi.string().max(10).allow(null, "").optional(),
-      commercialId: Joi.string().guid({ version: "uuidv4" }).allow(null).optional(),
+      commercialId: uuidString().allow(null).optional(),
       commentaire: Joi.string().max(2000).allow(null, "").optional(),
     }),
     // « commercial » : admis ici comme sur POST /commercial-contacts/:id/relances ;

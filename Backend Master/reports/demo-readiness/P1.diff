@@ -1,0 +1,1872 @@
+diff --git a/package.json b/package.json
+index 3b4b7f8..1ca7b58 100644
+--- a/package.json
++++ b/package.json
+@@ -8,6 +8,8 @@
+     "nfr:seed": "node nfr/seed/seedQaUsers.js",
+     "dev": "nodemon src/app.js",
+     "start": "node src/app.js",
++    "demo:start": "node -r ./scripts/demo/demo-guard.js src/app.js",
++    "demo:passwords": "node scripts/demo/reset-demo-passwords.js",
+     "web-search:check": "node scripts/checkWebSearch.js",
+     "data:audit": "node scripts/crmDataAudit.js",
+     "data:audit:internal": "node scripts/internalIndustrialAudit.js",
+diff --git a/src/ai/mcp/tools/commercialContacts/scheduleCommercialContactRelanceTool.js b/src/ai/mcp/tools/commercialContacts/scheduleCommercialContactRelanceTool.js
+index 8082c06..d800b8e 100644
+--- a/src/ai/mcp/tools/commercialContacts/scheduleCommercialContactRelanceTool.js
++++ b/src/ai/mcp/tools/commercialContacts/scheduleCommercialContactRelanceTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const relanceService = require("../../../../modules/commercial-contacts/services/commercialContactRelance.service");
+ 
+@@ -25,10 +26,10 @@ function createScheduleCommercialContactRelanceTool() {
+     description:
+       "Programme une relance datée pour un contact commercial (et, optionnellement, affecte un commercial responsable) — crée un enregistrement CommercialContactRelance réel.",
+     inputSchema: Joi.object({
+-      contactId: Joi.string().guid({ version: "uuidv4" }).required(),
++      contactId: uuidString().required(),
+       dateRelance: Joi.date().iso().required(),
+       heureRelance: Joi.string().max(10).allow(null, "").optional(),
+-      commercialId: Joi.string().guid({ version: "uuidv4" }).allow(null).optional(),
++      commercialId: uuidString().allow(null).optional(),
+       commentaire: Joi.string().max(2000).allow(null, "").optional(),
+     }),
+     // « commercial » : admis ici comme sur POST /commercial-contacts/:id/relances ;
+diff --git a/src/ai/mcp/tools/hr/acceptHrRequestTool.js b/src/ai/mcp/tools/hr/acceptHrRequestTool.js
+index 4765d8b..09aa029 100644
+--- a/src/ai/mcp/tools/hr/acceptHrRequestTool.js
++++ b/src/ai/mcp/tools/hr/acceptHrRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ const { HR_MANAGER_EMAIL } = require("../../../../config/hrManager");
+@@ -16,7 +17,7 @@ function createAcceptHrRequestTool() {
+     name: "accept_hr_request",
+     description: "Accepte une demande RH en attente.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       comment: Joi.string().max(2000).allow(null, "").optional(),
+     }),
+     requiredRoles: HR_REVIEWER_ROLES,
+diff --git a/src/ai/mcp/tools/hr/addHrRequestCommentTool.js b/src/ai/mcp/tools/hr/addHrRequestCommentTool.js
+index dde4dfd..f387bfb 100644
+--- a/src/ai/mcp/tools/hr/addHrRequestCommentTool.js
++++ b/src/ai/mcp/tools/hr/addHrRequestCommentTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ 
+@@ -12,7 +13,7 @@ function createAddHrRequestCommentTool() {
+     name: "add_hr_request_comment",
+     description: "Ajoute/remplace le commentaire de révision d'une demande RH (Responsable RH uniquement).",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       comment: Joi.string().max(2000).required(),
+     }),
+     requiredRoles: [],
+diff --git a/src/ai/mcp/tools/hr/deleteHrRequestTool.js b/src/ai/mcp/tools/hr/deleteHrRequestTool.js
+index 360e49d..bd2d5d7 100644
+--- a/src/ai/mcp/tools/hr/deleteHrRequestTool.js
++++ b/src/ai/mcp/tools/hr/deleteHrRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ 
+@@ -10,7 +11,7 @@ function createDeleteHrRequestTool() {
+   return new ServiceBackedTool({
+     name: "delete_hr_request",
+     description: "Supprime une demande RH (le demandeur uniquement, tant qu'elle est en attente ; un reviewer, à tout moment).",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) => hrRequestService.deleteRequest(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/hr/getHrRequestHistoryTool.js b/src/ai/mcp/tools/hr/getHrRequestHistoryTool.js
+index b9374a5..b53250b 100644
+--- a/src/ai/mcp/tools/hr/getHrRequestHistoryTool.js
++++ b/src/ai/mcp/tools/hr/getHrRequestHistoryTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ 
+@@ -9,7 +10,7 @@ function createGetHrRequestHistoryTool() {
+   return new ServiceBackedTool({
+     name: "get_hr_request_history",
+     description: "Historique des activités d'une demande RH (créée, acceptée, refusée, commentée...).",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) => hrRequestService.getHistory(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/hr/getHrRequestTool.js b/src/ai/mcp/tools/hr/getHrRequestTool.js
+index 800f5d6..27986d0 100644
+--- a/src/ai/mcp/tools/hr/getHrRequestTool.js
++++ b/src/ai/mcp/tools/hr/getHrRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ 
+@@ -14,7 +15,7 @@ function createGetHrRequestTool() {
+     name: "get_hr_request",
+     description: "Récupère le détail d'une demande RH par identifiant.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+     }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) => {
+diff --git a/src/ai/mcp/tools/hr/markHrRequestProcessedTool.js b/src/ai/mcp/tools/hr/markHrRequestProcessedTool.js
+index de3d526..7a8bb04 100644
+--- a/src/ai/mcp/tools/hr/markHrRequestProcessedTool.js
++++ b/src/ai/mcp/tools/hr/markHrRequestProcessedTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ const { HR_MANAGER_EMAIL } = require("../../../../config/hrManager");
+@@ -11,7 +12,7 @@ function createMarkHrRequestProcessedTool() {
+   return new ServiceBackedTool({
+     name: "mark_hr_request_processed",
+     description: "Marque une demande RH acceptée comme traitée administrativement.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: HR_REVIEWER_ROLES,
+     allowedEmails: [HR_MANAGER_EMAIL],
+     run: async (input, { actingUser }) => hrRequestService.markProcessed(input.id, actingUser),
+diff --git a/src/ai/mcp/tools/hr/rejectHrRequestTool.js b/src/ai/mcp/tools/hr/rejectHrRequestTool.js
+index 14e3243..e278edf 100644
+--- a/src/ai/mcp/tools/hr/rejectHrRequestTool.js
++++ b/src/ai/mcp/tools/hr/rejectHrRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const hrRequestService = require("../../../../modules/hr-requests/services/hrRequest.service");
+ const { HR_MANAGER_EMAIL } = require("../../../../config/hrManager");
+@@ -12,7 +13,7 @@ function createRejectHrRequestTool() {
+     name: "reject_hr_request",
+     description: "Refuse une demande RH en attente.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       comment: Joi.string().max(2000).allow(null, "").optional(),
+     }),
+     requiredRoles: HR_REVIEWER_ROLES,
+diff --git a/src/ai/mcp/tools/industrial/deleteIndustrialRecordTool.js b/src/ai/mcp/tools/industrial/deleteIndustrialRecordTool.js
+index 072c8e0..a3ed2e5 100644
+--- a/src/ai/mcp/tools/industrial/deleteIndustrialRecordTool.js
++++ b/src/ai/mcp/tools/industrial/deleteIndustrialRecordTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const industrialRecordService = require("../../../../modules/industrial-records/services/industrialRecord.service");
+ 
+@@ -10,7 +11,7 @@ function createDeleteIndustrialRecordTool() {
+   return new ServiceBackedTool({
+     name: "delete_industrial_record",
+     description: "Supprime une fiche industrielle.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: DELETE_ROLES,
+     run: async (input, { actingUser }) => industrialRecordService.deleteRecord(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/industrial/getIndustrialRecordTool.js b/src/ai/mcp/tools/industrial/getIndustrialRecordTool.js
+index 862088b..9f6f7f6 100644
+--- a/src/ai/mcp/tools/industrial/getIndustrialRecordTool.js
++++ b/src/ai/mcp/tools/industrial/getIndustrialRecordTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const industrialRecordService = require("../../../../modules/industrial-records/services/industrialRecord.service");
+ 
+@@ -10,7 +11,7 @@ function createGetIndustrialRecordTool() {
+   return new ServiceBackedTool({
+     name: "get_industrial_record",
+     description: "Récupère une fiche industrielle par identifiant.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: READ_WRITE_ROLES,
+     run: async (input, { actingUser }) => industrialRecordService.getRecordById(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/industrial/updateIndustrialRecordTool.js b/src/ai/mcp/tools/industrial/updateIndustrialRecordTool.js
+index 9a3e8b2..2958dda 100644
+--- a/src/ai/mcp/tools/industrial/updateIndustrialRecordTool.js
++++ b/src/ai/mcp/tools/industrial/updateIndustrialRecordTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const industrialRecordService = require("../../../../modules/industrial-records/services/industrialRecord.service");
+ 
+@@ -21,7 +22,7 @@ function createUpdateIndustrialRecordTool() {
+     name: "update_industrial_record",
+     description: "Met à jour une fiche industrielle.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       dateFiche: Joi.date().iso().optional(),
+       machine: Joi.string().max(50).optional(),
+       poste: Joi.string().valid("matin", "nuit").optional(),
+diff --git a/src/ai/mcp/tools/maintenance/acceptMaintenanceRequestTool.js b/src/ai/mcp/tools/maintenance/acceptMaintenanceRequestTool.js
+index 13cf003..0254c9c 100644
+--- a/src/ai/mcp/tools/maintenance/acceptMaintenanceRequestTool.js
++++ b/src/ai/mcp/tools/maintenance/acceptMaintenanceRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
+@@ -10,7 +11,7 @@ function createAcceptMaintenanceRequestTool() {
+   return new ServiceBackedTool({
+     name: "accept_maintenance_request",
+     description: "Accepte une demande de maintenance en attente.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: MAINTENANCE_MANAGER_ROLES,
+     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],
+     run: async (input, { actingUser }) => maintenanceService.acceptRequest(actingUser.id, input.id),
+diff --git a/src/ai/mcp/tools/maintenance/addMaintenanceCommentTool.js b/src/ai/mcp/tools/maintenance/addMaintenanceCommentTool.js
+index e5fce92..1394496 100644
+--- a/src/ai/mcp/tools/maintenance/addMaintenanceCommentTool.js
++++ b/src/ai/mcp/tools/maintenance/addMaintenanceCommentTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ 
+@@ -13,7 +14,7 @@ function createAddMaintenanceCommentTool() {
+     name: "add_maintenance_comment",
+     description: "Ajoute un commentaire à une demande de maintenance.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       message: Joi.string().max(2000).required(),
+     }),
+     requiredRoles: [],
+diff --git a/src/ai/mcp/tools/maintenance/assignMaintenanceTechnicianTool.js b/src/ai/mcp/tools/maintenance/assignMaintenanceTechnicianTool.js
+index 7a4235f..4c28929 100644
+--- a/src/ai/mcp/tools/maintenance/assignMaintenanceTechnicianTool.js
++++ b/src/ai/mcp/tools/maintenance/assignMaintenanceTechnicianTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
+@@ -11,8 +12,8 @@ function createAssignMaintenanceTechnicianTool() {
+     name: "assign_maintenance_technician",
+     description: "Affecte un technicien à une demande de maintenance (ne change pas le statut).",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+-      technicianId: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
++      technicianId: uuidString().required(),
+     }),
+     requiredRoles: MAINTENANCE_MANAGER_ROLES,
+     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],
+diff --git a/src/ai/mcp/tools/maintenance/completeMaintenanceRequestTool.js b/src/ai/mcp/tools/maintenance/completeMaintenanceRequestTool.js
+index 7bd05a5..ad65b02 100644
+--- a/src/ai/mcp/tools/maintenance/completeMaintenanceRequestTool.js
++++ b/src/ai/mcp/tools/maintenance/completeMaintenanceRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
+@@ -10,7 +11,7 @@ function createCompleteMaintenanceRequestTool() {
+   return new ServiceBackedTool({
+     name: "complete_maintenance_request",
+     description: "Marque une demande de maintenance en cours comme terminée.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: MAINTENANCE_MANAGER_ROLES,
+     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],
+     run: async (input, { actingUser }) => maintenanceService.completeRequest(actingUser.id, input.id),
+diff --git a/src/ai/mcp/tools/maintenance/deleteMaintenanceRequestTool.js b/src/ai/mcp/tools/maintenance/deleteMaintenanceRequestTool.js
+index 725cea0..dbec728 100644
+--- a/src/ai/mcp/tools/maintenance/deleteMaintenanceRequestTool.js
++++ b/src/ai/mcp/tools/maintenance/deleteMaintenanceRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
+@@ -10,7 +11,7 @@ function createDeleteMaintenanceRequestTool() {
+   return new ServiceBackedTool({
+     name: "delete_maintenance_request",
+     description: "Supprime définitivement une demande de maintenance.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: MAINTENANCE_MANAGER_ROLES,
+     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],
+     run: async (input) => maintenanceService.deleteRequest(input.id),
+diff --git a/src/ai/mcp/tools/maintenance/getMaintenanceHistoryTool.js b/src/ai/mcp/tools/maintenance/getMaintenanceHistoryTool.js
+index 9f39c37..e0fba88 100644
+--- a/src/ai/mcp/tools/maintenance/getMaintenanceHistoryTool.js
++++ b/src/ai/mcp/tools/maintenance/getMaintenanceHistoryTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ 
+@@ -8,7 +9,7 @@ function createGetMaintenanceHistoryTool() {
+   return new ServiceBackedTool({
+     name: "get_maintenance_history",
+     description: "Historique d'activité d'une demande de maintenance.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) =>
+       maintenanceService.getHistory(actingUser.id, actingUser.role, input.id, actingUser.email),
+diff --git a/src/ai/mcp/tools/maintenance/getMaintenanceRequestTool.js b/src/ai/mcp/tools/maintenance/getMaintenanceRequestTool.js
+index 9c45c1c..8cbb266 100644
+--- a/src/ai/mcp/tools/maintenance/getMaintenanceRequestTool.js
++++ b/src/ai/mcp/tools/maintenance/getMaintenanceRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ 
+@@ -11,7 +12,7 @@ function createGetMaintenanceRequestTool() {
+   return new ServiceBackedTool({
+     name: "get_maintenance_request",
+     description: "Récupère une demande de maintenance par identifiant.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) =>
+       maintenanceService.getById(actingUser.id, actingUser.role, input.id, actingUser.email),
+diff --git a/src/ai/mcp/tools/maintenance/listMaintenanceCommentsTool.js b/src/ai/mcp/tools/maintenance/listMaintenanceCommentsTool.js
+index e886776..0bda8e4 100644
+--- a/src/ai/mcp/tools/maintenance/listMaintenanceCommentsTool.js
++++ b/src/ai/mcp/tools/maintenance/listMaintenanceCommentsTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ 
+@@ -8,7 +9,7 @@ function createListMaintenanceCommentsTool() {
+   return new ServiceBackedTool({
+     name: "list_maintenance_comments",
+     description: "Liste les commentaires d'une demande de maintenance.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) =>
+       maintenanceService.getComments(actingUser.id, actingUser.role, input.id, actingUser.email),
+diff --git a/src/ai/mcp/tools/maintenance/rejectMaintenanceRequestTool.js b/src/ai/mcp/tools/maintenance/rejectMaintenanceRequestTool.js
+index 8372518..b63e267 100644
+--- a/src/ai/mcp/tools/maintenance/rejectMaintenanceRequestTool.js
++++ b/src/ai/mcp/tools/maintenance/rejectMaintenanceRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
+@@ -11,7 +12,7 @@ function createRejectMaintenanceRequestTool() {
+     name: "reject_maintenance_request",
+     description: "Refuse une demande de maintenance en attente, avec motif.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       reason: Joi.string().max(2000).required(),
+     }),
+     requiredRoles: MAINTENANCE_MANAGER_ROLES,
+diff --git a/src/ai/mcp/tools/maintenance/startMaintenanceRequestTool.js b/src/ai/mcp/tools/maintenance/startMaintenanceRequestTool.js
+index 2a7253b..832f7ce 100644
+--- a/src/ai/mcp/tools/maintenance/startMaintenanceRequestTool.js
++++ b/src/ai/mcp/tools/maintenance/startMaintenanceRequestTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const maintenanceService = require("../../../../modules/maintenance-requests/services/maintenanceRequest.service");
+ const { MAINTENANCE_MANAGER_ROLES } = require("../../../../middleware/requireMaintenanceManager");
+@@ -10,7 +11,7 @@ function createStartMaintenanceRequestTool() {
+   return new ServiceBackedTool({
+     name: "start_maintenance_request",
+     description: "Démarre l'intervention sur une demande de maintenance acceptée (avec technicien affecté).",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: MAINTENANCE_MANAGER_ROLES,
+     allowedEmails: [MAINTENANCE_MANAGER_EMAIL],
+     run: async (input, { actingUser }) => maintenanceService.startRequest(actingUser.id, input.id),
+diff --git a/src/ai/mcp/tools/notifications/deleteNotificationTool.js b/src/ai/mcp/tools/notifications/deleteNotificationTool.js
+index a41450f..8cff0fe 100644
+--- a/src/ai/mcp/tools/notifications/deleteNotificationTool.js
++++ b/src/ai/mcp/tools/notifications/deleteNotificationTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const notificationService = require("../../../../services/notification.service");
+ 
+@@ -10,7 +11,7 @@ function createDeleteNotificationTool() {
+   return new ServiceBackedTool({
+     name: "delete_notification",
+     description: "Supprime une notification de l'utilisateur courant.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) => notificationService.deleteNotification(actingUser.id, input.id),
+   });
+diff --git a/src/ai/mcp/tools/notifications/markNotificationReadTool.js b/src/ai/mcp/tools/notifications/markNotificationReadTool.js
+index 9f12be4..a74465e 100644
+--- a/src/ai/mcp/tools/notifications/markNotificationReadTool.js
++++ b/src/ai/mcp/tools/notifications/markNotificationReadTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const notificationService = require("../../../../services/notification.service");
+ 
+@@ -11,7 +12,7 @@ function createMarkNotificationReadTool() {
+   return new ServiceBackedTool({
+     name: "mark_notification_read",
+     description: "Marque une notification précise comme lue.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input, { actingUser }) => notificationService.markOneRead(actingUser.id, input.id),
+   });
+diff --git a/src/ai/mcp/tools/notifications/sendNotificationEmailTool.js b/src/ai/mcp/tools/notifications/sendNotificationEmailTool.js
+index 1c16d4f..9e12a63 100644
+--- a/src/ai/mcp/tools/notifications/sendNotificationEmailTool.js
++++ b/src/ai/mcp/tools/notifications/sendNotificationEmailTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const notificationService = require("../../../../services/notification.service");
+ 
+@@ -16,7 +17,7 @@ function createSendNotificationEmailTool() {
+     name: "send_notification_email",
+     description: "Envoie un e-mail et crée la notification correspondante pour un destinataire donné.",
+     inputSchema: Joi.object({
+-      toUserId: Joi.string().guid({ version: "uuidv4" }).required(),
++      toUserId: uuidString().required(),
+       emailTo: Joi.string().email().required(),
+       fromName: Joi.string().max(120).optional(),
+       subject: Joi.string().max(255).required(),
+diff --git a/src/ai/mcp/tools/pipeline/deletePipelineStageTool.js b/src/ai/mcp/tools/pipeline/deletePipelineStageTool.js
+index a7172d2..86fb5ae 100644
+--- a/src/ai/mcp/tools/pipeline/deletePipelineStageTool.js
++++ b/src/ai/mcp/tools/pipeline/deletePipelineStageTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const pipelineStageService = require("../../../../modules/pipeline/services/pipelineStage.service");
+ 
+@@ -12,7 +13,7 @@ function createDeletePipelineStageTool() {
+   return new ServiceBackedTool({
+     name: "delete_pipeline_stage",
+     description: "Supprime (soft-delete) une étape de pipeline non utilisée par un projet.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: ADMIN_TIER_ROLES,
+     run: async (input) => pipelineStageService.deleteStage(input.id),
+   });
+diff --git a/src/ai/mcp/tools/pipeline/getPipelineStageTool.js b/src/ai/mcp/tools/pipeline/getPipelineStageTool.js
+index b586ebc..b6c020b 100644
+--- a/src/ai/mcp/tools/pipeline/getPipelineStageTool.js
++++ b/src/ai/mcp/tools/pipeline/getPipelineStageTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const pipelineStageService = require("../../../../modules/pipeline/services/pipelineStage.service");
+ 
+@@ -8,7 +9,7 @@ function createGetPipelineStageTool() {
+   return new ServiceBackedTool({
+     name: "get_pipeline_stage",
+     description: "Récupère une étape de pipeline par identifiant.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: [],
+     run: async (input) => pipelineStageService.getStageById(input.id),
+   });
+diff --git a/src/ai/mcp/tools/pipeline/reorderPipelineStagesTool.js b/src/ai/mcp/tools/pipeline/reorderPipelineStagesTool.js
+index d17ab96..9576e51 100644
+--- a/src/ai/mcp/tools/pipeline/reorderPipelineStagesTool.js
++++ b/src/ai/mcp/tools/pipeline/reorderPipelineStagesTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const pipelineStageService = require("../../../../modules/pipeline/services/pipelineStage.service");
+ 
+@@ -12,7 +13,7 @@ function createReorderPipelineStagesTool() {
+     description: "Réordonne plusieurs étapes de pipeline en une seule opération.",
+     inputSchema: Joi.object({
+       stages: Joi.array()
+-        .items(Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required(), position: Joi.number().integer().min(0).required() }))
++        .items(Joi.object({ id: uuidString().required(), position: Joi.number().integer().min(0).required() }))
+         .min(1)
+         .required(),
+     }),
+diff --git a/src/ai/mcp/tools/pipeline/updatePipelineStageTool.js b/src/ai/mcp/tools/pipeline/updatePipelineStageTool.js
+index 146bd8b..7014869 100644
+--- a/src/ai/mcp/tools/pipeline/updatePipelineStageTool.js
++++ b/src/ai/mcp/tools/pipeline/updatePipelineStageTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const pipelineStageService = require("../../../../modules/pipeline/services/pipelineStage.service");
+ 
+@@ -12,7 +13,7 @@ function createUpdatePipelineStageTool() {
+     name: "update_pipeline_stage",
+     description: "Met à jour une étape de pipeline existante.",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       name: Joi.string().max(120).optional(),
+       color: Joi.string().pattern(HEX_COLOR).optional(),
+       icon: Joi.string().max(50).allow(null).optional(),
+diff --git a/src/ai/mcp/tools/porPromesh/deletePorPromeshTool.js b/src/ai/mcp/tools/porPromesh/deletePorPromeshTool.js
+index 9158172..a1b8aad 100644
+--- a/src/ai/mcp/tools/porPromesh/deletePorPromeshTool.js
++++ b/src/ai/mcp/tools/porPromesh/deletePorPromeshTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
+ 
+@@ -12,7 +13,7 @@ function createDeletePorPromeshTool() {
+   return new ServiceBackedTool({
+     name: "delete_por_promesh",
+     description: "Supprime une fiche POR PROMESH non verrouillée.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: DELETE_ROLES,
+     run: async (input, { actingUser }) => porPromeshService.deletePorPromesh(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/porPromesh/getPorPromeshTool.js b/src/ai/mcp/tools/porPromesh/getPorPromeshTool.js
+index 1599591..ec310b1 100644
+--- a/src/ai/mcp/tools/porPromesh/getPorPromeshTool.js
++++ b/src/ai/mcp/tools/porPromesh/getPorPromeshTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
+ 
+@@ -10,7 +11,7 @@ function createGetPorPromeshTool() {
+   return new ServiceBackedTool({
+     name: "get_por_promesh",
+     description: "Récupère une fiche POR PROMESH complète par identifiant.",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: READ_WRITE_ROLES,
+     run: async (input, { actingUser }) => porPromeshService.getPorPromeshById(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/porPromesh/updatePorPromeshTool.js b/src/ai/mcp/tools/porPromesh/updatePorPromeshTool.js
+index 505443b..fe7561d 100644
+--- a/src/ai/mcp/tools/porPromesh/updatePorPromeshTool.js
++++ b/src/ai/mcp/tools/porPromesh/updatePorPromeshTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
+ 
+@@ -24,7 +25,7 @@ function createUpdatePorPromeshTool() {
+     name: "update_por_promesh",
+     description: "Met à jour une fiche POR PROMESH non verrouillée (status=BROUILLON).",
+     inputSchema: Joi.object({
+-      id: Joi.string().guid({ version: "uuidv4" }).required(),
++      id: uuidString().required(),
+       dateProduction: Joi.date().iso().allow(null).optional(),
+       heureDebut: Joi.string().pattern(TIME_PATTERN).allow("", null).optional(),
+       heureFin: Joi.string().pattern(TIME_PATTERN).allow("", null).optional(),
+diff --git a/src/ai/mcp/tools/porPromesh/validatePorPromeshTool.js b/src/ai/mcp/tools/porPromesh/validatePorPromeshTool.js
+index 5509128..0f5274b 100644
+--- a/src/ai/mcp/tools/porPromesh/validatePorPromeshTool.js
++++ b/src/ai/mcp/tools/porPromesh/validatePorPromeshTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const porPromeshService = require("../../../../modules/por-promesh/services/porPromesh.service");
+ 
+@@ -14,7 +15,7 @@ function createValidatePorPromeshTool() {
+   return new ServiceBackedTool({
+     name: "validate_por_promesh",
+     description: "Valide définitivement une fiche POR PROMESH (verrouillage irréversible : status=VALIDE, isLocked=true).",
+-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ id: uuidString().required() }),
+     requiredRoles: READ_WRITE_ROLES,
+     run: async (input, { actingUser }) => porPromeshService.validatePorPromesh(input.id, actingUser),
+   });
+diff --git a/src/ai/mcp/tools/projectActions/createProjectActionTool.js b/src/ai/mcp/tools/projectActions/createProjectActionTool.js
+index 82cb720..5a33260 100644
+--- a/src/ai/mcp/tools/projectActions/createProjectActionTool.js
++++ b/src/ai/mcp/tools/projectActions/createProjectActionTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const projectActionService = require("../../../../modules/project-actions/services/projectAction.service");
+ 
+@@ -25,7 +26,7 @@ function createCreateProjectActionTool() {
+     description:
+       "Crée une activité sur un projet (ex. visite, relance) et, si une date de relance est fournie, le rappel associé.",
+     inputSchema: Joi.object({
+-      projectId: Joi.string().guid({ version: "uuidv4" }).required(),
++      projectId: uuidString().required(),
+       typeAction: Joi.string().max(100).allow(null, "").optional(),
+       commentaire: Joi.string().max(2000).allow(null, "").optional(),
+       dateAction: Joi.date().iso().optional(),
+diff --git a/src/ai/mcp/tools/projects/assignProjectOwnerTool.js b/src/ai/mcp/tools/projects/assignProjectOwnerTool.js
+index 696dff0..fe33a3e 100644
+--- a/src/ai/mcp/tools/projects/assignProjectOwnerTool.js
++++ b/src/ai/mcp/tools/projects/assignProjectOwnerTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const projectService = require("../../../../modules/projects/services/project.service");
+ 
+@@ -14,8 +15,8 @@ function createAssignProjectOwnerTool() {
+     name: "assign_project_owner",
+     description: "Assigne (ou retire, ownerId=null) le propriétaire d'un projet (admin-tier uniquement via ce Tool).",
+     inputSchema: Joi.object({
+-      projectId: Joi.string().guid({ version: "uuidv4" }).required(),
+-      ownerId: Joi.string().guid({ version: "uuidv4" }).allow(null).required(),
++      projectId: uuidString().required(),
++      ownerId: uuidString().allow(null).required(),
+     }),
+     requiredRoles: ADMIN_TIER_ROLES,
+     run: async (input, { actingUser }) =>
+diff --git a/src/ai/mcp/tools/projects/listProjectsTool.js b/src/ai/mcp/tools/projects/listProjectsTool.js
+index d40f6f6..2489055 100644
+--- a/src/ai/mcp/tools/projects/listProjectsTool.js
++++ b/src/ai/mcp/tools/projects/listProjectsTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const projectService = require("../../../../modules/projects/services/project.service");
+ 
+@@ -63,7 +64,7 @@ function createListProjectsTool() {
+     description: "Liste les projets (pipeline/kanban) avec statistiques globales — filtrage/tri best-effort.",
+     inputSchema: Joi.object({
+       mine: Joi.boolean().optional(),
+-      ownerId: Joi.string().guid({ version: "uuidv4" }).optional(),
++      ownerId: uuidString().optional(),
+       // Colonne réelle `Project.statut` (STRING, valeurs métier françaises —
+       // ex. "Négociation", "Identification" — voir project.repository.js::
+       // buildBaseWhere). Non déclaré auparavant : `.unknown(true)` laissait
+diff --git a/src/ai/mcp/tools/projects/moveProjectStageTool.js b/src/ai/mcp/tools/projects/moveProjectStageTool.js
+index 9cba572..63398a4 100644
+--- a/src/ai/mcp/tools/projects/moveProjectStageTool.js
++++ b/src/ai/mcp/tools/projects/moveProjectStageTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const projectService = require("../../../../modules/projects/services/project.service");
+ 
+@@ -20,8 +21,8 @@ function createMoveProjectStageTool() {
+     name: "move_project_stage",
+     description: "Déplace un projet vers une nouvelle étape de pipeline (admin-tier uniquement via ce Tool).",
+     inputSchema: Joi.object({
+-      projectId: Joi.string().guid({ version: "uuidv4" }).required(),
+-      pipelineStageId: Joi.string().guid({ version: "uuidv4" }).required(),
++      projectId: uuidString().required(),
++      pipelineStageId: uuidString().required(),
+     }),
+     requiredRoles: ADMIN_TIER_ROLES,
+     run: async (input, { actingUser }) =>
+diff --git a/src/ai/mcp/tools/users/getUserProfileTool.js b/src/ai/mcp/tools/users/getUserProfileTool.js
+index 3311855..ea04ba4 100644
+--- a/src/ai/mcp/tools/users/getUserProfileTool.js
++++ b/src/ai/mcp/tools/users/getUserProfileTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const userService = require("../../../../services/user.service");
+ 
+@@ -13,7 +14,7 @@ function createGetUserProfileTool() {
+   return new ServiceBackedTool({
+     name: "get_user_profile",
+     description: "Récupère le profil RH d'un utilisateur donné (vue admin).",
+-    inputSchema: Joi.object({ userId: Joi.string().guid({ version: "uuidv4" }).required() }),
++    inputSchema: Joi.object({ userId: uuidString().required() }),
+     requiredRoles: ADMIN_TIER_ROLES,
+     run: async (input) => userService.getUserProfile(input.userId),
+   });
+diff --git a/src/ai/mcp/tools/users/setUserActiveTool.js b/src/ai/mcp/tools/users/setUserActiveTool.js
+index 5640d12..fb908b0 100644
+--- a/src/ai/mcp/tools/users/setUserActiveTool.js
++++ b/src/ai/mcp/tools/users/setUserActiveTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const userService = require("../../../../services/user.service");
+ 
+@@ -15,7 +16,7 @@ function createSetUserActiveTool() {
+     name: "set_user_active",
+     description: "Active ou désactive un compte utilisateur.",
+     inputSchema: Joi.object({
+-      userId: Joi.string().guid({ version: "uuidv4" }).required(),
++      userId: uuidString().required(),
+       active: Joi.boolean().required(),
+     }),
+     requiredRoles: ADMIN_TIER_ROLES,
+diff --git a/src/ai/mcp/tools/users/setUserRoleTool.js b/src/ai/mcp/tools/users/setUserRoleTool.js
+index 78c89e1..57ad4c3 100644
+--- a/src/ai/mcp/tools/users/setUserRoleTool.js
++++ b/src/ai/mcp/tools/users/setUserRoleTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const userService = require("../../../../services/user.service");
+ 
+@@ -14,7 +15,7 @@ function createSetUserRoleTool() {
+     name: "set_user_role",
+     description: "Change le rôle d'un utilisateur (superadmin uniquement).",
+     inputSchema: Joi.object({
+-      userId: Joi.string().guid({ version: "uuidv4" }).required(),
++      userId: uuidString().required(),
+       role: Joi.string().max(50).required(),
+     }),
+     requiredRoles: ["superadmin", "superadmin2"],
+diff --git a/src/ai/mcp/tools/users/updateUserProfileTool.js b/src/ai/mcp/tools/users/updateUserProfileTool.js
+index 0295644..1b1f42b 100644
+--- a/src/ai/mcp/tools/users/updateUserProfileTool.js
++++ b/src/ai/mcp/tools/users/updateUserProfileTool.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("../../uuidSchema");
+ const { ServiceBackedTool } = require("../../../tools");
+ const userService = require("../../../../services/user.service");
+ 
+@@ -14,7 +15,7 @@ function createUpdateUserProfileTool() {
+     name: "update_user_profile",
+     description: "Met à jour le profil RH d'un utilisateur donné (matricule, qualification, département, service...).",
+     inputSchema: Joi.object({
+-      userId: Joi.string().guid({ version: "uuidv4" }).required(),
++      userId: uuidString().required(),
+       name: Joi.string().max(255).optional(),
+       designation: Joi.string().max(255).optional(),
+       phone: Joi.string().max(50).optional(),
+diff --git a/src/ai/mcp/validationManager.js b/src/ai/mcp/validationManager.js
+index f416c6b..93b2075 100644
+--- a/src/ai/mcp/validationManager.js
++++ b/src/ai/mcp/validationManager.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ 
+ const Joi = require("joi");
++const { uuidString } = require("./uuidSchema");
+ const { McpError, ToolValidationError } = require("./errors");
+ const { ErrorCodes } = require("./jsonRpc");
+ 
+@@ -21,7 +22,7 @@ const envelopeSchema = Joi.object({
+ // PermissionManager, fails closed as "anonymous"), not a validation one —
+ // this schema only rejects a value that is present but malformed.
+ const actingUserSchema = Joi.object({
+-  id: Joi.string().guid({ version: "uuidv4" }).required(),
++  id: uuidString().required(),
+   role: Joi.string().min(1).required(),
+   // Forme « x@y » seulement : l'adresse vient du compte déjà authentifié et ne
+   // sert qu'aux règles `allowedEmails`. La validation stricte de Joi refusait
+--- /dev/null
++++ b/src/ai/mcp/uuidSchema.js
+@@ -0,0 +1,25 @@
++"use strict";
++
++const Joi = require("joi");
++
++// Règle UNIQUE de validation d'un identifiant UUID pour le MCP : utilisateur
++// agissant (validationManager.js) et identifiants reçus par les outils.
++//
++// Les colonnes `uuid` de PostgreSQL acceptent toutes les versions. Le schéma
++// en contient deux : v4 (gen_random_uuid(), Sequelize.UUIDV4) et v5
++// (identifiants dérivés d'un nom, produits par scripts/demo-seeder). Exiger la
++// seule v4 refusait tout compte et toute entité en v5 avant même le contrôle
++// d'accès.
++//
++// Ce qui reste refusé : toute chaîne qui n'est pas un UUID au format canonique
++// (8-4-4-4-12 hexadécimaux, tirets obligatoires, sans accolades), une version
++// hors 1 à 8, une variante non RFC 4122. La validation d'identifiant n'est donc
++// pas relâchée sur la forme ; l'autorisation reste du ressort du
++// PermissionManager et des services, inchangés.
++const UUID_VERSIONS = Object.freeze(["uuidv1", "uuidv2", "uuidv3", "uuidv4", "uuidv5", "uuidv6", "uuidv7", "uuidv8"]);
++
++function uuidString() {
++  return Joi.string().guid({ version: [...UUID_VERSIONS], separator: "-", wrapper: false });
++}
++
++module.exports = { uuidString, UUID_VERSIONS };
+--- /dev/null
++++ b/scripts/demo/demo-guard.js
+@@ -0,0 +1,118 @@
++"use strict";
++
++// Garde-fou du lancement de DÉMONSTRATION. Préchargé avant le CRM :
++//
++//   npm run demo:start
++//   (= node -r ./scripts/demo/demo-guard.js src/app.js)
++//
++// Sans effet sur `npm start` et `npm run dev`, qui ne le chargent pas. Ne lit
++// le .env que pour le mot de passe du serveur local et ne l'écrit jamais.
++//
++// Ordre des contrôles — tous terminés AVANT que la première ligne du CRM
++// s'exécute, donc avant toute synchronisation, création de compte, reprise de
++// file d'e-mails ou tâche planifiée :
++//   1. cible lue dans scripts/demo-seeder/demo.config.json, pas dans le .env ;
++//   2. variables de CE processus fixées : dotenv ne remplace jamais une
++//      variable déjà définie, DB_NAME et DATABASE_URL du .env sont donc ignorés ;
++//   3. connexion de contrôle : current_database() doit valoir exactement
++//      cbigestionnairepfe_demo, sinon arrêt ;
++//   4. même contrôle sur chaque connexion ouverte ensuite par le CRM ;
++//   5. tâches planifiées et envois d'e-mails neutralisés dans le processus
++//      lui-même (pas seulement par variable d'environnement).
++// Aucun secret n'est écrit dans les traces.
++
++const fs = require("fs");
++const path = require("path");
++const { spawnSync } = require("child_process");
++
++const DEMO_DATABASE = "cbigestionnairepfe_demo";
++const LOCAL_HOSTS = ["127.0.0.1", "localhost", "::1"];
++
++function refuse(message) {
++  console.error(`[demo-guard] DÉMARRAGE REFUSÉ : ${message}`);
++  process.exit(1);
++}
++
++// Racine du backend : premier dossier parent dont le package.json est celui du CRM.
++function findBackendRoot() {
++  for (let dir = __dirname; dir !== path.dirname(dir); dir = path.dirname(dir)) {
++    const manifest = path.join(dir, "package.json");
++    if (fs.existsSync(manifest) && JSON.parse(fs.readFileSync(manifest, "utf8")).name === "backend-master") return dir;
++  }
++  return refuse("racine du backend introuvable");
++}
++
++const ROOT = findBackendRoot();
++const fromRoot = (...parts) => path.join(ROOT, ...parts);
++const { loadConfig, resolvePassword } = require(fromRoot("scripts", "demo-seeder", "lib", "target"));
++
++if (process.env.NODE_ENV === "production") refuse("NODE_ENV=production : le lancement de démonstration ne se fait jamais en mode production.");
++
++// 1. Cible : fichier de configuration du lot de démonstration.
++const { target } = loadConfig();
++if (target.database !== DEMO_DATABASE) refuse(`la configuration vise « ${target.database} », pas « ${DEMO_DATABASE} ».`);
++if (!LOCAL_HOSTS.includes(target.host)) refuse(`la configuration vise l'hôte « ${target.host} » : seule une base locale est acceptée.`);
++const password = resolvePassword({ target }); // lit le .env sans l'écrire ; la valeur n'est jamais affichée
++
++// 2. Variables du processus — posées APRÈS la lecture du .env, elles priment sur lui.
++Object.assign(process.env, {
++  DB_HOST: target.host,
++  DB_PORT: String(target.port),
++  DB_USER: target.user,
++  DB_PASSWORD: password,
++  DB_NAME: DEMO_DATABASE,
++  DATABASE_URL: `postgres://${encodeURIComponent(target.user)}:${encodeURIComponent(password)}@${target.host}:${target.port}/${DEMO_DATABASE}`,
++  AUTO_EMAIL_JOBS_ENABLED: "false",
++  AUTO_ARCHIVE_ENABLED: "false",
++  AI_PROACTIVE_MONITORING_ENABLED: "false",
++  EMAIL_HOST: "127.0.0.1",
++  EMAIL_PORT: "1",
++  DEMO_MODE: "true",
++});
++
++// 3. Contrôle sur la connexion elle-même, dans un processus enfant : il est
++//    terminé avant que la moindre ligne du CRM s'exécute.
++const probe = spawnSync(
++  process.execPath,
++  [
++    "-e",
++    `const { Client } = require("pg");
++     const e = process.env;
++     const c = new Client({ host: e.DB_HOST, port: Number(e.DB_PORT), user: e.DB_USER, password: e.DB_PASSWORD, database: e.DB_NAME });
++     c.connect().then(() => c.query("SELECT current_database() AS d")).then((r) => { process.stdout.write(r.rows[0].d); return c.end(); })
++       .catch((err) => { process.stderr.write(String(err.code || err.message)); process.exit(2); });`,
++  ],
++  { cwd: ROOT, env: process.env, encoding: "utf8", timeout: 15000 }
++);
++if (probe.status !== 0) refuse(`connexion de contrôle impossible (${(probe.stderr || "délai dépassé").trim()}).`);
++if (probe.stdout.trim() !== DEMO_DATABASE) refuse(`la connexion aboutit à « ${probe.stdout.trim()} », pas à « ${DEMO_DATABASE} ».`);
++
++// 5a. Tâches planifiées : aucune ne peut être créée dans ce processus, quel
++//     que soit l'état des interrupteurs. Les relances, notifications et alertes
++//     automatiques du CRM ne viennent que de ces tâches.
++const cron = require(fromRoot("node_modules", "node-cron"));
++const ignoredJobs = [];
++cron.schedule = (expression) => {
++  ignoredJobs.push(expression);
++  console.log(`[demo-guard] Tâche planifiée ignorée (${expression}).`);
++  return { start() {}, stop() {}, destroy() {} };
++};
++
++// 5b. E-mails : tout transport créé par le CRM écrit le message en mémoire au
++//     lieu de l'envoyer. Aucune connexion SMTP n'est ouverte.
++const nodemailer = require(fromRoot("node_modules", "nodemailer"));
++const createTransport = nodemailer.createTransport.bind(nodemailer);
++nodemailer.createTransport = () => createTransport({ jsonTransport: true });
++
++// 4. Même contrôle sur chaque connexion ouverte par le CRM, pendant toute la durée du processus.
++const { sequelize } = require(fromRoot("src", "db"));
++if (sequelize.config.database !== DEMO_DATABASE) refuse(`le CRM est configuré sur « ${sequelize.config.database} ».`);
++sequelize.addHook("afterConnect", async (connection) => {
++  const { rows } = await connection.query("SELECT current_database() AS d");
++  if (rows[0].d !== DEMO_DATABASE) refuse(`une connexion du CRM vise « ${rows[0].d} ».`);
++});
++
++console.log(`[demo-guard] Base vérifiée : ${DEMO_DATABASE} sur ${target.host}:${target.port}.`);
++console.log("[demo-guard] Neutralisés dans ce processus : tâches planifiées, archivage automatique, surveillance proactive, envoi d'e-mails.");
++
++module.exports = { DEMO_DATABASE, ignoredJobs };
+--- /dev/null
++++ b/scripts/demo/reset-demo-passwords.js
+@@ -0,0 +1,157 @@
++"use strict";
++
++// Réinitialisation du mot de passe des NEUF comptes de démonstration qui ne
++// peuvent pas se connecter (reports/demo-data-quality/AUDIT.md, anomalie C-01).
++//
++//   npm run demo:passwords
++//        Simulation : transaction en lecture seule, n'écrit rien.
++//   npm run demo:passwords -- --apply --batch=<batch_id>
++//        Écriture, dans une seule transaction, inscrite au registre du lot.
++//
++// Mot de passe : lu dans la variable d'environnement DEMO_ACCOUNT_PASSWORD.
++// Il n'est jamais écrit dans un fichier, une trace, un rapport ni au registre ;
++// aucune empreinte n'est lue en clair ni affichée. Même algorithme que le CRM :
++// bcrypt, coût 12 (src/routes/auth.routes.js).
++//
++// Périmètre fermé : les neuf adresses ci-dessous, et rien d'autre. Chacune doit
++// être inscrite au registre du lot de démonstration. Seule la colonne
++// passwordHash change. Refus si la base connectée n'est pas exactement
++// cbigestionnairepfe_demo.
++
++const DEMO_DATABASE = "cbigestionnairepfe_demo";
++const BCRYPT_COST = 12;
++const EXECUTED_BY = "DEMO_ACCOUNTS";
++const MASK = "[masqué]";
++
++const TARGET_ACCOUNTS = Object.freeze([
++  "demo.admin01@cbi_tunisia.com",
++  "demo.commercial02@cbi_tunisia.com",
++  "demo.commercial03@cbi_tunisia.com",
++  "demo.commercial04@cbi_tunisia.com",
++  "demo.commercial05@cbi_tunisia.com",
++  "demo.commercial06@cbi_tunisia.com",
++  "demo.commercial_sedentaire01@cbi_tunisia.com",
++  "demo.commercial_sedentaire02@cbi_tunisia.com",
++  "demo.responsable_logistique_achat01@cbi_tunisia.com",
++]);
++
++// Empreinte bcrypt bien formée — évaluée dans la base, la valeur n'en sort pas.
++const IS_BCRYPT_SQL = `"passwordHash" ~ '^[$]2[aby][$][0-9]{2}[$].{53}$'`;
++// Même règle que POST /auth/signin : 8 à 72 caractères.
++const isAcceptablePassword = (value) => typeof value === "string" && value.length >= 8 && value.length <= 72;
++
++/**
++ * @param {{ client: { query: Function }, bcrypt: { hash: Function, compare: Function }, batchId: string,
++ *           password?: string, apply?: boolean, log?: (line: string) => void }} options
++ * @returns {Promise<{ database: string, mode: "dry-run"|"apply", accounts: object[], updated: number, committed: boolean }>}
++ */
++async function resetDemoPasswords({ client, bcrypt, batchId, password, apply = false, log = () => {} }) {
++  if (apply && !isAcceptablePassword(password)) throw new Error("DEMO_ACCOUNT_PASSWORD absent ou hors des 8 à 72 caractères acceptés par la connexion.");
++
++  const assertDemo = async () => {
++    const { rows } = await client.query("SELECT current_database() AS d");
++    if (rows[0].d !== DEMO_DATABASE) throw new Error(`OPÉRATION REFUSÉE : la connexion vise « ${rows[0].d} », pas « ${DEMO_DATABASE} ».`);
++    return rows[0].d;
++  };
++  const database = await assertDemo();
++  const report = { database, mode: apply ? "apply" : "dry-run", accounts: [], updated: 0, committed: false };
++
++  await client.query(apply ? "BEGIN" : "BEGIN READ ONLY");
++  try {
++    await assertDemo();
++
++    // Les neuf comptes, leur appartenance au registre du lot et la FORME de leur empreinte.
++    const { rows } = await client.query(
++      `SELECT u.id::text AS id, u.email, u.role::text AS role, u."isActive" AS active, (${IS_BCRYPT_SQL}) AS valid,
++              EXISTS (SELECT 1 FROM data_change_log l WHERE l.batch_id = $2 AND l.table_name = 'users' AND l.operation = 'INSERT' AND l.record_id = u.id::text) AS registered
++         FROM users u WHERE u.email = ANY($1) ORDER BY u.role, u.email`,
++      [[...TARGET_ACCOUNTS], batchId]
++    );
++    const missing = TARGET_ACCOUNTS.filter((email) => !rows.some((r) => r.email === email));
++    if (missing.length) throw new Error(`compte(s) introuvable(s) : ${missing.join(", ")}`);
++    if (rows.length !== TARGET_ACCOUNTS.length) throw new Error(`${rows.length} ligne(s) pour ${TARGET_ACCOUNTS.length} comptes attendus`);
++    for (const r of rows) {
++      if (!r.registered) throw new Error(`compte hors du registre du lot ${batchId} : ${r.email}`);
++      if (!r.active) throw new Error(`compte inactif : ${r.email}`);
++    }
++    report.accounts = rows.map((r) => ({ id: r.id, email: r.email, role: r.role, state: r.valid ? "empreinte déjà valide" : "à réinitialiser" }));
++    for (const a of report.accounts) log(`  ${a.role.padEnd(30)} ${a.email.padEnd(54)} ${a.state}`);
++    const todo = rows.filter((r) => !r.valid);
++
++    if (!apply) {
++      await client.query("ROLLBACK");
++      log(`Simulation : ${todo.length} compte(s) seraient réinitialisés. Rien n'a été écrit.`);
++      return report;
++    }
++
++    // Tout ce qui n'est pas l'empreinte doit rester identique, pour tous les comptes.
++    const fingerprint = async () =>
++      (await client.query(`SELECT COUNT(*)::int AS n, md5(COALESCE(string_agg(md5((to_jsonb(t) - 'passwordHash' - 'updatedAt')::text), '' ORDER BY t.id::text), '')) AS h FROM users t`)).rows[0];
++    const before = await fingerprint();
++
++    for (const a of todo) {
++      const hash = await bcrypt.hash(password, BCRYPT_COST);
++      const res = await client.query(`UPDATE users SET "passwordHash" = $1, "updatedAt" = now() WHERE id::text = $2 AND email = $3 AND NOT (${IS_BCRYPT_SQL})`, [hash, a.id, a.email]);
++      if (res.rowCount !== 1) throw new Error(`compte ${a.email} : ${res.rowCount} ligne(s) modifiée(s) au lieu de 1`);
++      await client.query(
++        `INSERT INTO data_change_log (batch_id, table_name, record_id, column_name, old_value, new_value, source, reason, confidence, operation, executed_by)
++         VALUES ($1, 'users', $2, 'passwordHash', $3, $4, $5::jsonb, $6, 'HIGH', 'UPDATE', $7)`,
++        [batchId, a.id, MASK, MASK, JSON.stringify({ script: "scripts/demo/reset-demo-passwords.js", role: a.role }), "Réinitialisation du mot de passe d'un compte de démonstration (préparation de la soutenance)", EXECUTED_BY]
++      );
++      report.updated += 1;
++    }
++
++    // Contrôles AVANT validation : le moindre écart annule tout.
++    const after = await fingerprint();
++    if (before.n !== after.n || before.h !== after.h) throw new Error("une autre colonne ou un autre compte a changé");
++    const { rows: stored } = await client.query(`SELECT "passwordHash" AS hash FROM users WHERE id::text = ANY($1)`, [todo.map((a) => a.id)]);
++    if (stored.length !== todo.length) throw new Error("relecture des comptes incomplète");
++    for (const row of stored) if (!(await bcrypt.compare(password, row.hash))) throw new Error("vérification bcrypt échouée");
++    const { rows: left } = await client.query(`SELECT COUNT(*)::int AS n FROM users WHERE email = ANY($1) AND NOT (${IS_BCRYPT_SQL})`, [[...TARGET_ACCOUNTS]]);
++    if (left[0].n !== 0) throw new Error(`${left[0].n} compte(s) encore sans empreinte valide`);
++    await assertDemo();
++    await client.query("COMMIT");
++    report.committed = true;
++    log(`Terminé : ${report.updated} compte(s) réinitialisé(s), vérifiés par bcrypt, inscrits au registre (${EXECUTED_BY}).`);
++    return report;
++  } catch (err) {
++    await Promise.resolve(client.query("ROLLBACK")).catch(() => {});
++    throw err;
++  }
++}
++
++async function main() {
++  const path = require("path");
++  const root = path.join(__dirname, "..", "..");
++  const { Client } = require("pg");
++  const bcrypt = require("bcrypt");
++  const { loadConfig, resolvePassword } = require(path.join(root, "scripts", "demo-seeder", "lib", "target"));
++  const { batchIdOf } = require(path.join(root, "scripts", "demo-seeder", "lib", "runner"));
++
++  const config = loadConfig();
++  const batchId = batchIdOf(config);
++  const apply = process.argv.includes("--apply");
++  const confirmed = (process.argv.find((a) => a.startsWith("--batch=")) || "").slice("--batch=".length);
++  if (apply && confirmed !== batchId) throw new Error(`confirmation manquante : relancer avec --batch=${batchId}`);
++  const password = process.env.DEMO_ACCOUNT_PASSWORD;
++  if (apply && !isAcceptablePassword(password)) throw new Error("DEMO_ACCOUNT_PASSWORD absent ou hors des 8 à 72 caractères acceptés par la connexion.");
++
++  const { target } = config;
++  const client = new Client({ host: target.host, port: target.port, user: target.user, password: resolvePassword(config), database: target.database });
++  await client.connect();
++  try {
++    console.log(`Base : ${target.database} — lot : ${batchId} — ${apply ? "ÉCRITURE" : "simulation, lecture seule"}`);
++    await resetDemoPasswords({ client, bcrypt, batchId, password, apply, log: (line) => console.log(line) });
++  } finally {
++    await client.end();
++  }
++}
++
++if (require.main === module) {
++  main().catch((err) => {
++    console.error("Arrêt (rien n'est modifié) :", err.message);
++    process.exit(1);
++  });
++}
++
++module.exports = { resetDemoPasswords, TARGET_ACCOUNTS, DEMO_DATABASE, BCRYPT_COST, EXECUTED_BY, isAcceptablePassword };
+--- /dev/null
++++ b/test/ai.mcp.uuidSchema.test.js
+@@ -0,0 +1,162 @@
++"use strict";
++
++// Règle partagée de validation des identifiants UUID du MCP (src/ai/mcp/uuidSchema.js).
++// AUCUNE base n'est ouverte : schémas Joi, serveur MCP en mémoire, lecture du
++// code source en texte.
++
++const fs = require("fs");
++const path = require("path");
++const Joi = require("joi");
++const { uuidString, UUID_VERSIONS } = require("../src/ai/mcp/uuidSchema");
++const { ValidationManager } = require("../src/ai/mcp/validationManager");
++const { PermissionManager } = require("../src/ai/mcp/permissionManager");
++const { ErrorHandler } = require("../src/ai/mcp/errorHandler");
++const { McpServer } = require("../src/ai/mcp/server/mcpServer");
++const { McpError } = require("../src/ai/mcp/errors");
++const { ErrorCodes } = require("../src/ai/mcp/jsonRpc");
++const { ToolRegistry, ServiceBackedTool } = require("../src/ai/tools");
++const { stableUuid } = require("../scripts/demo-seeder/lib/random");
++
++const V4 = "792595bb-5a94-4e63-ada6-96658c792c3e";
++// Identifiant tel que le générateur du lot de démonstration les produit (version 5).
++const V5 = stableUuid("demo-powerbi-v1", "users", "commercial-01");
++const MCP_DIR = path.join(__dirname, "..", "src", "ai", "mcp");
++const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
++const accepts = (value) => !uuidString().validate(value).error;
++
++describe("uuidString — forme acceptée", () => {
++  test("le générateur de démonstration produit bien des UUID de version 5", () => {
++    expect(V5).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
++  });
++
++  test.each([
++    ["version 4 (gen_random_uuid, Sequelize.UUIDV4)", V4],
++    ["version 5 (lot de démonstration)", V5],
++    ["version 1", "c232ab00-9414-11ec-b3c8-9f6bdeced846"],
++    ["version 7", "018f4e5a-7b3c-7a1e-8f2d-3c4b5a697887"],
++    ["majuscules", V5.toUpperCase()],
++  ])("accepte un UUID %s", (_label, value) => {
++    expect(accepts(value)).toBe(true);
++  });
++
++  test.each([
++    ["une chaîne quelconque", "not-a-uuid"],
++    ["une tentative d'injection", "1 OR 1=1"],
++    ["un UUID sans tirets", V4.replace(/-/g, "")],
++    ["un UUID entre accolades", `{${V4}}`],
++    ["un UUID entouré d'espaces", ` ${V4} `],
++    ["un UUID tronqué", V4.slice(0, 35)],
++    ["une version 0", "792595bb-5a94-0e63-ada6-96658c792c3e"],
++    ["une variante hors RFC 4122", "792595bb-5a94-4e63-0da6-96658c792c3e"],
++    ["un caractère non hexadécimal", "792595bb-5a94-4e63-ada6-96658c792c3z"],
++    ["une chaîne vide", ""],
++    ["un nombre", 42],
++    ["un objet", { id: V4 }],
++  ])("refuse %s", (_label, value) => {
++    expect(accepts(value)).toBe(false);
++  });
++
++  test("garde le type d'erreur Joi d'origine (string.guid)", () => {
++    expect(uuidString().validate("abc").error.details[0].type).toBe("string.guid");
++  });
++
++  test("couvre les versions 4 et 5 utilisées par le schéma", () => {
++    expect(UUID_VERSIONS).toEqual(expect.arrayContaining(["uuidv4", "uuidv5"]));
++  });
++});
++
++describe("ValidationManager.validateActingUser — identifiant", () => {
++  const vm = new ValidationManager();
++
++  test("accepte un compte dont l'identifiant est un UUID de version 5", () => {
++    expect(() => vm.validateActingUser({ id: V5, role: "commercial", email: "demo.commercial01@cbi_tunisia.com" })).not.toThrow();
++  });
++
++  test("accepte toujours un compte en version 4", () => {
++    expect(() => vm.validateActingUser({ id: V4, role: "superadmin2" })).not.toThrow();
++  });
++
++  test.each([["non-UUID", "not-a-uuid"], ["vide", ""], ["numérique", 12]])("refuse toujours un identifiant %s", (_label, id) => {
++    expect(() => vm.validateActingUser({ id, role: "admin" })).toThrow(McpError);
++  });
++
++  test("refuse toujours un utilisateur sans identifiant ou sans rôle", () => {
++    expect(() => vm.validateActingUser({ role: "admin" })).toThrow(McpError);
++    expect(() => vm.validateActingUser({ id: V5 })).toThrow(McpError);
++  });
++});
++
++describe("contrôle d'accès — inchangé pour un identifiant de version 5", () => {
++  const ran = jest.fn(async (input) => ({ echoed: input.targetId }));
++  const server = () => {
++    const toolRegistry = new ToolRegistry();
++    toolRegistry.register(
++      new ServiceBackedTool({
++        name: "admin_only_tool",
++        description: "Outil factice réservé au rôle admin.",
++        inputSchema: Joi.object({ targetId: uuidString().required() }),
++        requiredRoles: ["admin"],
++        run: ran,
++      })
++    );
++    return new McpServer({ name: "test", version: "0.0.0", toolRegistry, permissionManager: new PermissionManager(), validationManager: new ValidationManager(), errorHandler: new ErrorHandler() });
++  };
++  const call = (actingUser, args = { targetId: V5 }) =>
++    server().handleMessage({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "admin_only_tool", arguments: args, ...(actingUser ? { actingUser } : {}) } });
++
++  beforeEach(() => ran.mockClear());
++
++  test("rôle insuffisant : PERMISSION_DENIED, l'outil ne s'exécute pas", async () => {
++    const response = await call({ id: V5, role: "commercial" });
++    expect(response.error.code).toBe(ErrorCodes.PERMISSION_DENIED);
++    expect(ran).not.toHaveBeenCalled();
++  });
++
++  test("aucun utilisateur : PERMISSION_DENIED", async () => {
++    const response = await call(null);
++    expect(response.error.code).toBe(ErrorCodes.PERMISSION_DENIED);
++    expect(ran).not.toHaveBeenCalled();
++  });
++
++  test("identifiant d'utilisateur invalide : INVALID_PARAMS, l'outil ne s'exécute pas", async () => {
++    const response = await call({ id: "not-a-uuid", role: "admin" });
++    expect(response.error.code).toBe(ErrorCodes.INVALID_PARAMS);
++    expect(ran).not.toHaveBeenCalled();
++  });
++
++  test("rôle autorisé et identifiants de version 5 : l'outil s'exécute", async () => {
++    const response = await call({ id: V5, role: "admin" });
++    expect(response.error).toBeUndefined();
++    expect(ran).toHaveBeenCalledTimes(1);
++  });
++
++  test("rôle autorisé mais identifiant d'entité invalide : refus de validation, l'outil ne s'exécute pas", async () => {
++    const response = await call({ id: V5, role: "admin" }, { targetId: "abc" });
++    expect(response.error.code).toBe(ErrorCodes.VALIDATION_ERROR);
++    expect(ran).not.toHaveBeenCalled();
++  });
++});
++
++describe("outils du MCP — tous sur la règle partagée", () => {
++  const sources = walk(MCP_DIR).filter((f) => f.endsWith(".js"));
++  const toolSources = sources.filter((f) => f.includes(`${path.sep}tools${path.sep}`));
++  const usingShared = toolSources.filter((f) => /require\("\.\.\/\.\.\/uuidSchema"\)/.test(fs.readFileSync(f, "utf8")));
++
++  test("plus aucune contrainte « version 4 seulement » dans src/ai/mcp", () => {
++    const offenders = sources.filter((f) => !f.endsWith("uuidSchema.js") && /guid\(\{\s*version:\s*"uuidv4"\s*\}\)/.test(fs.readFileSync(f, "utf8")));
++    expect(offenders.map((f) => path.relative(MCP_DIR, f))).toEqual([]);
++  });
++
++  test("les 40 outils concernés importent la règle partagée et l'utilisent", () => {
++    expect(usingShared).toHaveLength(40);
++    for (const file of usingShared) expect(fs.readFileSync(file, "utf8")).toMatch(/uuidString\(\)/);
++  });
++
++  test("le validateur de l'utilisateur agissant utilise la même règle", () => {
++    expect(fs.readFileSync(path.join(MCP_DIR, "validationManager.js"), "utf8")).toMatch(/id:\s*uuidString\(\)\.required\(\)/);
++  });
++
++  test("aucun de ces outils n'a perdu sa déclaration de contrôle d'accès", () => {
++    for (const file of usingShared) expect(fs.readFileSync(file, "utf8")).toMatch(/requiredRoles\s*:/);
++  });
++});
+--- /dev/null
++++ b/test/demoGuard.test.js
+@@ -0,0 +1,153 @@
++"use strict";
++
++// Garde-fou du lancement de démonstration (scripts/demo/demo-guard.js).
++//
++// Le serveur n'est jamais démarré : chaque cas lance un processus Node qui
++// précharge le garde-fou, puis un petit script d'inspection à la place du CRM.
++// Les cas de refus n'ouvrent aucune connexion (configuration ou sonde simulées).
++// Les cas nominaux lisent la base de démonstration : une sonde et une requête
++// SELECT current_database() dans une transaction READ ONLY. Aucune écriture,
++// aucune connexion à la base réelle.
++
++const fs = require("fs");
++const path = require("path");
++const { spawnSync } = require("child_process");
++
++const ROOT = path.join(__dirname, "..");
++const GUARD = path.join(ROOT, "scripts", "demo", "demo-guard.js");
++const FIXTURES = path.join(__dirname, "fixtures", "demoGuard");
++const INSPECT = path.join(FIXTURES, "inspect.js");
++const JEST_ONLY = ["JEST_WORKER_ID", "NODE_ENV", "DB_NAME", "DB_NAME_TEST", "DATABASE_URL", "AUTO_EMAIL_JOBS_ENABLED", "EMAIL_HOST", "EMAIL_PORT"];
++
++function launch({ preload = [], env = {} } = {}) {
++  // Réglages posés par Jest retirés : le garde-fou doit se suffire à lui-même.
++  const childEnv = { ...process.env, ...env };
++  for (const key of JEST_ONLY) if (!(key in env)) delete childEnv[key];
++  const args = [...preload.flatMap((f) => ["-r", path.join(FIXTURES, f)]), "-r", GUARD, INSPECT];
++  const run = spawnSync(process.execPath, args, { cwd: ROOT, env: childEnv, encoding: "utf8", timeout: 120000 });
++  const marker = (run.stdout || "").split("@@RESULT@@")[1];
++  return { status: run.status, stdout: run.stdout || "", stderr: run.stderr || "", result: marker ? JSON.parse(marker.trim()) : null };
++}
++
++jest.setTimeout(180000);
++
++describe("refus de démarrage — aucune connexion ouverte", () => {
++  test("configuration visant la base réelle", () => {
++    const run = launch({ preload: ["stub-real-database-config.js"] });
++    expect(run.status).toBe(1);
++    expect(run.stderr).toMatch(/DÉMARRAGE REFUSÉ : la configuration vise « cbigestionnairepfe », pas « cbigestionnairepfe_demo »/);
++    expect(run.result).toBeNull();
++  });
++
++  test("hôte distant", () => {
++    const run = launch({ preload: ["stub-remote-host.js"] });
++    expect(run.status).toBe(1);
++    expect(run.stderr).toMatch(/seule une base locale est acceptée/);
++    expect(run.result).toBeNull();
++  });
++
++  test("NODE_ENV=production", () => {
++    const run = launch({ env: { NODE_ENV: "production" } });
++    expect(run.status).toBe(1);
++    expect(run.stderr).toMatch(/NODE_ENV=production/);
++    expect(run.result).toBeNull();
++  });
++
++  test.each(["cbigestionnairepfe", "cbigestionnairepfe_demo_test", "cbigestionnairepfe_test", "CBIGESTIONNAIREPFE_DEMO", "cbigestionnairepfe_demo2"])(
++    "la connexion de contrôle aboutit à « %s »",
++    (database) => {
++      const run = launch({ preload: ["stub-probe-other-database.js"], env: { FAKE_CONNECTED_DATABASE: database } });
++      expect(run.status).toBe(1);
++      expect(run.stderr).toContain(`la connexion aboutit à « ${database} », pas à « cbigestionnairepfe_demo »`);
++      expect(run.result).toBeNull();
++    }
++  );
++
++  test("connexion de contrôle impossible", () => {
++    const run = launch({ preload: ["stub-probe-unreachable.js"] });
++    expect(run.status).toBe(1);
++    expect(run.stderr).toMatch(/connexion de contrôle impossible \(ECONNREFUSED\)/);
++    expect(run.result).toBeNull();
++  });
++
++  test("le refus intervient avant le chargement du CRM", () => {
++    const run = launch({ preload: ["stub-probe-other-database.js"] });
++    expect(run.stdout).not.toMatch(/CRM Scheduler started|PROACTIVE AI MONITOR|DB connected/);
++  });
++});
++
++describe("démarrage nominal — base de démonstration, lecture seule", () => {
++  let run;
++  beforeAll(() => {
++    run = launch();
++  });
++
++  test("le garde-fou laisse passer et annonce la base vérifiée", () => {
++    expect(run.status).toBe(0);
++    expect(run.stdout).toMatch(/\[demo-guard\] Base vérifiée : cbigestionnairepfe_demo sur 127\.0\.0\.1:5432\./);
++  });
++
++  test("la connexion du CRM vise la base de démonstration", () => {
++    expect(run.result.connectedDatabase).toBe("cbigestionnairepfe_demo");
++  });
++
++  test("le .env, rechargé comme le fait src/app.js, ne reprend pas la main", () => {
++    expect(run.result.env).toEqual({
++      DB_NAME: "cbigestionnairepfe_demo",
++      DATABASE_URL_database: "cbigestionnairepfe_demo",
++      AUTO_EMAIL_JOBS_ENABLED: "false",
++      AUTO_ARCHIVE_ENABLED: "false",
++      AI_PROACTIVE_MONITORING_ENABLED: "false",
++      DEMO_MODE: "true",
++    });
++  });
++
++  test("aucune tâche planifiée n'est créée, même interrupteurs remis à true", () => {
++    expect(run.result.cron.requested).toBe(6);
++    expect(run.result.cron.announced).toBe(6);
++    expect([0, null]).toContain(run.result.cron.registered);
++  });
++
++  test("aucun e-mail ne sort : le transport écrit en mémoire", () => {
++    expect(run.result.mail).toEqual({ transport: "JSONTransport", deliveredInMemory: true });
++  });
++
++  test("aucun secret dans les traces", () => {
++    const out = run.stdout + run.stderr;
++    expect(out).not.toMatch(/postgres:\/\//);
++    expect(out).not.toMatch(/password\s*[:=]/i);
++    if (process.env.DB_PASSWORD) expect(out).not.toContain(process.env.DB_PASSWORD);
++  });
++});
++
++describe("pendant l'exécution", () => {
++  test("une connexion du CRM vers une autre base arrête le processus", () => {
++    const run = launch({ env: { SCENARIO: "foreign-connection" } });
++    expect(run.status).toBe(1);
++    expect(run.stderr).toMatch(/DÉMARRAGE REFUSÉ : une connexion du CRM vise « cbigestionnairepfe »/);
++    expect(run.result).toBeNull();
++  });
++});
++
++describe("séparation d'avec le lancement normal", () => {
++  const scripts = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8")).scripts;
++  const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
++
++  test("npm start et npm run dev sont inchangés", () => {
++    expect(scripts.start).toBe("node src/app.js");
++    expect(scripts.dev).toBe("nodemon src/app.js");
++  });
++
++  test("le mode démonstration est un script distinct qui précharge le garde-fou", () => {
++    expect(scripts["demo:start"]).toBe("node -r ./scripts/demo/demo-guard.js src/app.js");
++  });
++
++  test("aucun fichier du CRM ne charge le garde-fou", () => {
++    const users = walk(path.join(ROOT, "src")).filter((f) => f.endsWith(".js") && /demo-guard/.test(fs.readFileSync(f, "utf8")));
++    expect(users).toEqual([]);
++  });
++
++  test("le garde-fou n'écrit dans aucun fichier", () => {
++    expect(fs.readFileSync(GUARD, "utf8")).not.toMatch(/writeFile|appendFile|createWriteStream/);
++  });
++});
+--- /dev/null
++++ b/test/demoResetPasswords.test.js
+@@ -0,0 +1,263 @@
++"use strict";
++
++// Réinitialisation des mots de passe de démonstration (scripts/demo/reset-demo-passwords.js).
++// AUCUNE base n'est ouverte : l'opération est exercée contre un client simulé
++// en mémoire, qui enregistre chaque requête émise. bcrypt est réel pour les
++// contrôles de coût, simulé ailleurs pour la vitesse.
++
++const realBcrypt = require("bcrypt");
++const { resetDemoPasswords, TARGET_ACCOUNTS, DEMO_DATABASE, BCRYPT_COST, EXECUTED_BY, isAcceptablePassword } = require("../scripts/demo/reset-demo-passwords");
++
++const BATCH = "DEMO-demo-powerbi-v1-s20261010";
++const PASSWORD = "Mot-De-Passe-De-Test-42!";
++const PLACEHOLDER = "VALEUR_INVALIDE";
++const roleOf = (email) => email.slice("demo.".length, email.indexOf("@")).replace(/\d+$/, "");
++
++// bcrypt simulé : rapide, déterministe, de la forme d'une vraie empreinte.
++const fakeBcrypt = () => {
++  const calls = [];
++  return {
++    calls,
++    hash: async (password, cost) => {
++      calls.push({ cost });
++      return `$2b$${String(cost).padStart(2, "0")}$${Buffer.from(password).toString("hex").padEnd(53, "0").slice(0, 53)}`;
++    },
++    compare: async (password, hash) => hash === `$2b$12$${Buffer.from(password).toString("hex").padEnd(53, "0").slice(0, 53)}`,
++  };
++};
++const looksBcrypt = (hash) => /^\$2[aby]\$\d{2}\$.{53}$/.test(hash);
++
++function fakeDatabase({ database = DEMO_DATABASE, unregistered = [], inactive = [], absent = [], alreadyValid = [], touchOtherColumn = false } = {}) {
++  const users = [...TARGET_ACCOUNTS, "demo.commercial01@cbi_tunisia.com", "issam@gmail.com"]
++    .filter((email) => !absent.includes(email))
++    .map((email, i) => ({
++      id: `00000000-0000-5000-8000-${String(i).padStart(12, "0")}`,
++      email,
++      role: email.startsWith("demo.") ? roleOf(email) : "superadmin2",
++      isActive: !inactive.includes(email),
++      passwordHash: TARGET_ACCOUNTS.includes(email) && !alreadyValid.includes(email) ? PLACEHOLDER : `$2b$12$${"x".repeat(53)}`,
++      other: "inchangé",
++    }));
++  const registry = new Set(users.filter((u) => u.email.startsWith("demo.") && !unregistered.includes(u.email)).map((u) => u.id));
++  const state = { users, log: [] };
++  const statements = [];
++  let snapshot = null;
++  const clone = (value) => JSON.parse(JSON.stringify(value));
++  const client = {
++    statements,
++    state,
++    async query(sql, params = []) {
++      const text = String(sql).replace(/\s+/g, " ").trim();
++      statements.push({ text, params });
++      if (text.startsWith("SELECT current_database()")) return { rows: [{ d: database }] };
++      if (text === "BEGIN" || text === "BEGIN READ ONLY") { snapshot = clone(state); return { rows: [] }; }
++      if (text === "COMMIT") { snapshot = null; return { rows: [] }; }
++      if (text === "ROLLBACK") { if (snapshot) { state.users = snapshot.users; state.log = snapshot.log; snapshot = null; } return { rows: [] }; }
++      if (text.startsWith("SELECT u.id::text AS id, u.email")) {
++        return { rows: state.users.filter((u) => params[0].includes(u.email)).map((u) => ({ id: u.id, email: u.email, role: u.role, active: u.isActive, valid: looksBcrypt(u.passwordHash), registered: registry.has(u.id) })).sort((a, b) => (a.role + a.email).localeCompare(b.role + b.email)) };
++      }
++      if (text.startsWith("SELECT COUNT(*)::int AS n, md5(")) {
++        return { rows: [{ n: state.users.length, h: JSON.stringify(state.users.map((u) => [u.id, u.email, u.role, u.isActive, u.other])) }] };
++      }
++      if (text.startsWith("UPDATE users SET")) {
++        const user = state.users.find((u) => u.id === params[1] && u.email === params[2] && !looksBcrypt(u.passwordHash));
++        if (!user) return { rowCount: 0 };
++        user.passwordHash = params[0];
++        if (touchOtherColumn) user.other = "MODIFIÉ";
++        return { rowCount: 1 };
++      }
++      if (text.startsWith("INSERT INTO data_change_log")) { state.log.push({ batch: params[0], id: params[1], old: params[2], new: params[3], by: params[6] }); return { rowCount: 1 }; }
++      if (text.startsWith('SELECT "passwordHash" AS hash')) return { rows: state.users.filter((u) => params[0].includes(u.id)).map((u) => ({ hash: u.passwordHash })) };
++      if (text.startsWith("SELECT COUNT(*)::int AS n FROM users WHERE email = ANY")) return { rows: [{ n: state.users.filter((u) => params[0].includes(u.email) && !looksBcrypt(u.passwordHash)).length }] };
++      throw new Error(`requête inattendue : ${text}`);
++    },
++  };
++  return client;
++}
++
++const writes = (client) => client.statements.filter((s) => /^(UPDATE|INSERT|DELETE|ALTER|DROP|TRUNCATE|CREATE)\b/i.test(s.text));
++const run = (client, extra = {}) => {
++  const lines = [];
++  const bcrypt = extra.bcrypt || fakeBcrypt();
++  return resetDemoPasswords({ client, bcrypt, batchId: BATCH, password: PASSWORD, log: (l) => lines.push(l), ...extra }).then(
++    (report) => ({ report, lines, bcrypt }),
++    (error) => ({ error, lines, bcrypt })
++  );
++};
++
++describe("périmètre", () => {
++  test("exactement neuf comptes, tous demo.*, sans demo.commercial01 ni compte hors lot", () => {
++    expect(TARGET_ACCOUNTS).toHaveLength(9);
++    expect(new Set(TARGET_ACCOUNTS).size).toBe(9);
++    for (const email of TARGET_ACCOUNTS) expect(email).toMatch(/^demo\.[a-z_]+\d{2}@cbi_tunisia\.com$/);
++    expect(TARGET_ACCOUNTS).not.toContain("demo.commercial01@cbi_tunisia.com");
++    expect(TARGET_ACCOUNTS).not.toContain("issam@gmail.com");
++  });
++
++  test("la liste est figée", () => {
++    expect(Object.isFrozen(TARGET_ACCOUNTS)).toBe(true);
++  });
++
++  test("même règle de longueur que la connexion (8 à 72 caractères)", () => {
++    expect(isAcceptablePassword("1234567")).toBe(false);
++    expect(isAcceptablePassword("12345678")).toBe(true);
++    expect(isAcceptablePassword("x".repeat(73))).toBe(false);
++    expect(isAcceptablePassword(undefined)).toBe(false);
++  });
++});
++
++describe("simulation (mode par défaut)", () => {
++  test("ouvre une transaction en lecture seule et n'émet aucune écriture", async () => {
++    const client = fakeDatabase();
++    const { report, bcrypt } = await run(client);
++    expect(report.mode).toBe("dry-run");
++    expect(client.statements.map((s) => s.text)).toContain("BEGIN READ ONLY");
++    expect(client.statements.map((s) => s.text)).not.toContain("BEGIN");
++    expect(client.statements.map((s) => s.text)).not.toContain("COMMIT");
++    expect(writes(client)).toEqual([]);
++    expect(bcrypt.calls).toEqual([]);
++    expect(report.updated).toBe(0);
++    expect(report.committed).toBe(false);
++    expect(client.state.users.filter((u) => u.passwordHash === PLACEHOLDER)).toHaveLength(9);
++  });
++
++  test("fonctionne sans mot de passe fourni", async () => {
++    const { report, error } = await run(fakeDatabase(), { password: undefined });
++    expect(error).toBeUndefined();
++    expect(report.accounts).toHaveLength(9);
++  });
++
++  test("liste les neuf comptes à réinitialiser", async () => {
++    const { report } = await run(fakeDatabase());
++    expect(report.accounts.map((a) => a.email).sort()).toEqual([...TARGET_ACCOUNTS].sort());
++    expect(report.accounts.every((a) => a.state === "à réinitialiser")).toBe(true);
++  });
++});
++
++describe("refus", () => {
++  test.each(["cbigestionnairepfe", "cbigestionnairepfe_demo_test", "cbigestionnairepfe_test", "postgres"])("base « %s » : arrêt avant toute transaction", async (database) => {
++    const client = fakeDatabase({ database });
++    const { error } = await run(client, { apply: true });
++    expect(error.message).toMatch(/OPÉRATION REFUSÉE/);
++    expect(client.statements).toHaveLength(1);
++    expect(writes(client)).toEqual([]);
++  });
++
++  test("écriture sans mot de passe : arrêt avant toute requête", async () => {
++    const client = fakeDatabase();
++    const { error } = await run(client, { apply: true, password: undefined });
++    expect(error.message).toMatch(/DEMO_ACCOUNT_PASSWORD/);
++    expect(client.statements).toEqual([]);
++  });
++
++  test("mot de passe trop court : arrêt avant toute requête", async () => {
++    const client = fakeDatabase();
++    const { error } = await run(client, { apply: true, password: "court" });
++    expect(error.message).toMatch(/8 à 72/);
++    expect(client.statements).toEqual([]);
++  });
++
++  test("un compte hors du registre du lot : annulation, rien d'écrit", async () => {
++    const client = fakeDatabase({ unregistered: ["demo.admin01@cbi_tunisia.com"] });
++    const { error } = await run(client, { apply: true });
++    expect(error.message).toMatch(/hors du registre/);
++    expect(writes(client)).toEqual([]);
++    expect(client.statements[client.statements.length - 1].text).toBe("ROLLBACK");
++  });
++
++  test("un compte introuvable : annulation", async () => {
++    const client = fakeDatabase({ absent: ["demo.commercial04@cbi_tunisia.com"] });
++    const { error } = await run(client, { apply: true });
++    expect(error.message).toMatch(/introuvable/);
++    expect(writes(client)).toEqual([]);
++  });
++
++  test("un compte inactif : annulation", async () => {
++    const client = fakeDatabase({ inactive: ["demo.commercial02@cbi_tunisia.com"] });
++    const { error } = await run(client, { apply: true });
++    expect(error.message).toMatch(/inactif/);
++    expect(writes(client)).toEqual([]);
++  });
++
++  test("une autre colonne modifiée en cours de route : tout est annulé", async () => {
++    const client = fakeDatabase({ touchOtherColumn: true });
++    const { error } = await run(client, { apply: true });
++    expect(error.message).toMatch(/autre colonne/);
++    expect(client.statements.map((s) => s.text)).not.toContain("COMMIT");
++    expect(client.state.users.filter((u) => u.passwordHash === PLACEHOLDER)).toHaveLength(9);
++    expect(client.state.log).toEqual([]);
++  });
++
++  test("vérification bcrypt en échec : tout est annulé", async () => {
++    const client = fakeDatabase();
++    const bcrypt = { ...fakeBcrypt(), compare: async () => false };
++    const { error } = await run(client, { apply: true, bcrypt });
++    expect(error.message).toMatch(/bcrypt/);
++    expect(client.state.users.filter((u) => u.passwordHash === PLACEHOLDER)).toHaveLength(9);
++  });
++});
++
++describe("écriture (mode explicite), contre la base simulée", () => {
++  test("une seule transaction, neuf mises à jour, validation à la fin", async () => {
++    const client = fakeDatabase();
++    const { report } = await run(client, { apply: true });
++    const texts = client.statements.map((s) => s.text);
++    expect(texts.filter((t) => t === "BEGIN")).toHaveLength(1);
++    expect(texts.filter((t) => t === "COMMIT")).toHaveLength(1);
++    expect(texts.indexOf("COMMIT")).toBe(texts.length - 1);
++    expect(texts.filter((t) => t.startsWith("UPDATE users SET"))).toHaveLength(9);
++    expect(report.updated).toBe(9);
++    expect(report.committed).toBe(true);
++  });
++
++  test("seule la colonne passwordHash (et updatedAt) est écrite, sur les neuf comptes seulement", async () => {
++    const client = fakeDatabase();
++    await run(client, { apply: true });
++    const updates = client.statements.filter((s) => s.text.startsWith("UPDATE"));
++    for (const u of updates) expect(u.text).toMatch(/^UPDATE users SET "passwordHash" = \$1, "updatedAt" = now\(\) WHERE id::text = \$2 AND email = \$3 AND NOT \(/);
++    expect(updates.map((u) => u.params[2]).sort()).toEqual([...TARGET_ACCOUNTS].sort());
++    const untouched = client.state.users.filter((u) => !TARGET_ACCOUNTS.includes(u.email));
++    expect(untouched.every((u) => u.passwordHash === `$2b$12$${"x".repeat(53)}`)).toBe(true);
++    expect(writes(client).every((s) => /^(UPDATE users|INSERT INTO data_change_log)/.test(s.text))).toBe(true);
++  });
++
++  test("bcrypt est appelé avec le coût 12", async () => {
++    const { bcrypt } = await run(fakeDatabase(), { apply: true });
++    expect(BCRYPT_COST).toBe(12);
++    expect(bcrypt.calls).toHaveLength(9);
++    expect(bcrypt.calls.every((c) => c.cost === 12)).toBe(true);
++  });
++
++  test("un compte déjà valide n'est pas réécrit", async () => {
++    const client = fakeDatabase({ alreadyValid: ["demo.admin01@cbi_tunisia.com"] });
++    const { report } = await run(client, { apply: true });
++    expect(report.updated).toBe(8);
++    expect(client.statements.filter((s) => s.text.startsWith("UPDATE")).map((u) => u.params[2])).not.toContain("demo.admin01@cbi_tunisia.com");
++  });
++
++  test("le registre reçoit neuf entrées aux valeurs masquées", async () => {
++    const client = fakeDatabase();
++    await run(client, { apply: true });
++    expect(client.state.log).toHaveLength(9);
++    for (const entry of client.state.log) expect(entry).toMatchObject({ batch: BATCH, old: "[masqué]", new: "[masqué]", by: EXECUTED_BY });
++  });
++
++  test("ni le mot de passe ni une empreinte n'apparaissent dans les traces, le rapport ou le registre", async () => {
++    const client = fakeDatabase();
++    const { report, lines } = await run(client, { apply: true });
++    const hashes = client.state.users.map((u) => u.passwordHash);
++    const exposed = JSON.stringify({ report, lines, log: client.state.log, sql: client.statements.map((s) => s.text) });
++    expect(exposed).not.toContain(PASSWORD);
++    for (const hash of hashes) expect(exposed).not.toContain(hash);
++  });
++
++  test("avec le vrai bcrypt : empreinte de coût 12, vérifiable", async () => {
++    const client = fakeDatabase({ alreadyValid: TARGET_ACCOUNTS.slice(1) });
++    const { report } = await run(client, { apply: true, bcrypt: realBcrypt });
++    expect(report.updated).toBe(1);
++    const stored = client.state.users.find((u) => u.email === TARGET_ACCOUNTS[0]).passwordHash;
++    expect(realBcrypt.getRounds(stored)).toBe(12);
++    expect(await realBcrypt.compare(PASSWORD, stored)).toBe(true);
++    expect(await realBcrypt.compare("autre", stored)).toBe(false);
++  });
++});
+--- /dev/null
++++ b/test/fixtures/demoGuard/inspect.js
+@@ -0,0 +1,56 @@
++"use strict";
++// Exécuté APRÈS le garde-fou, à la place du CRM : décrit l'état du processus en JSON.
++// Lecture seule : une seule requête, SELECT current_database(), dans une transaction READ ONLY.
++const path = require("path");
++const root = process.cwd();
++const guard = require(path.join(root, "scripts", "demo", "demo-guard.js"));
++const out = {};
++
++(async () => {
++  require(path.join(root, "node_modules", "dotenv")).config({ quiet: true }); // comme src/app.js
++  out.env = {
++    DB_NAME: process.env.DB_NAME,
++    DATABASE_URL_database: String(process.env.DATABASE_URL).split("/").pop(),
++    AUTO_EMAIL_JOBS_ENABLED: process.env.AUTO_EMAIL_JOBS_ENABLED,
++    AUTO_ARCHIVE_ENABLED: process.env.AUTO_ARCHIVE_ENABLED,
++    AI_PROACTIVE_MONITORING_ENABLED: process.env.AI_PROACTIVE_MONITORING_ENABLED,
++    DEMO_MODE: process.env.DEMO_MODE,
++  };
++
++  const { sequelize } = require(path.join(root, "src", "db"));
++  if (process.env.SCENARIO === "foreign-connection") {
++    // Le crochet réel reçoit une connexion qui répond un autre nom de base.
++    await sequelize.runHooks("afterConnect", { query: async () => ({ rows: [{ d: "cbigestionnairepfe" }] }) }, {});
++    out.survived = true;
++  } else {
++    const rows = await sequelize.transaction({ readOnly: true }, (transaction) => sequelize.query("SELECT current_database() AS d", { type: "SELECT", transaction }));
++    out.connectedDatabase = rows[0].d;
++  }
++
++  // Tâches planifiées : interrupteurs remis à true pour prouver que le blocage ne dépend pas d'eux.
++  Object.assign(process.env, { AUTO_EMAIL_JOBS_ENABLED: "true", AUTO_ARCHIVE_ENABLED: "true", AI_PROACTIVE_MONITORING_ENABLED: "true" });
++  const log = console.log;
++  const lines = [];
++  console.log = (...args) => lines.push(args.join(" "));
++  for (const file of ["src/services/scheduler", "src/cron/checkProjects", "src/cron/projectCron", "src/cron/followup.job", "src/cron/googleCalendarChannelRenewal.job", "src/cron/proactiveAiMonitor.job"]) require(path.join(root, file));
++  console.log = log;
++  const cron = require(path.join(root, "node_modules", "node-cron"));
++  out.cron = {
++    requested: guard.ignoredJobs.length,
++    registered: typeof cron.getTasks === "function" ? cron.getTasks().size : null,
++    announced: lines.filter((l) => l.includes("Tâche planifiée ignorée")).length,
++  };
++
++  // E-mails : un transport demandé avec un vrai serveur SMTP n'ouvre aucune connexion.
++  const nodemailer = require(path.join(root, "node_modules", "nodemailer"));
++  const transporter = nodemailer.createTransport({ host: "smtp.exemple.tn", port: 587, auth: { user: "u", pass: "p" } });
++  const info = await transporter.sendMail({ from: "crm@exemple.tn", to: "client@exemple.tn", subject: "test", text: "test" });
++  out.mail = { transport: transporter.transporter.name, deliveredInMemory: typeof info.message === "string" };
++
++  await sequelize.close();
++  process.stdout.write(`\n@@RESULT@@${JSON.stringify(out)}\n`);
++  process.exit(0);
++})().catch((err) => {
++  process.stdout.write(`\n@@ERROR@@${err.message}\n`);
++  process.exit(3);
++});
+--- /dev/null
++++ b/test/fixtures/demoGuard/stub-probe-other-database.js
+@@ -0,0 +1,3 @@
++"use strict";
++// Simule une connexion de contrôle qui aboutit à une autre base. Aucune connexion n'est ouverte.
++require("child_process").spawnSync = () => ({ status: 0, stdout: process.env.FAKE_CONNECTED_DATABASE || "cbigestionnairepfe", stderr: "" });
+--- /dev/null
++++ b/test/fixtures/demoGuard/stub-probe-unreachable.js
+@@ -0,0 +1,3 @@
++"use strict";
++// Simule une connexion de contrôle impossible. Aucune connexion n'est ouverte.
++require("child_process").spawnSync = () => ({ status: 2, stdout: "", stderr: "ECONNREFUSED" });
+--- /dev/null
++++ b/test/fixtures/demoGuard/stub-real-database-config.js
+@@ -0,0 +1,5 @@
++"use strict";
++// Simule une configuration visant la base réelle. Aucune connexion n'est ouverte.
++const path = require("path");
++const target = require(path.resolve("scripts/demo-seeder/lib/target"));
++target.loadConfig = () => ({ target: { host: "127.0.0.1", port: 5432, user: "postgres", database: "cbigestionnairepfe", passwordEnv: "DEMO_DB_PASSWORD", passwordFallbackEnv: "DB_PASSWORD" } });
+--- /dev/null
++++ b/test/fixtures/demoGuard/stub-remote-host.js
+@@ -0,0 +1,10 @@
++"use strict";
++// Simule une configuration visant un hôte distant. Aucune connexion n'est ouverte.
++const path = require("path");
++const target = require(path.resolve("scripts/demo-seeder/lib/target"));
++const loadConfig = target.loadConfig;
++target.loadConfig = () => {
++  const config = loadConfig();
++  config.target.host = "db.exemple.tn";
++  return config;
++};

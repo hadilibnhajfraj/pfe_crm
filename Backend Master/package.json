@@ -8,6 +8,8 @@
     "nfr:seed": "node nfr/seed/seedQaUsers.js",
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
+    "demo:start": "node -r ./scripts/demo/demo-guard.js src/app.js",
+    "demo:passwords": "node scripts/demo/reset-demo-passwords.js",
     "web-search:check": "node scripts/checkWebSearch.js",
     "data:audit": "node scripts/crmDataAudit.js",
     "data:audit:internal": "node scripts/internalIndustrialAudit.js",

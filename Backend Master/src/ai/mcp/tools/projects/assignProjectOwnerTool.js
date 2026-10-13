@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const projectService = require("../../../../modules/projects/services/project.service");
 
@@ -14,8 +15,8 @@ function createAssignProjectOwnerTool() {
     name: "assign_project_owner",
     description: "Assigne (ou retire, ownerId=null) le propriétaire d'un projet (admin-tier uniquement via ce Tool).",
     inputSchema: Joi.object({
-      projectId: Joi.string().guid({ version: "uuidv4" }).required(),
-      ownerId: Joi.string().guid({ version: "uuidv4" }).allow(null).required(),
+      projectId: uuidString().required(),
+      ownerId: uuidString().allow(null).required(),
     }),
     requiredRoles: ADMIN_TIER_ROLES,
     run: async (input, { actingUser }) =>

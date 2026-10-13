@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("./uuidSchema");
 const { McpError, ToolValidationError } = require("./errors");
 const { ErrorCodes } = require("./jsonRpc");
 
@@ -21,7 +22,7 @@ const envelopeSchema = Joi.object({
 // PermissionManager, fails closed as "anonymous"), not a validation one —
 // this schema only rejects a value that is present but malformed.
 const actingUserSchema = Joi.object({
-  id: Joi.string().guid({ version: "uuidv4" }).required(),
+  id: uuidString().required(),
   role: Joi.string().min(1).required(),
   // Forme « x@y » seulement : l'adresse vient du compte déjà authentifié et ne
   // sert qu'aux règles `allowedEmails`. La validation stricte de Joi refusait

@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const userService = require("../../../../services/user.service");
 
@@ -14,7 +15,7 @@ function createSetUserRoleTool() {
     name: "set_user_role",
     description: "Change le rôle d'un utilisateur (superadmin uniquement).",
     inputSchema: Joi.object({
-      userId: Joi.string().guid({ version: "uuidv4" }).required(),
+      userId: uuidString().required(),
       role: Joi.string().max(50).required(),
     }),
     requiredRoles: ["superadmin", "superadmin2"],

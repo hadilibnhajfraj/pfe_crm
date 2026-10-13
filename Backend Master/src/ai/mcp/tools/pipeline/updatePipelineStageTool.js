@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const pipelineStageService = require("../../../../modules/pipeline/services/pipelineStage.service");
 
@@ -12,7 +13,7 @@ function createUpdatePipelineStageTool() {
     name: "update_pipeline_stage",
     description: "Met à jour une étape de pipeline existante.",
     inputSchema: Joi.object({
-      id: Joi.string().guid({ version: "uuidv4" }).required(),
+      id: uuidString().required(),
       name: Joi.string().max(120).optional(),
       color: Joi.string().pattern(HEX_COLOR).optional(),
       icon: Joi.string().max(50).allow(null).optional(),

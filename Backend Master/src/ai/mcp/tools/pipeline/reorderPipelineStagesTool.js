@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const pipelineStageService = require("../../../../modules/pipeline/services/pipelineStage.service");
 
@@ -12,7 +13,7 @@ function createReorderPipelineStagesTool() {
     description: "Réordonne plusieurs étapes de pipeline en une seule opération.",
     inputSchema: Joi.object({
       stages: Joi.array()
-        .items(Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required(), position: Joi.number().integer().min(0).required() }))
+        .items(Joi.object({ id: uuidString().required(), position: Joi.number().integer().min(0).required() }))
         .min(1)
         .required(),
     }),

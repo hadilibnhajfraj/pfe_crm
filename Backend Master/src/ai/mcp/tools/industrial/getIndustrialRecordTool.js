@@ -1,6 +1,7 @@
 "use strict";
 
 const Joi = require("joi");
+const { uuidString } = require("../../uuidSchema");
 const { ServiceBackedTool } = require("../../../tools");
 const industrialRecordService = require("../../../../modules/industrial-records/services/industrialRecord.service");
 
@@ -10,7 +11,7 @@ function createGetIndustrialRecordTool() {
   return new ServiceBackedTool({
     name: "get_industrial_record",
     description: "Récupère une fiche industrielle par identifiant.",
-    inputSchema: Joi.object({ id: Joi.string().guid({ version: "uuidv4" }).required() }),
+    inputSchema: Joi.object({ id: uuidString().required() }),
     requiredRoles: READ_WRITE_ROLES,
     run: async (input, { actingUser }) => industrialRecordService.getRecordById(input.id, actingUser),
   });
