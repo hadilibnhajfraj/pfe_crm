@@ -22,7 +22,7 @@ class UserApi {
 
     final token = AuthService().accessToken;
 
-    print('TOKEN DASHBOARD = $token');
+    print('TOKEN DASHBOARD = ${(token ?? '').isEmpty ? 'absent' : 'présent'}');
 
     final response = await http.get(
 
@@ -69,7 +69,7 @@ class UserApi {
 
     final token = AuthService().accessToken;
 
-    print('TOKEN USER PROJECTS = $token');
+    print('TOKEN USER PROJECTS = ${(token ?? '').isEmpty ? 'absent' : 'présent'}');
 
     final response = await http.get(
 

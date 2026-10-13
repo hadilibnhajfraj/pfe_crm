@@ -9,20 +9,32 @@ class ThemeToggleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeController controller = Get.find<ThemeController>();
 
-    return GestureDetector(
-      onTap: () {
-        controller.toggleTheme();
-      },
-      child: Padding(
-        padding: EdgeInsetsDirectional.only(start: 15, end: 15),
-        child: SvgPicture.asset(
-          controller.isDarkMode ? darkModeIcon : lightModeIcon,
-          // Use appropriate icons
-          width: 24,
-          height: 24,
-          colorFilter: ColorFilter.mode(
-              controller.isDarkMode ? colorWhite : colorGrey900,
-              BlendMode.srcIn),
+    // Bouton d'icône complet : infobulle, survol, focus clavier (Tab puis
+    // Entrée ou Espace) — au lieu d'une zone tactile sans retour visuel.
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 7, end: 7),
+      child: Tooltip(
+        message: controller.isDarkMode ? 'Passer au thème clair' : 'Passer au thème sombre',
+        waitDuration: const Duration(milliseconds: 350),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: controller.toggleTheme,
+            hoverColor: colorPrimary100.withValues(alpha: 0.10),
+            focusColor: colorPrimary100.withValues(alpha: 0.18),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: SvgPicture.asset(
+                controller.isDarkMode ? darkModeIcon : lightModeIcon,
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                    controller.isDarkMode ? colorWhite : colorGrey900,
+                    BlendMode.srcIn),
+              ),
+            ),
+          ),
         ),
       ),
     );

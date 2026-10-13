@@ -16,7 +16,7 @@ class ClientService {
   Future<List<ClientModel>> getAllClients() async {
     final token = AuthService().accessToken;
 
-    print('TOKEN LU DEPUIS AUTHSERVICE = $token');
+    print('TOKEN LU DEPUIS AUTHSERVICE = ${(token ?? '').isEmpty ? 'absent' : 'présent'}');
 
     final response = await http.get(
       Uri.parse('$baseUrl/all'),

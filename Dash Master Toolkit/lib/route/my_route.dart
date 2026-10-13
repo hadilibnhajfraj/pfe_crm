@@ -647,7 +647,7 @@ GoRoute(
     final userId = (box.read('userId') ?? '').toString();
     final userEmail = (box.read('userEmail') ?? '').toString();
 
-    print('DEBUG route token = $token');
+    print('DEBUG route token = ${token.isEmpty ? 'absent' : 'présent'}');
     print('DEBUG route role = $role');
     print('DEBUG route userId = $userId');
     print('DEBUG route userEmail = $userEmail');

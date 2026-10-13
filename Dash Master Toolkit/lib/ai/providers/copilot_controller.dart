@@ -27,6 +27,29 @@ import '../services/copilot_socket_service.dart';
 import '../utils/copilot_loading_phase.dart';
 import 'copilot_context_controller.dart';
 
+/// Ce que l'on SAIT de la disponibilité du Copilot, d'après le dernier
+/// échange réel avec le serveur.
+enum CopilotAvailability {
+  /// Aucun échange dans cette session : rien n'est affirmé.
+  unknown,
+
+  /// Dernière demande traitée normalement.
+  ready,
+
+  /// Le serveur répond, mais la dernière demande a échoué (modèle
+  /// indisponible, délai dépassé, erreur interne).
+  degraded,
+
+  /// Aucune réponse du serveur.
+  unreachable,
+
+  /// Copilot désactivé ou sans modèle configuré côté serveur (503).
+  notConfigured,
+
+  /// Rôle non autorisé (403).
+  forbidden,
+}
+
 class CopilotController extends GetxController {
   static CopilotController get to {
     if (!Get.isRegistered<CopilotController>()) {
@@ -52,6 +75,11 @@ class CopilotController extends GetxController {
   final _auth = AuthService();
 
   final messages = <CopilotMessage>[].obs;
+
+  /// État de disponibilité CONSTATÉ, jamais supposé : `unknown` tant
+  /// qu'aucun échange n'a eu lieu dans la session, puis le résultat du
+  /// dernier échange avec le serveur. L'en-tête du panneau l'affiche.
+  final availability = CopilotAvailability.unknown.obs;
   final isSending = false.obs;
   final isTyping = false.obs;
   final conversationId = RxnString();
@@ -135,6 +163,9 @@ class CopilotController extends GetxController {
       msg.text = response.answer ?? response.errorMessage ?? msg.text;
       msg.status = response.isError ? CopilotMessageStatus.error : CopilotMessageStatus.complete;
       msg.response = response;
+      // Le serveur a répondu : joignable. `mode: "error"` signale que le
+      // modèle ou un service en aval n'a pas pu traiter la demande.
+      availability.value = response.isError ? CopilotAvailability.degraded : CopilotAvailability.ready;
       messages.refresh();
     });
 
@@ -142,6 +173,7 @@ class CopilotController extends GetxController {
       if (_turnStopped) return;
       isTyping.value = false;
       isSending.value = false;
+      availability.value = CopilotAvailability.degraded;
       final msg = _currentAssistantMessage();
       if (msg == null) return;
       msg.text = message;
@@ -275,8 +307,10 @@ class CopilotController extends GetxController {
         msg.status = response.isError ? CopilotMessageStatus.error : CopilotMessageStatus.complete;
         msg.response = response;
       }
+      availability.value = response.isError ? CopilotAvailability.degraded : CopilotAvailability.ready;
     } catch (e) {
       if (_turnStopped || (e is DioException && e.type == DioExceptionType.cancel)) return;
+      availability.value = _availabilityFor(e);
       final msg = _currentAssistantMessage();
       if (msg != null) {
         msg.text = _friendlyError(e);
@@ -291,11 +325,27 @@ class CopilotController extends GetxController {
     }
   }
 
+  // Un message par cause, toujours actionnable : jamais une réponse
+  // inventée à la place d'une erreur, jamais de détail technique.
   String _friendlyError(Object e) {
-    final type = e.runtimeType.toString();
-    if (type == 'CopilotNotConfiguredException') return "Le Copilot IA n'est pas encore configuré côté serveur.";
-    if (type == 'CopilotForbiddenException') return "Votre rôle n'a pas accès au Copilot IA.";
+    if (e is CopilotNotConfiguredException) return "Le Copilot IA n'est pas encore configuré côté serveur.";
+    if (e is CopilotForbiddenException) return "Votre rôle n'a pas accès au Copilot IA.";
+    if (e is CopilotNetworkException) return 'Serveur injoignable. Vérifiez votre connexion et que le CRM est démarré, puis réessayez.';
+    if (e is CopilotTimeoutException) return "Le Copilot n'a pas répondu à temps : le modèle met trop longtemps ou est indisponible. Reformulez plus précisément ou réessayez dans un instant.";
+    if (e is CopilotServerException) {
+      if (e.statusCode == 401) return 'Votre session a expiré. Reconnectez-vous pour continuer.';
+      if (e.statusCode == 429) return 'Trop de demandes envoyées en peu de temps. Patientez quelques secondes avant de réessayer.';
+      if ((e.statusCode ?? 0) >= 500) return "Le service du Copilot a rencontré une erreur. Aucune donnée n'a été modifiée. Réessayez dans un instant.";
+      return e.message;
+    }
     return 'Une erreur est survenue. Réessayez.';
+  }
+
+  CopilotAvailability _availabilityFor(Object e) {
+    if (e is CopilotNetworkException) return CopilotAvailability.unreachable;
+    if (e is CopilotNotConfiguredException) return CopilotAvailability.notConfigured;
+    if (e is CopilotForbiddenException) return CopilotAvailability.forbidden;
+    return CopilotAvailability.degraded;
   }
 
   void sendSuggestion(CopilotSuggestion suggestion) => send(suggestion.label);

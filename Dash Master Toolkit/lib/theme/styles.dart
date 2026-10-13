@@ -11,6 +11,52 @@ abstract class Styles {
 
   static const String fontFamily = 'InterTight';
 
+  // ── États d'interaction communs ─────────────────────────────────────────
+  // Survol, focus clavier, pression et désactivé explicites pour tous les
+  // boutons Material de l'application. Seules les surcouches d'état sont
+  // définies ici : la couleur, la forme et la taille au repos de chaque
+  // bouton restent celles que son écran lui donne.
+  static const Duration interactionDuration = Duration(milliseconds: 180);
+
+  static WidgetStateProperty<Color?> _overlay(Color base) => WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) return Colors.transparent;
+        if (states.contains(WidgetState.pressed)) return base.withValues(alpha: 0.16);
+        if (states.contains(WidgetState.focused)) return base.withValues(alpha: 0.14);
+        if (states.contains(WidgetState.hovered)) return base.withValues(alpha: 0.08);
+        return null;
+      });
+
+  static final WidgetStateProperty<MouseCursor?> _cursor = WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled) ? SystemMouseCursors.forbidden : SystemMouseCursors.click);
+
+  // Anneau de focus visible à la navigation clavier (Tab).
+  static WidgetStateProperty<BorderSide?> _focusRing(Color color) => WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.focused) ? BorderSide(color: color, width: 2) : null);
+
+  static ThemeData _withInteractions(ThemeData base, {required Color accent, required Color onFilled, required Color tooltipBackground}) {
+    final onAccent = _overlay(accent);
+    final onSolid = _overlay(onFilled);
+    return base.copyWith(
+      hoverColor: accent.withValues(alpha: 0.06),
+      focusColor: accent.withValues(alpha: 0.12),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(overlayColor: onSolid, mouseCursor: _cursor, side: _focusRing(accent), animationDuration: interactionDuration)),
+      filledButtonTheme: FilledButtonThemeData(
+          style: ButtonStyle(overlayColor: onSolid, mouseCursor: _cursor, side: _focusRing(accent), animationDuration: interactionDuration)),
+      outlinedButtonTheme:
+          OutlinedButtonThemeData(style: ButtonStyle(overlayColor: onAccent, mouseCursor: _cursor, animationDuration: interactionDuration)),
+      textButtonTheme: TextButtonThemeData(style: ButtonStyle(overlayColor: onAccent, mouseCursor: _cursor, animationDuration: interactionDuration)),
+      iconButtonTheme: IconButtonThemeData(style: ButtonStyle(overlayColor: onAccent, mouseCursor: _cursor, animationDuration: interactionDuration)),
+      tooltipTheme: TooltipThemeData(
+        waitDuration: const Duration(milliseconds: 350),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(color: tooltipBackground, borderRadius: BorderRadius.circular(6)),
+        textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+      ),
+      textSelectionTheme: base.textSelectionTheme.copyWith(selectionColor: accent.withValues(alpha: 0.24)),
+    );
+  }
+
   static ThemeData createTheme(ColorScheme colorScheme) {
     if (Get.isDarkMode) {
       return darkTheme.copyWith(
@@ -75,7 +121,9 @@ abstract class Styles {
     );
   }
 
-  static final ThemeData lightTheme = ThemeData(
+  static final ThemeData lightTheme = _withInteractions(_lightBase, accent: colorPrimary100, onFilled: Colors.white, tooltipBackground: const Color(0xFF0F172A));
+
+  static final ThemeData _lightBase = ThemeData(
           splashColor: Colors.transparent,
           // Removes the splash color
           highlightColor: Colors.transparent,
@@ -138,7 +186,9 @@ timePickerTheme:  TimePickerThemeData(
         }),
   );
 
-  static final ThemeData darkTheme = ThemeData(
+  static final ThemeData darkTheme = _withInteractions(_darkBase, accent: colorPrimary50, onFilled: Colors.white, tooltipBackground: const Color(0xFF334155));
+
+  static final ThemeData _darkBase = ThemeData(
     splashColor: Colors.transparent,
     // Removes the splash color
     highlightColor: Colors.transparent,

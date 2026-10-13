@@ -6,6 +6,7 @@
 // par « Stop » plutôt que d'empiler des messages, la même discipline que le
 // reste de l'app (voir ArchiveRequestProvider.sending).
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'package:dash_master_toolkit/theme/styles.dart';
@@ -17,13 +18,54 @@ import 'copilot_attachment_button.dart';
 import 'copilot_attachment_preview.dart';
 import 'copilot_voice_button.dart';
 
-class CopilotInputBar extends StatelessWidget {
+class CopilotInputBar extends StatefulWidget {
   const CopilotInputBar({super.key});
+
+  @override
+  State<CopilotInputBar> createState() => _CopilotInputBarState();
+}
+
+class _CopilotInputBarState extends State<CopilotInputBar> {
+  // Entrée envoie, Maj+Entrée insère un saut de ligne. L'événement est
+  // intercepté sur le nœud de focus du champ, avant que la saisie ne
+  // l'interprète comme un retour à la ligne. Rien n'est envoyé pendant une
+  // composition IME, ni pendant une génération (CopilotController.send le
+  // refuse déjà : un seul tour à la fois).
+  late final FocusNode _focusNode = FocusNode(debugLabel: 'copilot-input', onKeyEvent: _onKey);
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (mounted && _focused != _focusNode.hasFocus) setState(() => _focused = _focusNode.hasFocus);
+  }
+
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    final isEnter = event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (!isEnter || event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (HardwareKeyboard.instance.isShiftPressed) return KeyEventResult.ignored; // saut de ligne
+    final controller = CopilotController.to;
+    if (controller.inputCtrl.value.composing.isValid) return KeyEventResult.ignored;
+    if (!controller.isSending.value) controller.send();
+    return KeyEventResult.handled;
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Get.isRegistered<ThemeController>() ? Get.find<ThemeController>().isDarkMode : false;
     final controller = CopilotController.to;
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
@@ -50,12 +92,15 @@ class CopilotInputBar extends StatelessWidget {
                 ),
               );
             }),
-            Container(
+            AnimatedContainer(
+              duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 160),
               padding: const EdgeInsets.fromLTRB(2, 2, 4, 2),
               decoration: BoxDecoration(
                 color: CopilotColors.panelBackground(isDark),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: CopilotColors.border(isDark)),
+                // Focus clavier visible : bordure renforcée et halo discret.
+                border: Border.all(color: _focused ? CopilotColors.orbGradient.first : CopilotColors.border(isDark), width: _focused ? 1.5 : 1),
+                boxShadow: _focused ? [BoxShadow(color: CopilotColors.orbGradient.first.withValues(alpha: 0.14), blurRadius: 8)] : const [],
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -66,10 +111,11 @@ class CopilotInputBar extends StatelessWidget {
                       constraints: const BoxConstraints(maxHeight: 120),
                       child: TextField(
                         controller: controller.inputCtrl,
+                        focusNode: _focusNode,
                         minLines: 1,
                         maxLines: 5,
-                        textInputAction: TextInputAction.send,
-                        onSubmitted: (_) => controller.send(),
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
                         style: TextStyle(fontFamily: Styles.fontFamily, fontSize: 14),
                         decoration: const InputDecoration(
                           hintText: 'Posez une question au Copilot…',
@@ -108,7 +154,7 @@ class CopilotInputBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 6, left: 4),
               child: Text(
-                'Le Copilot répond avec vos données CRM, dans la limite de vos droits. Vérifiez les informations importantes.',
+                'Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne. Le Copilot répond avec vos données CRM, dans la limite de vos droits. Vérifiez les informations importantes.',
                 style: TextStyle(fontFamily: Styles.fontFamily, fontSize: 10.5, color: CopilotColors.mutedText(isDark)),
               ),
             ),

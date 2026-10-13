@@ -154,8 +154,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     print("=== [DASHBOARD DIAG] ========================================");
     print("USER_ID       : '$_currentUserId'");
     print("IS_ADMIN      : $_isAdmin");
-    print("WIDGET_TOKEN  : '${widget.token.isEmpty ? 'VIDE !!!' : widget.token.substring(0, widget.token.length.clamp(0, 30))}...'");
-    print("GETSTORE_TOKEN: '${ApiClient.instance.getAccessToken()?.substring(0, (ApiClient.instance.getAccessToken()?.length ?? 0).clamp(0, 30)) ?? 'NULL !!!'}...'");
+    // Présence du jeton seulement : aucun caractère du jeton n'est journalisé.
+    print("WIDGET_TOKEN  : ${widget.token.isEmpty ? 'absent' : 'présent'}");
+    print("GETSTORE_TOKEN: ${(ApiClient.instance.getAccessToken() ?? '').isEmpty ? 'absent' : 'présent'}");
     print("=============================================================");
 
     try {
@@ -205,6 +206,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final projRes  = await ApiClient.instance.dio.get(endpoint, queryParameters: {'page': 1, 'limit': 1000});
       final projData = projRes.data;
 
+      // GET /projects/my-projects ne renvoie par défaut que le modèle
+      // « project » : sans les deux appels ci-dessous, les graphiques et le
+      // sous-titre comptaient 10 projets quand les cartes KPI (GET
+      // /dashboard/user, tous modèles) en annonçaient 14. Les revendeurs et
+      // applicateurs de l'utilisateur sont donc ajoutés à la même liste.
+      final extraProjects = <dynamic>[];
+      if (!_isAdmin) {
+        for (final modele in const ['revendeur', 'applicateur']) {
+          try {
+            final res = await ApiClient.instance.dio.get(endpoint, queryParameters: {'page': 1, 'limit': 1000, 'projectModele': modele});
+            final body = res.data;
+            extraProjects.addAll(_safeList(body is Map ? (body['items'] ?? body['data'] ?? body['results']) : body));
+          } catch (e) {
+            print("ERREUR        PROJECTS modèle=$modele : $e");
+          }
+        }
+      }
+
       print("RESPONSE      PROJECTS type=${projData.runtimeType}");
       if (projData is Map) {
         print("RESPONSE      PROJECTS keys=${projData.keys.toList()}");
@@ -220,6 +239,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       } else if (projData is List) {
         rawProjects = projData;
       }
+      if (extraProjects.isNotEmpty) rawProjects = [...rawProjects, ...extraProjects];
       print("PARSED_DATA   PROJECTS count=${rawProjects.length}");
       if (rawProjects.isNotEmpty) {
         print("PARSED_DATA   PROJECTS[0] keys=${rawProjects[0] is Map ? (rawProjects[0] as Map).keys.toList() : 'non-map'}");

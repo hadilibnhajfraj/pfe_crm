@@ -227,9 +227,10 @@ Future<List<String>> getUserNames() async {
       // runtimeType sur `otp` permet de détecter une conversion int/double
       // accidentelle (le backend attend une String).
       // ignore: avoid_print
-      print('[MFA-DIAG][Flutter][ApiService] JSON envoyé à POST /auth/mfa/verify : $body');
+      // Ni le code ni le jeton de défi ne sont journalisés : type et longueur seulement.
+      print('[MFA-DIAG][Flutter][ApiService] POST /auth/mfa/verify — champs : ${body.keys.toList()}');
       // ignore: avoid_print
-      print('[MFA-DIAG][Flutter][ApiService] otp runtimeType=${otp.runtimeType}, otp="$otp", otp.length=${otp.length}');
+      print('[MFA-DIAG][Flutter][ApiService] otp runtimeType=${otp.runtimeType}, otp.length=${otp.length}');
 
       final res = await ApiClient.instance.dio.post('/auth/mfa/verify', data: body);
 

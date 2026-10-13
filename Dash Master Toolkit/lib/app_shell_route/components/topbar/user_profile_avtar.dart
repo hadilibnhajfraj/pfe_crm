@@ -33,6 +33,7 @@ class UserProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<int>(
+      tooltip: 'Mon compte',
       onSelected: (value) async {
         switch (value) {
           case 1:

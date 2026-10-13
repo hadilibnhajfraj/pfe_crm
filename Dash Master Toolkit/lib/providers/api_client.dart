@@ -50,10 +50,13 @@ class ApiClient {
             options.extra['withCredentials'] = true;
           }
 
+          // Journal de débogage SANS secret : l'en-tête Authorization, les
+          // cookies, les mots de passe, les codes et les jetons ne sont jamais
+          // écrits dans la console (voir _safeHeaders / _safeBody).
           if (kDebugMode) {
             debugPrint("➡️ [${options.method}] ${options.baseUrl}${options.path}");
-            debugPrint("Headers: ${options.headers}");
-            if (options.data != null) debugPrint("Body: ${options.data}");
+            debugPrint("Headers: ${_safeHeaders(options.headers)}");
+            if (options.data != null) debugPrint("Body: ${_safeBody(options.path, options.data)}");
           }
 
           return handler.next(options);
@@ -61,7 +64,7 @@ class ApiClient {
         onResponse: (response, handler) {
           if (kDebugMode) {
             debugPrint("✅ Response [${response.statusCode}] ${response.requestOptions.path}");
-            debugPrint("Data: ${response.data}");
+            debugPrint("Data: ${_safeBody(response.requestOptions.path, response.data)}");
           }
           return handler.next(response);
         },
@@ -70,7 +73,7 @@ class ApiClient {
             debugPrint("❌ DioError: ${e.message}");
             if (e.response != null) {
               debugPrint("Status: ${e.response?.statusCode}");
-              debugPrint("Data: ${e.response?.data}");
+              debugPrint("Data: ${_safeBody(e.requestOptions.path, e.response?.data)}");
             }
           }
 
@@ -135,3 +138,38 @@ void clearToken() {
     await prefs.remove("token");
   }
 }
+
+// ── Journalisation sans secret ─────────────────────────────────────────────
+// Clés dont la valeur n'est jamais écrite dans la console, où qu'elles soient
+// dans un en-tête, un corps de requête ou une réponse.
+final RegExp _sensitiveKey = RegExp(r'(authorization|cookie|token|password|passwd|secret|otp|code$|hash)', caseSensitive: false);
+const String _masked = '[masqué]';
+
+Map<String, dynamic> _safeHeaders(Map<String, dynamic> headers) =>
+    headers.map((key, value) => MapEntry(key, _sensitiveKey.hasMatch(key) ? _masked : value));
+
+/// Copie de [data] dont toute valeur sensible est masquée. Les échanges
+/// d'authentification (/auth/…) ne sont jamais détaillés : seuls les noms de
+/// champs sont listés.
+Object? _safeBody(String path, Object? data) {
+  if (data == null) return null;
+  if (data is FormData) return 'FormData(${data.fields.map((f) => f.key).toList()}, ${data.files.length} fichier(s))';
+  if (path.contains('/auth/')) return data is Map ? 'champs : ${data.keys.toList()}' : _masked;
+  return _redact(data);
+}
+
+Object? _redact(Object? value) {
+  if (value is Map) {
+    return value.map((key, v) => MapEntry(key, _sensitiveKey.hasMatch(key.toString()) && v != null ? _masked : _redact(v)));
+  }
+  if (value is List) return value.map(_redact).toList();
+  if (value is String && RegExp(r'^eyJ[A-Za-z0-9_-]+.[A-Za-z0-9_-]+.').hasMatch(value)) return _masked;
+  return value;
+}
+
+/// Accès de test aux fonctions de masquage (voir test/api_client_log_redaction_test.dart).
+@visibleForTesting
+Map<String, dynamic> debugSafeHeaders(Map<String, dynamic> headers) => _safeHeaders(headers);
+
+@visibleForTesting
+Object? debugSafeBody(String path, Object? data) => _safeBody(path, data);

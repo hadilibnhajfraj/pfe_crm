@@ -141,9 +141,14 @@ class _Header extends StatelessWidget {
                     Text('Copilot IA', style: CopilotTextStyles.panelTitle(isDark)),
                     // Statut en direct : la phase en cours pendant une
                     // réponse (même source que l'indicateur de la bulle).
+                    // L'état affiché est celui CONSTATÉ au dernier échange
+                    // (CopilotController.availability), jamais un « prêt »
+                    // supposé : tant qu'aucune demande n'a été faite, aucune
+                    // disponibilité n'est affirmée.
                     Obx(() {
                       final controller = CopilotController.to;
                       final busy = controller.isSending.value;
+                      final status = _statusFor(controller.availability.value, isDark);
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -152,13 +157,13 @@ class _Header extends StatelessWidget {
                             height: 7,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: busy ? CopilotColors.orbGradient.last : CopilotColors.success(isDark),
+                              color: busy ? CopilotColors.orbGradient.last : status.color,
                             ),
                           ),
                           const SizedBox(width: 5),
                           Flexible(
                             child: Text(
-                              busy ? controller.loadingPhase.value.label : 'Assistant CRM · prêt',
+                              busy ? controller.loadingPhase.value.label : status.label,
                               overflow: TextOverflow.ellipsis,
                               style: CopilotTextStyles.timestamp(isDark),
                             ),
@@ -209,6 +214,23 @@ class _Header extends StatelessWidget {
   }
 }
 
+({String label, Color color}) _statusFor(CopilotAvailability availability, bool isDark) {
+  switch (availability) {
+    case CopilotAvailability.unknown:
+      return (label: 'Assistant CRM', color: CopilotColors.mutedText(isDark));
+    case CopilotAvailability.ready:
+      return (label: 'Assistant CRM · connecté', color: CopilotColors.success(isDark));
+    case CopilotAvailability.degraded:
+      return (label: 'Dernière demande en échec', color: CopilotColors.warning(isDark));
+    case CopilotAvailability.unreachable:
+      return (label: 'Serveur injoignable', color: CopilotColors.errorText(isDark));
+    case CopilotAvailability.notConfigured:
+      return (label: 'Copilot non configuré', color: CopilotColors.errorText(isDark));
+    case CopilotAvailability.forbidden:
+      return (label: 'Accès non autorisé', color: CopilotColors.errorText(isDark));
+  }
+}
+
 // Un des 3 boutons d'onglet du header (dashboard/conversation/historique) —
 // mis en évidence (couleur) quand actif, jamais un simple bouton binaire
 // comme avant l'ajout de l'onglet Dashboard AI.
@@ -229,11 +251,22 @@ class _TabIconButton extends StatelessWidget {
         button: true,
         selected: isActive,
         label: tooltip,
+        // États distincts : onglet actif (fond teinté + couleur), survol et
+        // focus clavier (InkWell), pression (CopilotPressScale).
         child: CopilotPressScale(
-          onTap: onPressed,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, color: isActive ? CopilotColors.orbGradient.first : null),
+          child: Material(
+            color: isActive ? CopilotColors.orbGradient.first.withValues(alpha: isDark ? 0.22 : 0.10) : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onPressed,
+              hoverColor: CopilotColors.orbGradient.first.withValues(alpha: 0.10),
+              focusColor: CopilotColors.orbGradient.first.withValues(alpha: 0.18),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(icon, color: isActive ? CopilotColors.orbGradient.first : null),
+              ),
+            ),
           ),
         ),
       ),

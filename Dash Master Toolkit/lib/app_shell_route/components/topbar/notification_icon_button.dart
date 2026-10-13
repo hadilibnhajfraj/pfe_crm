@@ -62,10 +62,21 @@ class NotificationIconButton extends StatelessWidget {
 
     return Obx(() {
       final count = ctrl.unreadCount.value;
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
+      // Bouton d'icône complet : infobulle avec le nombre de non lues,
+      // survol et focus clavier visibles.
+      final unreadLabel = count > 1 ? '$count non lues' : '$count non lue';
+      return Tooltip(
+        message: count > 0 ? 'Notifications ($unreadLabel)' : 'Notifications',
+        waitDuration: const Duration(milliseconds: 350),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+          customBorder: const CircleBorder(),
           onTap: () => _openCenter(context, ctrl),
+          hoverColor: colorPrimary100.withValues(alpha: 0.10),
+          focusColor: colorPrimary100.withValues(alpha: 0.18),
+          child: Padding(
+          padding: const EdgeInsets.all(8),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -98,6 +109,8 @@ class NotificationIconButton extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+          ),
           ),
         ),
       );

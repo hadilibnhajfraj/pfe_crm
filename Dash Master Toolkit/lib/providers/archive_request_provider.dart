@@ -94,7 +94,7 @@ class ArchiveRequestProvider extends GetxController {
     final endpoint = isAdmin ? '/archive-requests/admin' : '/archive-requests/my';
 
     debugPrint('LOAD ARCHIVE REQUESTS');
-    debugPrint('TOKEN = $token');
+    debugPrint('TOKEN = ${(token ?? '').toString().isEmpty ? 'absent' : 'présent'}');
     debugPrint('ENDPOINT = $endpoint');
 
     try {

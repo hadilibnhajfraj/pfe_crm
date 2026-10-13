@@ -32,6 +32,34 @@ class CopilotForbiddenException implements Exception {
   const CopilotForbiddenException(this.message);
 }
 
+/// Le serveur n'a pas pu être joint (hors ligne, backend arrêté, DNS…) :
+/// aucune réponse HTTP n'a été reçue.
+class CopilotNetworkException implements Exception {
+  final String message;
+  const CopilotNetworkException(this.message);
+  @override
+  String toString() => message;
+}
+
+/// La requête a expiré avant la réponse (connexion, envoi ou réception).
+class CopilotTimeoutException implements Exception {
+  final String message;
+  const CopilotTimeoutException(this.message);
+  @override
+  String toString() => message;
+}
+
+/// Le serveur a répondu par une erreur (401, 429, 5xx…). `message` est celui
+/// du backend, déjà rédigé pour l'utilisateur (voir errorClassifier.js) : il
+/// ne contient jamais de détail technique.
+class CopilotServerException implements Exception {
+  final int? statusCode;
+  final String message;
+  const CopilotServerException(this.statusCode, this.message);
+  @override
+  String toString() => message;
+}
+
 /// Réponse de POST /ai-copilot/documents — métadonnées seulement, jamais le
 /// contenu du document.
 class CopilotUploadedDocument {
@@ -234,6 +262,17 @@ class CopilotApiService {
 
     if (status == 503) return CopilotNotConfiguredException(message);
     if (status == 403) return CopilotForbiddenException(message);
-    return Exception(message);
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return CopilotTimeoutException(message);
+      case DioExceptionType.connectionError:
+        return CopilotNetworkException(message);
+      default:
+        break;
+    }
+    if (status != null) return CopilotServerException(status, message);
+    return CopilotNetworkException(message);
   }
 }
